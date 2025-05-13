@@ -23,7 +23,6 @@
 
 #include "GraphicsAPI.h"
 
-#define Grapi 
 
 using namespace DirectX;
 
@@ -219,9 +218,7 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice()
 {
-#if defined (Grapi)
 
-#else 
     HRESULT hr = S_OK;
 
     RECT rc;
@@ -346,7 +343,7 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-#endif 
+
 
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
@@ -484,8 +481,8 @@ HRESULT InitDevice()
     };
 
     D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(SimpleVertex) * 24;
+    bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
 

@@ -18,8 +18,12 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <directxcolors.h>
-#include "DDSTextureLoader.h"
+//#include "DDSTextureLoader.h"
 #include "resource.h"
+
+#include "GraphicsAPI.h"
+
+#define Grapi 
 
 using namespace DirectX;
 
@@ -57,11 +61,13 @@ HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 ID3D11Device* g_pd3dDevice = nullptr;
+#if !definded (Grapi)
 ID3D11Device1* g_pd3dDevice1 = nullptr;
 ID3D11DeviceContext* g_pImmediateContext = nullptr;
 ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
 IDXGISwapChain* g_pSwapChain = nullptr;
 IDXGISwapChain1* g_pSwapChain1 = nullptr;
+#endif
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 ID3D11Texture2D* g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
@@ -213,6 +219,9 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice()
 {
+#if defined (Grapi)
+
+#else 
     HRESULT hr = S_OK;
 
     RECT rc;
@@ -336,6 +345,8 @@ HRESULT InitDevice()
 
     if (FAILED(hr))
         return hr;
+
+#endif 
 
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
@@ -547,9 +558,9 @@ HRESULT InitDevice()
         return hr;
 
     // Load the Texture
-    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
-    if (FAILED(hr))
-        return hr;
+    //hr = CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
+    //if (FAILED(hr))
+    //    return hr;
 
     // Create the sample state
     D3D11_SAMPLER_DESC sampDesc = {};

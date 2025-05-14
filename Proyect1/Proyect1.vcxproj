@@ -129,11 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
+    <ClInclude Include="BufferManager.h" />
     <ClInclude Include="GraphicsAPI.h" />
   </ItemGroup>
   <ItemGroup>

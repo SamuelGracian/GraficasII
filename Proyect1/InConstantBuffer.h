@@ -1,6 +1,5 @@
 #pragma once
 #include <d3d11.h>
-#include <wrl/client.h>
 
 class InConstantBuffer
 {
@@ -26,14 +25,9 @@ class InConstantBuffer
         cbd.ByteWidth = static_cast<UINT>(bufferSize);
 		// Set the structure byte stride
         cbd.StructureByteStride = 0;
-		// Set the resource type
-        HRESULT hr = device->CreateBuffer(&cbd, nullptr, m_constantBuffer.GetAddressOf());
-        
     }
 
 private:
-	//Smart Pointer to the ID3D11Buffer 
-    Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
 
 	// Size of the buffer
     size_t m_bufferSize;

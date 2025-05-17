@@ -8,6 +8,8 @@
 #include <stdexcept>
 
 
+#include "InConstantBuffer.h"
+
 class GraphicsAPI
 {
 public:
@@ -15,16 +17,17 @@ public:
     ~GraphicsAPI();
 
     void Clear(const FLOAT color[4]);
-    void Present();
+    
+     Dx11ConstantBuffer* CreateConstantBuffer();
 
 
 private:
-    ID3D11Device* m_device = nullptr;
-    ID3D11DeviceContext* m_context = nullptr;
-    IDXGISwapChain* m_swapChain = nullptr;
-    ID3D11RenderTargetView* m_renderTargetView = nullptr;
-    ID3D11Texture2D* m_depthStencil = nullptr;
-    ID3D11DepthStencilView* m_depthStencilView = nullptr;
+    ID3D11Device* m_device;
+    ID3D11DeviceContext* m_context;
+    IDXGISwapChain* m_swapChain;
+    ID3D11RenderTargetView* m_renderTargetView;
+    ID3D11Texture2D* m_depthStencil;
+    ID3D11DepthStencilView* m_depthStencilView;
 
     void CreateDeviceAndSwapChain(HWND hWnd, UINT width, UINT height);
     void Cleanup();

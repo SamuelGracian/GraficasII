@@ -1,16 +1,22 @@
 #pragma once
 #include <d3d11.h>
 
-class InConstantBuffer
+#include "GraphicsAPI.h"
+
+class Dx11ConstantBuffer
 {
+	friend class GraphicsAPI;
+public:
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="device"></param>
     /// <param name="bufferSize"></param>
-    InConstantBuffer(ID3D11Device* device, size_t bufferSize)
-        : m_bufferSize(bufferSize)
+    Dx11ConstantBuffer(ID3D11Device* device, size_t bufferSize)
+        : m_byteWidth(bufferSize)
     {
+        // Initialize the buffer pointer to null
+		m_bufer = nullptr;
 		// Create the constant buffer description
         D3D11_BUFFER_DESC cbd = {};
 		// Set the buffer description parameters
@@ -27,8 +33,11 @@ class InConstantBuffer
         cbd.StructureByteStride = 0;
     }
 
-private:
+    void UpdateBuffer();
 
+private:
+	// Pointer to the constant buffer
+    ID3D11Buffer* m_bufer; 
 	// Size of the buffer
-    size_t m_bufferSize;
+    size_t m_byteWidth;
 };

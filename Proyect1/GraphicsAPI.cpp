@@ -19,10 +19,27 @@ void GraphicsAPI::Clear(const FLOAT color[4])
     m_context->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void GraphicsAPI::Present()
+ConstantBuffer* GraphicsAPI::CreateConstantBuffer()
 {
-    m_swapChain->Present(0, 0);
+    Dx11ConstantBuffer* constantBuffer = new Dx11ConstantBuffer(m_device, sizeof(XMMATRIX));
+    
+    D3D11_BUFFER_DESC bd = {};
+    bd.ByteWidth = sizeof(XMMATRIX);
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    bd.MiscFlags = 0;
+    bd.StructureByteStride = 0;
+
+    HRESULT hr = m_device->CreateBuffer(&bd, nullptr, &constantBuffer->m_bufer);
+    if (FAILED(hr)) {
+        delete constantBuffer;
+        return nullptr;
+    }
+
+    return constantBuffer;
 }
+
 
 void GraphicsAPI::CreateDeviceAndSwapChain(HWND hWnd, UINT width, UINT height)
 {

@@ -18,7 +18,8 @@ public:
 
     void Clear(const FLOAT color[4]);
     
-     Dx11ConstantBuffer* CreateConstantBuffer();
+
+     ConstantBuffer* CreateConstantBuffer();
 
 
 private:

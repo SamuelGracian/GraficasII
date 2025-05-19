@@ -3,7 +3,24 @@
 
 #include "GraphicsAPI.h"
 
-class Dx11ConstantBuffer
+/// <summary>
+/// Interface for constant buffers
+/// </summary>
+class ConstantBuffer
+{
+public:
+	ConstantBuffer() = default;
+
+	virtual void CleanUp() = 0;
+
+private:
+	unsigned int m_byteWidth;
+};
+
+/// <summary>
+/// Constant buffer class for DirectX 11
+/// </summary>
+class Dx11ConstantBuffer : public ConstantBuffer
 {
 	friend class GraphicsAPI;
 public:
@@ -33,7 +50,21 @@ public:
         cbd.StructureByteStride = 0;
     }
 
-    void UpdateBuffer();
+    ~Dx11ConstantBuffer();
+	
+protected:
+
+    virtual void UpdateBuffer();
+
+	virtual void CleanUp() override
+	{
+		// Release the buffer if it exists
+		if (m_bufer)
+		{
+			m_bufer->Release();
+			m_bufer = nullptr;
+		}
+	};
 
 private:
 	// Pointer to the constant buffer

@@ -132,11 +132,13 @@
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="VertexBuffers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="InConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
+    <ClInclude Include="VertexBuffers.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\Downloads\Tutorial07.fxh" />

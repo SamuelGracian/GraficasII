@@ -12,6 +12,7 @@ public:
 	ConstantBuffer() = default;
 
 	virtual void CleanUp() = 0;
+	virtual void UpdateBuffer() = 0;
 
 private:
 	unsigned int m_byteWidth;
@@ -54,7 +55,7 @@ public:
 	
 protected:
 
-    virtual void UpdateBuffer();
+    virtual void UpdateBuffer() override;
 
 	virtual void CleanUp() override
 	{

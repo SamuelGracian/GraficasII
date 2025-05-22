@@ -31,9 +31,13 @@ struct SimpleVertex
 class DX11VertexBuffers : public VertexBuffers
 {
 public:
-	DX11VertexBuffers(ID3D11Device* device, UINT vertexCount, UINT indexCount)
-		: m_vertexCount(vertexCount), m_indexCount(indexCount)
+	DX11VertexBuffers() = default;
+
+	void CreateBuffer(ID3D11Device* device, UINT vertexCount, UINT indexCount)
 	{
+		m_vertexCount = vertexCount;
+		m_indexCount = indexCount;
+
 		SimpleVertex* vertices = new SimpleVertex[vertexCount];
 		D3D11_BUFFER_DESC bufferDesc = {};
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -43,13 +47,23 @@ public:
 		D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = vertices;
 		HRESULT hr = device->CreateBuffer(&bufferDesc, &initData, &m_buffer);
+		delete[] vertices;
 		if (FAILED(hr))
 			throw std::runtime_error("Failed to create vertex buffer");
 	}
+
 	virtual void CleanUp() override
 	{
 		if (m_buffer)
+		{
 			m_buffer->Release();
+			m_buffer = nullptr;
+		}
+	}
+
+	virtual void UpdateBuffer () override
+	{
+
 	}
 
 protected:

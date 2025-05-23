@@ -139,6 +139,7 @@
     <ClInclude Include="InConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="InIndexBuffer.h" />
+    <ClInclude Include="IPixelVertex.h" />
     <ClInclude Include="VertexBuffers.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,4 @@
 #include <d3d11.h>
-
-
 #include "GraphicsAPI.h"
 
 class IndexBuffers

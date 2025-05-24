@@ -15,16 +15,16 @@ struct SimpleVertex
     XMFLOAT2 Tex;
 };
 
-class IPixelVertex
+class IPixelShader
 {
 public:
-    virtual ~IPixelVertex() = default;
+    virtual ~IPixelShader() = default;
     virtual const XMFLOAT3& GetPosition() const = 0;
     virtual const XMFLOAT2& GetTexCoord() const = 0;
 };
 
 
-class PixelVertex : public IPixelVertex
+class PixelVertex : public IPixelShader
 {
 public:
     PixelVertex(const XMFLOAT3& pos, const XMFLOAT2& tex)

@@ -3,21 +3,7 @@
 #include <directxmath.h>
 #include <stdexcept>
 
-class VertexBuffers
-{
-public:
-	VertexBuffers() = default;
-	virtual void CleanUp() = 0;
-	virtual void UpdateBuffer() = 0;
-
-protected:
-	ID3D11Buffer* m_buffer = nullptr;
-	UINT m_byteWidth = 0;
-	UINT m_stride = 0;
-	UINT m_offset = 0;
-	UINT m_vertexCount = 0;
-	UINT m_indexCount = 0;
-};
+#include "GraphicsAPI.h"
 
 // Define the SimpleVertex structure
 struct SimpleVertex
@@ -28,49 +14,48 @@ struct SimpleVertex
 };
 
 
-class DX11VertexBuffers : public VertexBuffers
+class InterDx11VertexBuffers
 {
+	friend  GraphicsAPI;
+
 public:
-	DX11VertexBuffers() = default;
-
-	void CreateBuffer(ID3D11Device* device, UINT vertexCount, UINT indexCount)
-	{
-		m_vertexCount = vertexCount;
-		m_indexCount = indexCount;
-
-		SimpleVertex* vertices = new SimpleVertex[vertexCount];
-		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(SimpleVertex) * vertexCount;
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = 0;
-		D3D11_SUBRESOURCE_DATA initData = {};
-		initData.pSysMem = vertices;
-		HRESULT hr = device->CreateBuffer(&bufferDesc, &initData, &m_buffer);
-		delete[] vertices;
-		if (FAILED(hr))
-			throw std::runtime_error("Failed to create vertex buffer");
-	}
-
-	virtual void CleanUp() override
-	{
-		if (m_buffer)
-		{
-			m_buffer->Release();
-			m_buffer = nullptr;
-		}
-	}
-
-	virtual void UpdateBuffer () override
-	{
-
-	}
+	InterDx11VertexBuffers() = default;
+	virtual ~InterDx11VertexBuffers() = default;
 
 protected:
-	ID3D11Buffer* m_buffer = nullptr;
-	UINT m_byteWidth = 0;
-	UINT m_stride = 0;
-	UINT m_offset = 0;
-	UINT m_vertexCount = 0;
-	UINT m_indexCount = 0;
+
+	virtual void CleanUpResources () override;
+
+private:
+	
+	ID3D11Buffer* m_buffer = nullptr; // DirectX 11 buffer for vertex data
 };
+
+
+
+class DX11VertexBuffers : public InterDx11VertexBuffers
+{
+public:
+
+	DX11VertexBuffers() = default;
+	~DX11VertexBuffers() = default;
+
+private:
+	const std::uint32_t GetSlot() const
+	{
+		return m_slot;
+	}
+protected:
+	std::uint32_t m_slot;
+
+};
+
+//
+//ID3D11Buffer* m_buffer = nullptr;
+//UINT m_byteWidth = 0;
+//UINT m_stride = 0;
+//UINT m_offset = 0;
+//UINT m_vertexCount = 0;
+//UINT m_indexCount = 0;
+//};
+//

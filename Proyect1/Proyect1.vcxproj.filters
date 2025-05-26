@@ -47,7 +47,10 @@
     <ClInclude Include="InIndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IPixelVertex.h">
+    <ClInclude Include="IPixelShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gapibuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

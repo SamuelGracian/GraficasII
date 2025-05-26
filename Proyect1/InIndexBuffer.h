@@ -1,55 +1,40 @@
 #include <d3d11.h>
 #include "GraphicsAPI.h"
 
-class IndexBuffers
+class InterDx11IndexBuffer : public GapiRenderResources
 {
+	friend GraphicsAPI;
+
 public:
-	IndexBuffers() = default;
-	virtual void CleanUp() = 0;
-	virtual void UpdateBuffer() = 0;
+	InterDx11IndexBuffer() = default;
+
+	virtual ~InterDx11IndexBuffer() = default;
+
 protected:
+
+	virtual void CleanUpResources() override;
+
+private:
+	ID3D11Buffer* m_buffer = nullptr;
 
 };
 
 
-class Dx11IndexBuffer : public IndexBuffers
+class Dx11IndexBuffer : public InterDx11IndexBuffer
 {
-	friend class GraphicsAPI;
+
 public:
 
 	Dx11IndexBuffer() = default;
+	~Dx11IndexBuffer();
 
-	void CreateBuffer(ID3D11Device* device, UINT indexCount)
+private:
+	const std::uint32_t GetSlot() const
 	{
-		m_indexCount = indexCount;
-		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(UINT) * indexCount;
-		bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		bufferDesc.CPUAccessFlags = 0;
-		HRESULT hr = device->CreateBuffer(&bufferDesc, nullptr, &m_buffer);
-		if (FAILED(hr))
-			throw std::runtime_error("Failed to create index buffer");
-	}
-
-	void CleanUp() override
-	{
-		if (m_buffer)
-		{
-			m_buffer->Release();
-			m_buffer = nullptr;
-		}
-	}
-
-	void UpdateBuffer() override
-	{
-		// Something will go here  some day
+		return m_slot;
 	}
 
 protected:
-	ID3D11Buffer* m_buffer = nullptr;
-	UINT m_indexCount = 0;
-	UINT m_offset = 0;
-	UINT m_stride = sizeof(UINT);
+	std::uint32_t m_slot = 0;
 
 };

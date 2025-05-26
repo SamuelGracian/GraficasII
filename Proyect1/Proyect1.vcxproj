@@ -136,10 +136,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
+    <ClInclude Include="Gapibuffer.h" />
     <ClInclude Include="InConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="InIndexBuffer.h" />
-    <ClInclude Include="IPixelVertex.h" />
+    <ClInclude Include="IPixelShader.h" />
     <ClInclude Include="VertexBuffers.h" />
   </ItemGroup>
   <ItemGroup>

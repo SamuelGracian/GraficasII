@@ -30,6 +30,9 @@
     <ClCompile Include="VertexBuffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GapiDx11VertexShader.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Gapibuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GapiRenderResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

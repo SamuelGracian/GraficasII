@@ -1,6 +1,12 @@
+#pragma once
 #include <d3d11.h>
-#include "GraphicsAPI.h"
 
+#include "GraphicsAPI.h"
+#include "GapiRenderResources.h"
+
+/// <summary>
+/// Interface for DirectX 11 index buffers
+/// </summary>
 class InterDx11IndexBuffer : public GapiRenderResources
 {
 	friend GraphicsAPI;
@@ -14,27 +20,15 @@ protected:
 
 	virtual void CleanUpResources() override;
 
+	const std::uint32_t GetSlot()
+	{
+		return m_slot;
+	}
+
+	std::uint32_t m_slot;
+
 private:
 	ID3D11Buffer* m_buffer = nullptr;
 
 };
 
-
-class Dx11IndexBuffer : public InterDx11IndexBuffer
-{
-
-public:
-
-	Dx11IndexBuffer() = default;
-	~Dx11IndexBuffer();
-
-private:
-	const std::uint32_t GetSlot() const
-	{
-		return m_slot;
-	}
-
-protected:
-	std::uint32_t m_slot = 0;
-
-};

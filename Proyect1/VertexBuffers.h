@@ -14,6 +14,9 @@ struct SimpleVertex
 };
 
 
+/// <summary>
+/// Interface for DirectX 11 vertex buffers
+/// </summary>
 class InterDx11VertexBuffers
 {
 	friend  GraphicsAPI;
@@ -26,36 +29,15 @@ protected:
 
 	virtual void CleanUpResources () override;
 
+	const std::uint32_t GetSlot()
+	{
+		return m_slot;
+	}
+
+	std::uint32_t m_slot;
+
 private:
 	
 	ID3D11Buffer* m_buffer = nullptr; // DirectX 11 buffer for vertex data
 };
 
-
-
-class DX11VertexBuffers : public InterDx11VertexBuffers
-{
-public:
-
-	DX11VertexBuffers() = default;
-	~DX11VertexBuffers() = default;
-
-private:
-	const std::uint32_t GetSlot() const
-	{
-		return m_slot;
-	}
-protected:
-	std::uint32_t m_slot;
-
-};
-
-//
-//ID3D11Buffer* m_buffer = nullptr;
-//UINT m_byteWidth = 0;
-//UINT m_stride = 0;
-//UINT m_offset = 0;
-//UINT m_vertexCount = 0;
-//UINT m_indexCount = 0;
-//};
-//

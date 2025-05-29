@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -137,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Gapibuffer.h" />
+    <ClInclude Include="GapiRenderResources.h" />
     <ClInclude Include="InConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="InIndexBuffer.h" />

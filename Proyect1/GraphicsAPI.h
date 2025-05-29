@@ -19,7 +19,7 @@ public:
     void Clear(const FLOAT color[4]);
     
 
-     ConstantBuffer* CreateConstantBuffer();
+     //ConstantBuffer* CreateConstantBuffer();
 
 
 private:

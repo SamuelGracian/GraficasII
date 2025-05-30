@@ -24,7 +24,7 @@ protected:
 class InterDx11VertexShader : public GapiVertexShader, public GapiRenderResources
 {
 	friend GraphicsAPI;
-{
+
 
 
 public:

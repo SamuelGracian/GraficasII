@@ -218,6 +218,9 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice()
 {
+#if defined (GrphicsAPI)
+
+#else 
 
     HRESULT hr = S_OK;
 
@@ -266,6 +269,8 @@ HRESULT InitDevice()
     }
     if (FAILED(hr))
         return hr;
+#endif
+
 
     // Obtain DXGI factory from device (since we used nullptr for pAdapter above)
     IDXGIFactory1* dxgiFactory = nullptr;

@@ -24,6 +24,8 @@ public:
     std::weak_ptr<InterDx11VertexBuffers> CreateVertexBuffer();
 
 private:
+
+
 };
 
 

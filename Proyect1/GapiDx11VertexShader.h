@@ -24,16 +24,29 @@ protected:
 class InterDx11VertexShader : public GapiVertexShader, public GapiRenderResources
 {
 	friend GraphicsAPI;
-
-
-
 public:
-	GapiDx11VertexShader() = default;
-	virtual ~GapiDx11VertexShader() = default;
+	InterDx11VertexShader() = default;
+
+	virtual ~InterDx11VertexShader() = default;
 
 protected:
 	virtual void CleanUpResources() override
 	{
+		if (m_Blob)
+		{
+			m_Blob->Release();
+			m_Blob = nullptr;
+		}
+		if (m_VertexShader)
+		{
+			m_VertexShader->Release();
+			m_VertexShader = nullptr;
+		}
+		if (m_InputLayout)
+		{
+			m_InputLayout->Release();
+			m_InputLayout = nullptr;
+		}
 	}
 
 

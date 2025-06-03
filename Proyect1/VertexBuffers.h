@@ -19,7 +19,7 @@ struct SimpleVertex
 /// </summary>
 class InterDx11VertexBuffers
 {
-	friend  GraphicsAPI;
+	friend class GraphicsAPI;
 
 public:
 	InterDx11VertexBuffers() = default;

@@ -9,7 +9,7 @@
 /// </summary>
 class InterDx11IndexBuffer : public GapiRenderResources
 {
-	friend GraphicsAPI;
+	friend class GraphicsAPI;
 
 public:
 	InterDx11IndexBuffer() = default;

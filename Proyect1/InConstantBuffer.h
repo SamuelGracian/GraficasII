@@ -10,7 +10,7 @@
 /// </summary>
 class InterDx11ConstantBuffer : public GapiBuffer , public GapiRenderResources
 {
-	friend GraphicsAPI;
+	friend class GraphicsAPI;
 
 public:
 	InterDx11ConstantBuffer() = default;

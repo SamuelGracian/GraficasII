@@ -15,7 +15,7 @@
 class GraphicsAPI
 {
 public:
-    GraphicsAPI(HWND Winhandler);
+    GraphicsAPI(HWND Winhandler, UINT width, UINT height);
     ~GraphicsAPI();
 
     //______Functions_______________________

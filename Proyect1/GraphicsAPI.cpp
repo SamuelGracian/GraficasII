@@ -2,12 +2,10 @@
 #include <memory>
 #include "GraphicsAPI.h"
 
-GraphicsAPI::GraphicsAPI(HWND WinHandler)
+GraphicsAPI::GraphicsAPI(HWND WinHandler ,UINT width, UINT height)
 {
     RECT rc;
     GetClientRect(WinHandler, &rc);
-    UINT width = rc.right - rc.left;
-    UINT height = rc.bottom - rc.top;
 
     UINT createDeviceFlags = 0;
 #ifdef _DEBUG

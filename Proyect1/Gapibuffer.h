@@ -1,4 +1,7 @@
+#pragma once
 #include <cstdint>
+
+#include "GapiRenderResources.h"
 
 
 static const std::uint32_t AvailableBufferSlots = 8;

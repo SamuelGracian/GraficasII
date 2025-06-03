@@ -21,8 +21,12 @@
 //#include "DDSTextureLoader.h"
 #include "resource.h"
 
-#include "GraphicsAPI.h"
 
+//GraphicsAPI graphicsAPI(g_hWnd);
+//
+//auto ConstanBuffer = graphicsAPI.CreateConstantBuffer();
+//auto IndexBuffer = graphicsAPI.CreateIndexBuffer();
+//auto VertexBuffer = graphicsAPI.CreateVertexBuffer();
 
 using namespace DirectX;
 
@@ -60,7 +64,8 @@ HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 ID3D11Device* g_pd3dDevice = nullptr;
-#if !definded (Grapi)
+
+#if !definded (GRAPI)
 ID3D11Device1* g_pd3dDevice1 = nullptr;
 ID3D11DeviceContext* g_pImmediateContext = nullptr;
 ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
@@ -212,16 +217,13 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
     return S_OK;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice()
 {
-#if defined (GrphicsAPI)
-
-#else 
-
     HRESULT hr = S_OK;
 
     RECT rc;
@@ -230,8 +232,11 @@ HRESULT InitDevice()
     UINT height = rc.bottom - rc.top;
 
     UINT createDeviceFlags = 0;
+
 #ifdef _DEBUG
+
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+
 #endif
 
     D3D_DRIVER_TYPE driverTypes[] =
@@ -269,8 +274,6 @@ HRESULT InitDevice()
     }
     if (FAILED(hr))
         return hr;
-#endif
-
 
     // Obtain DXGI factory from device (since we used nullptr for pAdapter above)
     IDXGIFactory1* dxgiFactory = nullptr;
@@ -352,7 +355,7 @@ HRESULT InitDevice()
 
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+    hr =  g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     if (FAILED(hr))
         return hr;
 
@@ -513,6 +516,9 @@ HRESULT InitDevice()
         22,20,21,
         23,20,22
     };
+
+    D3D11_BUFFER_DESC bd = {};
+    D3D11_SUBRESOURCE_DATA InitData = {};
 
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(WORD) * 36;

@@ -15,7 +15,10 @@
 class GraphicsAPI
 {
 public:
-    GraphicsAPI(HWND Winhandler, UINT width, UINT height);
+    GraphicsAPI(HWND Winhandler, UINT width, UINT height) : m_width(width), m_height(height)
+    {
+    }
+	//______Destructor______________________
     ~GraphicsAPI();
 
     //______Functions_______________________
@@ -33,6 +36,9 @@ public:
 private:
     D3D_DRIVER_TYPE driverType = D3D_DRIVER_TYPE_UNKNOWN;
     D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	UINT m_width;
+	UINT m_height;
 
 };
 

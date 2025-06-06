@@ -21,12 +21,8 @@
 //#include "DDSTextureLoader.h"
 #include "resource.h"
 
+#include "GraphicsAPI.h"
 
-//GraphicsAPI graphicsAPI(g_hWnd);
-//
-//auto ConstanBuffer = graphicsAPI.CreateConstantBuffer();
-//auto IndexBuffer = graphicsAPI.CreateIndexBuffer();
-//auto VertexBuffer = graphicsAPI.CreateVertexBuffer();
 
 using namespace DirectX;
 
@@ -174,6 +170,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
         return E_FAIL;
 
     ShowWindow(g_hWnd, nCmdShow);
+
 
     return S_OK;
 }
@@ -594,7 +591,6 @@ HRESULT InitDevice()
 
     return S_OK;
 }
-
 
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created

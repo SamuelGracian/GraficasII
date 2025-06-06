@@ -12,4 +12,3 @@ Dx11ConstantBuffer::Dx11ConstantBuffer(ID3D11Device* device, size_t size)
         m_buffer = std::shared_ptr<ID3D11Buffer>(raw, BufferDeleter());
     }
 }
-

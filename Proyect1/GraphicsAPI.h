@@ -1,45 +1,26 @@
 #pragma once
+#include <memory>
+#include <d3d11.h>
 
-#include <windows.h>
-#include <d3d11_1.h>
-#include <directxmath.h>
-#include <d3dcompiler.h>
-#include <directxcolors.h>
-#include <stdexcept>
-#include <memory> 
+#include "Gapibuffer.h"
 
-#include "InConstantBuffer.h"
-#include "InIndexBuffer.h"
-#include "VertexBuffers.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "ConstantBuffer.h"
 
-class GraphicsAPI
+
+class GraphicsAPI 
 {
 public:
-    GraphicsAPI(HWND Winhandler, UINT width, UINT height) : m_width(width), m_height(height)
-    {
-    }
-	//______Destructor______________________
-    ~GraphicsAPI();
+    GraphicsAPI(ID3D11Device* device);
 
-    //______Functions_______________________
-    
-    // Buffer creation functions returning weak pointers to their interfaces
-    std::weak_ptr<InterDx11ConstantBuffer> CreateConstantBuffer();
-    std::weak_ptr<InterDx11IndexBuffer> CreateIndexBuffer();
-    std::weak_ptr<InterDx11VertexBuffers> CreateVertexBuffer();
-
-	//DirectX 11 device and context accessors
-	ID3D11Device* device = nullptr;
-	ID3D11DeviceContext* context = nullptr;
-	IDXGISwapChain* swapChain = nullptr;
+    std::shared_ptr<GapiBufferResource> CreateVertexBuffer(const void* data, size_t size, UINT stride);
+    std::shared_ptr<GapiBufferResource> CreateIndexBuffer(const void* data, size_t size);
+    std::shared_ptr<GapiBufferResource> CreateConstantBuffer(size_t size);
 
 private:
-    D3D_DRIVER_TYPE driverType = D3D_DRIVER_TYPE_UNKNOWN;
-    D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
-	UINT m_width;
-	UINT m_height;
-
+    ID3D11Device* m_device;
 };
+
 
 

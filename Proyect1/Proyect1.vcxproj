@@ -132,6 +132,8 @@
     <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
+    <ClCompile Include="Constantbuffer.cpp" />
+    <ClCompile Include="InIndexBuffer.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="VertexBuffers.cpp" />
   </ItemGroup>
@@ -139,11 +141,11 @@
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Gapibuffer.h" />
     <ClInclude Include="GapiRenderResources.h" />
-    <ClInclude Include="InConstantBuffer.h" />
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
-    <ClInclude Include="InIndexBuffer.h" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="IPixelShader.h" />
-    <ClInclude Include="VertexBuffers.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\Downloads\Tutorial07.fxh" />

@@ -2,10 +2,10 @@
 #include <d3d11.h>
 #include <memory>
 
-#include "Gapibuffer.h"
+#include "BufferResource.h"
 
 
-class Dx11ConstantBuffer : public GapiBufferResource
+class Dx11ConstantBuffer : public 
 {
 public:
     Dx11ConstantBuffer(ID3D11Device* device, size_t size);

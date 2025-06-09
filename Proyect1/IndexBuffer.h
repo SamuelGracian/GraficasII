@@ -3,13 +3,13 @@
 #include <d3d11.h>
 #include <memory>
 
-#include "Gapibuffer.h"
+#include "BufferResource.h"
 
-class Dx11IndexBuffer : public GapiBufferResource
+class Dx11IndexBuffer : public BufferResource
 {
 public:
     Dx11IndexBuffer(ID3D11Device* device, const void* data, size_t size);
-    void* GetRawBuffer() override { return m_buffer.get(); }
+
 
 private:
     struct BufferDeleter {

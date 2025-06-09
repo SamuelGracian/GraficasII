@@ -2,10 +2,10 @@
 #include <d3d11.h>
 #include <memory>
 
-#include "Gapibuffer.h"
+#include "BufferResource.h"
 
 
-class Dx11VertexBuffer : public GapiBufferResource
+class Dx11VertexBuffer : public BufferResource
 {
 public:
     Dx11VertexBuffer(ID3D11Device* device, const void* data, size_t size, UINT stride);
@@ -31,30 +31,28 @@ private:
 //};
 
 
-///// <summary>
-///// Interface for DirectX 11 vertex buffers
-///// </summary>
-//class InterDx11VertexBuffers
-//{
-//	friend class GraphicsAPI;
-//
-//public:
-//	InterDx11VertexBuffers() = default;
-//	virtual ~InterDx11VertexBuffers() = default;
-//
-//protected:
-//
-//	virtual void CleanUpResources () override;
-//
-//	const std::uint32_t GetSlot()
-//	{
-//		return m_slot;
-//	}
-//
-//	std::uint32_t m_slot;
-//
-//private:
-//	
-//	ID3D11Buffer* m_buffer = nullptr; // DirectX 11 buffer for vertex data
-//};
+/// <summary>
+/// Interface for DirectX 11 vertex buffers
+/// </summary>
+class InterDx11VertexBuffers
+{
+	friend class GraphicsAPI;
+
+public:
+	InterDx11VertexBuffers() = default;
+	virtual ~InterDx11VertexBuffers() = default;
+
+protected:
+
+	const std::uint32_t GetSlot()
+	{
+		return m_slot;
+	}
+
+	std::uint32_t m_slot;
+
+private:
+	
+	ID3D11Buffer* m_buffer = nullptr; // DirectX 11 buffer for vertex data
+};
 

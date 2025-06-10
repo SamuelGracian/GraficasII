@@ -5,57 +5,43 @@
 #include "BufferResource.h"
 
 
-class Dx11ConstantBuffer : public 
+class Dx11ConstantBuffer : public BufferResource
 {
 public:
-    Dx11ConstantBuffer(ID3D11Device* device, size_t size);
-    ID3D11Buffer* GetRawBuffer() override { return m_buffer.get(); }
+	Dx11ConstantBuffer() = default;
 
-private:
-    struct BufferDeleter {
-        void operator()(ID3D11Buffer* p) const { if (p) p->Release(); }
-    };
+	~Dx11ConstantBuffer()
+	{
+		CleanUpResources();
+	}
 
-    std::shared_ptr<ID3D11Buffer> m_buffer;
+	ID3D11Buffer* GetRawBuffer() override
+	{
+		return m_buffer.get();
+	}
+
+	void CleanUpResources() override
+	{
+		if (m_buffer)
+		{
+			m_buffer->Release();
+			m_buffer.reset();
+		}
+	}
+	void UpdateBuffer() override;
+
+	UINT GetByteWidth() const override
+	{
+		return m_byteWidth;
+	}
+	UINT GetBindFlags() const override
+	{
+		return D3D11_BIND_CONSTANT_BUFFER;
+	}
+
+protected:
+	std::shared_ptr<ID3D11Buffer> m_buffer;
+	UINT m_byteWidth = 0;
 };
 
 
-
-
-//#pragma once
-//#include <d3d11.h>
-//#include <wrl/client.h>  // Para ComPtr
-//#include <cstdint>
-//#include <stdexcept>
-//
-//#include "GraphicsAPI.h"
-//#include "GapiBuffer.h"
-//#include "GapiRenderResources.h"
-//
-///// <summary>
-///// Interface for constant buffers
-///// </summary>
-//
-//namespace wrl = Microsoft::WRL;
-//
-//class InterDx11ConstantBuffer : public GapiBuffer, public GapiRenderResources {
-//    friend class GraphicsAPI;
-//
-//public:
-//    InterDx11ConstantBuffer() = default;
-//    virtual ~InterDx11ConstantBuffer() = default;
-//
-//    //______Métodos Públicos______
-//    void UpdateBuffer(const void* data, size_t dataSize);
-//    void SetSlot(uint32_t slot) { m_slot = slot; }
-//    uint32_t GetSlot() const { return m_slot; }
-//
-//protected:
-//    virtual void CleanUpResources() override {
-//        m_buffer.Reset();
-//    }
-//
-//private:
-//    wrl::ComPtr<ID3D11Buffer> m_buffer; 
-//    uint32_t m_slot = 0;
-//};

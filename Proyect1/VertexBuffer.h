@@ -1,58 +1,58 @@
 #pragma once
 #include <d3d11.h>
 #include <memory>
+#include <DirectXMath.h>
 
 #include "BufferResource.h"
 
+using namespace DirectX;
 
-class Dx11VertexBuffer : public BufferResource
+// Define the SimpleVertex structure
+struct SimpleVertex
 {
-public:
-    Dx11VertexBuffer(ID3D11Device* device, const void* data, size_t size, UINT stride);
-
-    ID3D11Buffer* GetRawBuffer() override { return m_buffer.get(); }
-
-private:
-    struct BufferDeleter 
-    {
-        void operator()(ID3D11Buffer* p) const { if (p) p->Release(); }
-    };
-
-    std::shared_ptr<ID3D11Buffer> m_buffer;
-    UINT m_vertexSize; // Size of each vertex in bytes
+	DirectX::XMFLOAT3 Position; // 3D position of the vertex
+	DirectX::XMFLOAT3 Normal;   // Normal vector for lighting calculations
+	DirectX::XMFLOAT2 TexCoord; // Texture coordinates
 };
 
-//// Define the SimpleVertex structure
-//struct SimpleVertex
-//{
-//	DirectX::XMFLOAT3 Position; // 3D position of the vertex
-//	DirectX::XMFLOAT3 Normal;   // Normal vector for lighting calculations
-//	DirectX::XMFLOAT2 TexCoord; // Texture coordinates
-//};
-
-
-/// <summary>
-/// Interface for DirectX 11 vertex buffers
-/// </summary>
-class InterDx11VertexBuffers
+class Dx11vertexBuffer : public BufferResource
 {
-	friend class GraphicsAPI;
-
 public:
-	InterDx11VertexBuffers() = default;
-	virtual ~InterDx11VertexBuffers() = default;
-
-protected:
-
-	const std::uint32_t GetSlot()
+	Dx11vertexBuffer() = default;
+	~Dx11vertexBuffer()
 	{
-		return m_slot;
+		CleanUpResources();
 	}
 
-	std::uint32_t m_slot;
+	ID3D11Buffer* GetRawBuffer() override
+	{
+		return m_buffer.get();
+	}
+	void CleanUpResources() override
+	{
+		if (m_buffer)
+		{
+			m_buffer->Release();
+			m_buffer.reset();
+		}
+	}
+	void UpdateBuffer() override;
 
+	UINT GetByteWidth() const override
+	{
+		return m_byteWidth;
+	}
+
+	UINT GetBindFlags() const override
+	{
+		return D3D11_BIND_VERTEX_BUFFER;
+	}
+
+	UINT GetVertexCount() const { return m_vertexCount; }
 private:
-	
-	ID3D11Buffer* m_buffer = nullptr; // DirectX 11 buffer for vertex data
-};
 
+	std::shared_ptr<ID3D11Buffer> m_buffer;;
+	UINT m_vertexCount = 0;
+	UINT m_byteWidth = 0;
+
+};

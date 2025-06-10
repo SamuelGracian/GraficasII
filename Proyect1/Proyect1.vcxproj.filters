@@ -65,9 +65,6 @@
     <ClInclude Include="BufferResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GapiRenderResources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Dx11GraphicsAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>

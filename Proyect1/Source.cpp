@@ -18,11 +18,9 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <directxcolors.h>
+
 //#include "DDSTextureLoader.h"
 #include "resource.h"
-
-#include "GraphicsAPI.h"
-
 
 using namespace DirectX;
 
@@ -168,7 +166,6 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 
     ShowWindow(g_hWnd, nCmdShow);
 
-
     return S_OK;
 }
 
@@ -211,7 +208,6 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
     return S_OK;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
@@ -226,11 +222,8 @@ HRESULT InitDevice()
     UINT height = rc.bottom - rc.top;
 
     UINT createDeviceFlags = 0;
-
 #ifdef _DEBUG
-
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-
 #endif
 
     D3D_DRIVER_TYPE driverTypes[] =
@@ -345,11 +338,9 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-
-
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
-    hr =  g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+    hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     if (FAILED(hr))
         return hr;
 
@@ -482,30 +473,24 @@ HRESULT InitDevice()
         { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
     };
 
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(SimpleVertex) * 24;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitData = {};
+    InitData.pSysMem = vertices;
+    hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
+    if (FAILED(hr))
+        return hr;
 
     // Set vertex buffer
-/*    UINT stride = sizeof(SimpleVertex);
+    UINT stride = sizeof(SimpleVertex);
     UINT offset = 0;
-    g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset)*/;
+    g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
     // Create index buffer
-	UINT offset = 0;
-    UINT stride = sizeof(SimpleVertex);
-   
-	g_pIndexBuffer = std::make_shared<Dx11VertexBuffer>(g_pd3dDevice, vertices, sizeof(vertices), sizeof(SimpleVertex));
-
-        
-        ID3D11DeviceContext* pImmediateContext = nullptr;
-        g_pd3dDevice->GetImmediateContext(&pImmediateContext);
-
-        // Use the valid pointer to call IASetVertexBuffers
-        if (pImmediateContext)
-        {
-            ID3D11Buffer* rawBuffer = g_pIndexBuffer->GetRawBuffer();
-            pImmediateContext->IASetVertexBuffers(0, 1, &rawBuffer, &stride, &offset);
-
-            pImmediateContext->Release(); 
-        }
     // Create vertex buffer
     WORD indices[] =
     {
@@ -528,109 +513,41 @@ HRESULT InitDevice()
         23,20,22
     };
 
-    D3D11_BUFFER_DESC bd = {};
-    D3D11_SUBRESOURCE_DATA InitData = {};
-
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(WORD) * 36;
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = 0;
     InitData.pSysMem = indices;
-    //hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pIndexBuffer);
-
-    ///
-    ///INDEX BUFFER
-    /// 
-    /// 
-    /// 
-    // Extract the raw pointer from the shared_ptr and pass it to CreateBuffer
-    ID3D11Buffer* rawIndexBuffer = nullptr; // Temporary raw pointer
-    hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &rawIndexBuffer);
-    if (SUCCEEDED(hr))
-    {
-        // Wrap the raw pointer in the shared_ptr
-       
-        g_pIndexBuffer = std::make_shared<Dx11VertexBuffer>(g_pd3dDevice, indices, sizeof(indices), sizeof(WORD));
-
-    // Wrap the raw pointer in a Dx11VertexBuffer and assign it to g_pIndexBuffer
-    if (SUCCEEDED(hr))
-    {
-        g_pIndexBuffer = std::make_shared<Dx11VertexBuffer>(g_pd3dDevice, indices, sizeof(indices), sizeof(WORD));
-    }
-    }
+    hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pIndexBuffer);
     if (FAILED(hr))
         return hr;
 
     // Set index buffer
-    ///g_pImmediateContext->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    g_pImmediateContext->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
     g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // Create the constant buffers
-//bd.Usage = D3D11_USAGE_DEFAULT;
-    //bd.ByteWidth = sizeof(CBNeverChanges);
-    //bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    //bd.CPUAccessFlags = 0;
-    //hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);*/
-    //if (FAILED(hr))
-    //    return hr;
-
-    bd.ByteWidth = sizeof(CBChangeOnResize);
-
-    // Create a shared pointer for the constant buffer
-    auto cbNeverChangesBuffer = std::make_shared<Dx11ConstantBuffer>(g_pd3dDevice, sizeof(CBNeverChanges));
-
-    // Use the buffer where necessary
-    //g_pCBNeverChanges = cbNeverChangesBuffer->GetRawBuffer();
-
-    ID3D11Buffer* cbNeverChanges = nullptr;
-
-    D3D11_BUFFER_DESC bd = {};
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(CBNeverChanges);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-
-    // Use cbNeverChanges in the existing code
-    //g_pd3dDevice->GetImmediateContext()->VSSetConstantBuffers(0, 1, &cbNeverChanges);
-
-    HRESULT hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &cbNeverChanges);
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);
     if (FAILED(hr))
-    {
-        // Handle error (e.g., log or return)
         return hr;
-    }
 
-    //hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
-	g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
-
-    // Ensure g_pd3dDevice is properly initialized and not null
-    if (g_pd3dDevice)
-    {
-        ID3D11DeviceContext* pImmediateContext = nullptr;
-        g_pd3dDevice->GetImmediateContext(&pImmediateContext); // Correct usage of GetImmediateContext
-
-        if (pImmediateContext && g_pCBNeverChanges) // Ensure both pointers are valid
-        {
-            pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-            pImmediateContext->Release(); // Release the context after use
-        }
-    }
-
-    g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-    
-
+    bd.ByteWidth = sizeof(CBChangeOnResize);
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
     if (FAILED(hr))
         return hr;
 
     bd.ByteWidth = sizeof(CBChangesEveryFrame);
-    hr = g_pd3dDevice->
-        CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
     if (FAILED(hr))
         return hr;
 
-    // Load the Texture
+    //// Load the Texture
     //hr = CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
     //if (FAILED(hr))
     //    return hr;
@@ -671,6 +588,7 @@ HRESULT InitDevice()
     return S_OK;
 }
 
+
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created
 //--------------------------------------------------------------------------------------
@@ -683,7 +601,8 @@ void CleanupDevice()
     if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
     if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
     if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
-
+    if (g_pVertexBuffer) g_pVertexBuffer->Release();
+    if (g_pIndexBuffer) g_pIndexBuffer->Release();
     if (g_pVertexLayout) g_pVertexLayout->Release();
     if (g_pVertexShader) g_pVertexShader->Release();
     if (g_pPixelShader) g_pPixelShader->Release();

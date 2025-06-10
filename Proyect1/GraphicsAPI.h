@@ -15,7 +15,18 @@ class GraphicsAPI
 {
 public:
 	GraphicsAPI(HWND windowhandler);
+
 	virtual ~GraphicsAPI() = 0;
+
+	virtual void CleanUpResources() = 0;
+
+	virtual void SetVertexBuffer() = 0;
+
+	virtual void SetIndexBuffer() = 0;
+
+	virtual void SetConstantBuffer() = 0;
+
+	virtual void Draw() = 0;
 
 private:
 	HWND								m_wWnd = nullptr;

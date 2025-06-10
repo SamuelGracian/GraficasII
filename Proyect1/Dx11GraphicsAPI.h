@@ -5,10 +5,9 @@ class Dx11GraphicsAPI : public GraphicsAPI
 {
 public:
 	Dx11GraphicsAPI() = default;
+
 	virtual ~Dx11GraphicsAPI() = default;
-	// Implement GraphicsAPI methods here
-	// For example, you might have methods to create buffers, textures, etc.
-protected:
+
 	void CleanUpResources() override
 	{
 		// Implement resource cleanup logic specific to DirectX 11
@@ -28,6 +27,15 @@ protected:
 			m_swapChain = nullptr;
 		}
 	}
+
+	void SetVertexBuffer() override;
+
+	void SetIndexBuffer() override;
+
+	void SetConstantBuffer() override;
+
+	void Draw() override;
+
 private:
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_context = nullptr;

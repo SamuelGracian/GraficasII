@@ -1,4 +1,3 @@
-
 #pragma once
 #include <d3d11.h>
 #include <memory>
@@ -8,43 +7,40 @@
 class Dx11IndexBuffer : public BufferResource
 {
 public:
-    Dx11IndexBuffer(ID3D11Device* device, const void* data, size_t size);
+	Dx11IndexBuffer() = default;
+	~Dx11IndexBuffer()
+	{
+		CleanUpResources();
+	}
 
+	ID3D11Buffer* GetRawBuffer() override
+	{
+		return m_buffer.get();
+	}
+	void CleanUpResources() override
+	{
+		if (m_buffer)
+		{
+			m_buffer->Release();
+			m_buffer.reset();
+		}
+	}
+	void UpdateBuffer() override;
+
+	UINT GetByteWidth() const override
+	{
+		return m_byteWidth;
+	}
+
+	UINT GetBindFlags() const override
+	{
+		return D3D11_BIND_INDEX_BUFFER;
+	}
+
+	UINT GetIndexCount() const { return m_indexCount; }
 
 private:
-    struct BufferDeleter {
-        void operator()(ID3D11Buffer* p) const { if (p) p->Release(); }
-    };
-
-    std::shared_ptr<ID3D11Buffer> m_buffer;
+	std::shared_ptr<ID3D11Buffer> m_buffer;
+	UINT m_indexCount = 0;
+	UINT m_byteWidth = 0;
 };
-
-
-
-
-
-//namespace wrl = Microsoft::WRL;
-//
-//class InterDx11IndexBuffer : public GapiRenderResources {
-//    friend class GraphicsAPI;
-//
-//public:
-//    InterDx11IndexBuffer() = default;
-//    virtual ~InterDx11IndexBuffer() = default;
-//
-//    //______Public methots______
-//    void Bind() const;  
-//    uint32_t GetIndexCount() const { return m_indexCount; }
-//    DXGI_FORMAT GetFormat() const { return m_format; }
-//
-//protected:
-//    virtual void CleanUpResources() override {
-//        m_buffer.Reset();
-//        m_indexCount = 0;
-//    }
-//
-//private:
-//    wrl::ComPtr<ID3D11Buffer> m_buffer;
-//    uint32_t m_indexCount = 0;
-//    DXGI_FORMAT m_format = DXGI_FORMAT_R16_UINT;
-//};

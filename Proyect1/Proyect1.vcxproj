@@ -142,7 +142,6 @@
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Dx11GraphicsAPI.h" />
     <ClInclude Include="BufferResource.h" />
-    <ClInclude Include="GapiRenderResources.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="IndexBuffer.h" />

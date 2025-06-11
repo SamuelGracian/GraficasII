@@ -1,9 +1,9 @@
 #include "GraphicsAPI.h"
 
-GraphicsAPI::GraphicsAPI(HWND windowHandler)
-{
-	m_wWnd = windowHandler;
 
+Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
+    m_wWnd(windowHandler)
+{
     HRESULT hr = S_OK;
 
     RECT rc;
@@ -35,7 +35,8 @@ GraphicsAPI::GraphicsAPI(HWND windowHandler)
 
     for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
     {
-        m_driverType = driverTypes[driverTypeIndex];
+        auto diverType = 
+       m_driverType = driverTypes[driverTypeIndex];
         hr = D3D11CreateDevice(nullptr, m_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
             D3D11_SDK_VERSION, &m_device, &m_featureLvel, &m_immediateContext);
 
@@ -130,9 +131,8 @@ GraphicsAPI::GraphicsAPI(HWND windowHandler)
     dxgiFactory->Release();
 
     if (FAILED(hr))
-		MessageBox(nullptr,
-			L"Failed to create the Direct3D device and swap chain.",
-			L"Error", MB_OK | MB_ICONERROR);
-      //  return hr;
+        MessageBox(nullptr,
+            L"Failed to create the Direct3D device and swap chain.",
+            L"Error", MB_OK | MB_ICONERROR);
+    //  return hr;
 }
-

@@ -1,5 +1,26 @@
 #include "ConstantBuffer.h"
 
+Dx11ConstantBuffer::Dx11ConstantBuffer():
+    m_buffer(nullptr)
+{
+}
+
+Dx11ConstantBuffer::~Dx11ConstantBuffer()
+{
+    CleanUpResources();
+}
+
+void Dx11ConstantBuffer::CleanUpResources()
+{
+    if (m_buffer)
+    {
+        m_buffer->Release();
+        m_buffer.reset();
+    }
+}
+
+
+
 Dx11ConstantBuffer::Dx11ConstantBuffer(ID3D11Device* device, size_t size)
 {
     D3D11_BUFFER_DESC desc = {};
@@ -12,3 +33,5 @@ Dx11ConstantBuffer::Dx11ConstantBuffer(ID3D11Device* device, size_t size)
         m_buffer = std::shared_ptr<ID3D11Buffer>(raw, BufferDeleter());
     }
 }
+
+

@@ -1,27 +1,22 @@
 #pragma once
-#include <cstdint>
 
-#include "GraphicsAPI.h"
+#include "RenderResource.h"
+
 
 /// <summary>
 /// Base class for buffer resources in the graphics API.
 /// </summary>
-class  BufferResource
+class  BufferResource : public RenderResource
 {
 public:
+	BufferResource()
+		: m_byteWidth (0)
+	{};
+
 	virtual ~BufferResource() = default;
-	
-	virtual ID3D11Buffer* GetRawBuffer() = 0;
 
-	virtual void CleanUpResources() = 0;
-
-	virtual void UpdateBuffer() = 0;
-
-	virtual UINT GetByteWidth() const = 0;
-
-	virtual UINT GetBindFlags() const = 0;
+	 uint32_t GetByteWidth() const { return m_byteWidth; }
 
 protected:
-	UINT m_byteWidth = 0;
-	UINT m_bindFlags = 0; 
+	uint32_t m_byteWidth;
 };

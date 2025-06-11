@@ -140,12 +140,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
+    <ClInclude Include="Base.h" />
     <ClInclude Include="Dx11GraphicsAPI.h" />
     <ClInclude Include="BufferResource.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="IPixelShader.h" />
+    <ClInclude Include="RenderResource.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

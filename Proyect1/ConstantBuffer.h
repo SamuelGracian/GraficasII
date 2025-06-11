@@ -1,47 +1,43 @@
 #pragma once
-#include <d3d11.h>
-#include <memory>
+
 
 #include "BufferResource.h"
 
-
-class Dx11ConstantBuffer : public BufferResource
+class ConstanBuffer : public BufferResource
 {
 public:
-	Dx11ConstantBuffer() = default;
+	ConstanBuffer():
+	m_stride (0)
+	,m_offset(0)
+	,m_slot(0)
+	{};
 
-	~Dx11ConstantBuffer()
-	{
-		CleanUpResources();
-	}
+	virtual ~ConstanBuffer () = default;
 
-	ID3D11Buffer* GetRawBuffer() override
-	{
-		return m_buffer.get();
-	}
+	uint32_t GetStride() { return m_stride; }
 
-	void CleanUpResources() override
-	{
-		if (m_buffer)
-		{
-			m_buffer->Release();
-			m_buffer.reset();
-		}
-	}
-	void UpdateBuffer() override;
-
-	UINT GetByteWidth() const override
-	{
-		return m_byteWidth;
-	}
-	UINT GetBindFlags() const override
-	{
-		return D3D11_BIND_CONSTANT_BUFFER;
-	}
+	uint32_t GetOffset() { return m_offset; }
 
 protected:
-	std::shared_ptr<ID3D11Buffer> m_buffer;
-	UINT m_byteWidth = 0;
+	uint32_t m_stride;
+	uint32_t m_offset;
+	uint32_t m_slot;
+};
+
+class Dx11ConstantBuffer  final : public ConstanBuffer
+{
+	friend class Dx11GraphicsAPI;
+
+public:
+	Dx11ConstantBuffer();
+
+	~Dx11ConstantBuffer();
+
+	virtual void CleanUpResources() override;
+
+protected:
+	ID3D11Buffer* m_buffer;
+
 };
 
 

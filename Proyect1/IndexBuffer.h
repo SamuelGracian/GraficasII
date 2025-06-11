@@ -4,7 +4,7 @@
 
 #include "BufferResource.h"
 
-class Dx11IndexBuffer : public BufferResource
+class Dx11IndexBuffer : public RenderResource
 {
 public:
 	Dx11IndexBuffer() = default;

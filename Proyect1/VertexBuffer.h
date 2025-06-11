@@ -15,7 +15,7 @@ struct SimpleVertex
 	DirectX::XMFLOAT2 TexCoord; // Texture coordinates
 };
 
-class Dx11vertexBuffer : public BufferResource
+class Dx11vertexBuffer : public RenderResource
 {
 public:
 	Dx11vertexBuffer() = default;

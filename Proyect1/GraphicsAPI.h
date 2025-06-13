@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Base.h"
+//Buffers
 #include "ConstantBuffer.h"
+#include "IndexBuffer.h"
 
 
 class ConstantBuffer;
@@ -42,6 +44,8 @@ public:
 
 	std::shared_ptr<ConstantBuffer> CreateConstanBuffer() override;
 
+	std::shared_ptr<IndexBuffer> CreateIndexBuffer();
+
 private:
 
 	std::shared_ptr <ConstantBuffer> m_constanBuffer;
@@ -51,5 +55,13 @@ private:
 	ID3D11Device*					m_device;
 	ID3D11DeviceContext*			m_immediateContext;
 	IDXGISwapChain*					m_swapChain;
-	IDXGISwapChain*					_SwapChain1;
+	IDXGISwapChain1*				m_swapChain1;
+
+
+	ID3D11DeviceContext1* m_pImmediateContext1;
+	D3D_FEATURE_LEVEL                   m_featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	ID3D11Device1* g_pd3dDevice1 = nullptr;
+	ID3D11DeviceContext* g_pImmediateContext = nullptr;
+
 };

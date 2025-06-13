@@ -38,13 +38,13 @@ Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
         
        auto m_driverType = driverTypes[driverTypeIndex];
         hr = D3D11CreateDevice(nullptr, m_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
-            D3D11_SDK_VERSION, &m_device, &m_featureLvel, &m_immediateContext);
+            D3D11_SDK_VERSION, &m_device, &m_featureLevel, &m_immediateContext);
 
         if (hr == E_INVALIDARG)
         {
             // DirectX 11.0 platforms will not recognize D3D_FEATURE_LEVEL_11_1 so we need to retry without it
             hr = D3D11CreateDevice(nullptr, m_driverType, nullptr, createDeviceFlags, &featureLevels[1], numFeatureLevels - 1,
-                D3D11_SDK_VERSION, &m_device, &m_featureLvel, &m_immediateContext);
+                D3D11_SDK_VERSION, &m_device, &m_featureLevel, &m_immediateContext);
         }
 
         if (SUCCEEDED(hr))
@@ -86,7 +86,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
         hr = m_device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&g_pd3dDevice1));
         if (SUCCEEDED(hr))
         {
-            (void)m_immediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&g_pImmediateContext1));
+            (void)m_immediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&m_pImmediateContext1));
         }
 
         DXGI_SWAP_CHAIN_DESC1 sd = {};
@@ -98,10 +98,10 @@ Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
         sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         sd.BufferCount = 1;
 
-        hr = dxgiFactory2->CreateSwapChainForHwnd(m_device, m_wWnd, &sd, nullptr, nullptr, &m_SwapChain1);
+        hr = dxgiFactory2->CreateSwapChainForHwnd(m_device, m_wWnd, &sd, nullptr, nullptr, & m_swapChain1);
         if (SUCCEEDED(hr))
         {
-            hr = m_SwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
+            hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
         }
 
         dxgiFactory2->Release();

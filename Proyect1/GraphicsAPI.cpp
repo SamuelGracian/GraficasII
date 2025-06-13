@@ -35,8 +35,8 @@ Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
 
     for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
     {
-        auto diverType = 
-       m_driverType = driverTypes[driverTypeIndex];
+        
+       auto m_driverType = driverTypes[driverTypeIndex];
         hr = D3D11CreateDevice(nullptr, m_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
             D3D11_SDK_VERSION, &m_device, &m_featureLvel, &m_immediateContext);
 
@@ -135,4 +135,61 @@ Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
             L"Failed to create the Direct3D device and swap chain.",
             L"Error", MB_OK | MB_ICONERROR);
     //  return hr;
+}
+
+//________DX11GrpahicsAPI CLASS _______________
+
+Dx11GraphicsAPI::Dx11GraphicsAPI(HWND window) :
+    m_constanBuffer(nullptr)
+    , m_device(nullptr)
+    , m_immediateContext(nullptr)
+    , m_swapChain(nullptr)
+{
+};
+
+
+void Dx11GraphicsAPI::CleanUpResources()
+{
+    if (m_device)
+    {
+        m_device->Release();
+        m_device = nullptr;
+    }
+    if (m_immediateContext)
+    {
+        m_immediateContext->Release();
+        m_immediateContext = nullptr;
+    }
+    if (m_swapChain)
+    {
+        m_swapChain->Release();
+        m_swapChain = nullptr;
+    }
+}
+
+std::shared_ptr<ConstanBuffer> Dx11GraphicsAPI::CreateConstanBuffer()
+{
+    HRESULT hr = S_OK;
+	D3D11_BUFFER_DESC bd = {};
+    // Create the constant buffers
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(CBNeverChanges);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);
+    if (FAILED(hr))
+        return hr;
+
+    bd.ByteWidth = sizeof(CBChangeOnResize);
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
+    if (FAILED(hr))
+        return hr;
+
+    bd.ByteWidth = sizeof(CBChangesEveryFrame);
+    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
+    if (FAILED(hr))
+        return hr;
+
+
+    return m_constanBuffer;
 }

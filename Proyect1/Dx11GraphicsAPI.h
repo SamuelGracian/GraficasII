@@ -4,12 +4,7 @@
 class Dx11GraphicsAPI : public GraphicsAPI
 {
 public:
-	Dx11GraphicsAPI() :
-		 m_constanBuffer(nullptr)
-		,m_device(nullptr)
-		,m_immediateContext(nullptr)
-		,m_swapChain(nullptr)
-	{};
+	Dx11GraphicsAPI() {};
 
 	virtual ~Dx11GraphicsAPI() = default;
 

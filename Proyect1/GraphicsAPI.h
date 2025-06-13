@@ -20,7 +20,9 @@ public:
 
 };
 
-
+/// <summary>
+/// API for Dx11
+/// </summary>
 class Dx11GraphicsAPI : public GraphicsAPI
 {
 public:
@@ -30,10 +32,16 @@ public:
 
 	void CleanUpResources() override;
 
-private:
-	HWND								m_wWnd;
+	std::shared_ptr<ConstanBuffer> CreateConstanBuffer() override;
 
-	ID3D11Device* m_device = nullptr;
-	ID3D11DeviceContext* m_context = nullptr;
-	IDXGISwapChain* m_swapChain = nullptr;
+private:
+
+	std::shared_ptr <ConstanBuffer> m_constanBuffer;
+
+	HWND							m_wWnd;
+
+	ID3D11Device*					m_device;
+	ID3D11DeviceContext*			m_immediateContext;
+	IDXGISwapChain*					m_swapChain;
+	IDXGISwapChain*					_SwapChain1;
 };

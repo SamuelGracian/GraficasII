@@ -4,6 +4,12 @@
 
 class ConstantBuffer;
 
+
+struct CBNeverChanges
+{
+	DirectX::XMMATRIX mView;
+};
+
 /// <summary>
 /// Base class for graphics API.
 /// </summary>

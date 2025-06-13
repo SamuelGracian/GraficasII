@@ -183,7 +183,7 @@ std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstanBuffer()
 
 
     auto buffer = std::make_shared<ConstantBuffer>();
-    buffer->m_byteWidth = bd.ByteWidth;
+	buffer->SetByteWidth(bd.ByteWidth);
 
     if (pBuffer) pBuffer->Release();
 

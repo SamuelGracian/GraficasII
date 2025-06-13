@@ -167,29 +167,25 @@ void Dx11GraphicsAPI::CleanUpResources()
     }
 }
 
-std::shared_ptr<ConstanBuffer> Dx11GraphicsAPI::CreateConstanBuffer()
+std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstanBuffer()
 {
     HRESULT hr = S_OK;
-	D3D11_BUFFER_DESC bd = {};
-    // Create the constant buffers
+    D3D11_BUFFER_DESC bd = {};
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(CBNeverChanges);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);
+
+    ID3D11Buffer* pBuffer = nullptr;
+    hr = m_device->CreateBuffer(&bd, nullptr, &pBuffer);
     if (FAILED(hr))
-        return hr;
-
-    bd.ByteWidth = sizeof(CBChangeOnResize);
-    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
-    if (FAILED(hr))
-        return hr;
-
-    bd.ByteWidth = sizeof(CBChangesEveryFrame);
-    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
-    if (FAILED(hr))
-        return hr;
+        return nullptr;
 
 
-    return m_constanBuffer;
+    auto buffer = std::make_shared<ConstantBuffer>();
+    buffer->m_byteWidth = bd.ByteWidth;
+
+    if (pBuffer) pBuffer->Release();
+
+    return buffer;
 }

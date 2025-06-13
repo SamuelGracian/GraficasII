@@ -10,10 +10,10 @@ public:
 
 	void CleanUpResources() override;
 
-	std::shared_ptr<ConstanBuffer> CreateConstanBuffer() override;
+	std::shared_ptr<ConstantBuffer> CreateConstanBuffer() override;
 
 private:
-	std::shared_ptr <ConstanBuffer> m_constanBuffer;
+	std::shared_ptr <ConstantBuffer> m_constanBuffer;
 
 	//*-------------------------------------------------------------//*
 	ID3D11Device* m_device;

@@ -3,16 +3,16 @@
 
 #include "BufferResource.h"
 
-class ConstanBuffer : public BufferResource
+class ConstantBuffer : public BufferResource
 {
 public:
-	ConstanBuffer():
+	ConstantBuffer():
 	m_stride (0)
 	,m_offset(0)
 	,m_slot(0)
 	{};
 
-	virtual ~ConstanBuffer () = default;
+	virtual ~ConstantBuffer () = default;
 
 	uint32_t GetStride() { return m_stride; }
 
@@ -24,7 +24,7 @@ protected:
 	uint32_t m_slot;
 };
 
-class Dx11ConstantBuffer  final : public ConstanBuffer
+class Dx11ConstantBuffer  final : public ConstantBuffer
 {
 	friend class Dx11GraphicsAPI;
 

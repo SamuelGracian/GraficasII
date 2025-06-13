@@ -2,7 +2,7 @@
 
 #include "Base.h"
 
-class ConstanBuffer;
+class ConstantBuffer;
 
 /// <summary>
 /// Base class for graphics API.
@@ -16,7 +16,7 @@ public:
 
 	virtual void CleanUpResources() = 0;
 
-	virtual std::shared_ptr<ConstanBuffer> CreateConstanBuffer() = 0;
+	virtual std::shared_ptr<ConstantBuffer> CreateConstanBuffer() = 0;
 
 };
 
@@ -32,11 +32,11 @@ public:
 
 	void CleanUpResources() override;
 
-	std::shared_ptr<ConstanBuffer> CreateConstanBuffer() override;
+	std::shared_ptr<ConstantBuffer> CreateConstanBuffer() override;
 
 private:
 
-	std::shared_ptr <ConstanBuffer> m_constanBuffer;
+	std::shared_ptr <ConstantBuffer> m_constanBuffer;
 
 	HWND							m_wWnd;
 

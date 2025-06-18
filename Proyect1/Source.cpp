@@ -556,21 +556,24 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     bd.CPUAccessFlags = 0;
     InitData.pSysMem = indices;
     //hr = GAPI->m_device->CreateBuffer(&bd, &InitData, & g_pIndexBuffer);
-    INDXBuffer = GAPI->CreateIndexBuffer(sizeof(WORD) , indices, 36);
+    INDXBuffer = GAPI->CreateIndexBuffer(sizeof(WORD)* 36 , indices, 36);
     if (FAILED(hr))
         return hr;
 
     // Set index buffer
     //GAPI->m_immediateContext->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
     auto SharedINDXBuffer = INDXBuffer.lock();
-    if (!SharedINDXBuffer)
-    {
+    if (!SharedINDXBuffer) {
+        std::cout << "Error: IndexBuffer no creado correctamente" << std::endl;
         return E_FAIL;
-
-        auto dx11IndexBuffer = std::dynamic_pointer_cast <Dx11IndexBuffer> (SharedINDXBuffer);
-		if (!dx11IndexBuffer) std::cout << " Error casting to Dx11IndexBuffer" << std::endl; return E_FAIL;
-        GAPI->m_immediateContext->IASetIndexBuffer(dx11IndexBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
     }
+    auto dx11IndexBuffer = std::dynamic_pointer_cast<Dx11IndexBuffer>(SharedINDXBuffer);
+    if (!dx11IndexBuffer) {
+        std::cout << "Error: No se pudo castear a Dx11IndexBuffer" << std::endl;
+        return E_FAIL;
+    }
+    GAPI->m_immediateContext->IASetIndexBuffer(dx11IndexBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
+
 
 
     // Set primitive topology

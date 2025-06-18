@@ -4,31 +4,30 @@
 
 #include "BufferResource.h"
 
-class IndexBuffer : public RenderResource
+class IndexBuffer : public BufferResource
 {
+	
 public:
+	IndexBuffer()
+		: m_indexCount(0)
+	{
+	}
+	virtual ~IndexBuffer() = default;
+	uint32_t GetIndexCount() const { return m_indexCount; }
 
-	UINT GetIndexCount() const { return m_indexCount; }
 
-private:
-	std::shared_ptr<ID3D11Buffer> m_buffer;
-	UINT m_indexCount = 0;
-	UINT m_byteWidth = 0;
+	uint32_t m_indexCount;
 };
 
 class Dx11IndexBuffer final : public IndexBuffer
 {
+	friend class Dx11GraphicsAPI;
 public:
-	Dx11IndexBuffer() = default;
-	~Dx11IndexBuffer() override = default;
-	void CleanUpResources() override
-	{
-		if (m_buffer)
-		{
-			m_buffer->Release();
-			m_buffer.reset();
-		}
-	}
-private:
-	std::shared_ptr<ID3D11Buffer> m_buffer;
+	Dx11IndexBuffer();
+
+	virtual ~Dx11IndexBuffer();
+
+	void CleanUpResources() override;
+
+	ID3D11Buffer* m_buffer;
 };

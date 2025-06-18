@@ -1,58 +1,34 @@
 #pragma once
-#include <d3d11.h>
-#include <memory>
-#include <DirectXMath.h>
 
 #include "BufferResource.h"
 
-using namespace DirectX;
-
-// Define the SimpleVertex structure
-struct SimpleVertex
-{
-	DirectX::XMFLOAT3 Position; // 3D position of the vertex
-	DirectX::XMFLOAT3 Normal;   // Normal vector for lighting calculations
-	DirectX::XMFLOAT2 TexCoord; // Texture coordinates
-};
-
-class Dx11vertexBuffer : public RenderResource
+class VertexBuffer : public BufferResource
 {
 public:
-	Dx11vertexBuffer() = default;
-	~Dx11vertexBuffer()
-	{
-		CleanUpResources();
+	VertexBuffer()
+		: m_stride(0), 
+		m_offset(0)	
+	{ 
 	}
+	uint32_t GetOffSet() { return m_offset; }
+	uint32_t GetStride() { return m_stride; }
 
-	ID3D11Buffer* GetRawBuffer() override
-	{
-		return m_buffer.get();
-	}
-	void CleanUpResources() override
-	{
-		if (m_buffer)
-		{
-			m_buffer->Release();
-			m_buffer.reset();
-		}
-	}
-	void UpdateBuffer() override;
+	virtual ~VertexBuffer() = default;
 
-	UINT GetByteWidth() const override
-	{
-		return m_byteWidth;
-	}
 
-	UINT GetBindFlags() const override
-	{
-		return D3D11_BIND_VERTEX_BUFFER;
-	}
+	uint32_t m_stride;
+	uint32_t m_offset;
+};
 
-	UINT GetVertexCount() const { return m_vertexCount; }
-private:
+class Dx11VertexBuffer final : public VertexBuffer
+{
+	friend class Dx11GraphicsAPI;
+public:
+	Dx11VertexBuffer();
 
-	std::shared_ptr<ID3D11Buffer> m_buffer;;
-	UINT m_vertexCount = 0;
-	UINT m_byteWidth = 0;
+	~Dx11VertexBuffer();
 
+	void CleanUpResources() override;
+
+	ID3D11Buffer* m_buffer;
 };

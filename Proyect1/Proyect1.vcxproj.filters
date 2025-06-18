@@ -27,9 +27,6 @@
     <ClCompile Include="InConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertexBuffers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GapiDx11VertexShader.h">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -39,7 +36,7 @@
     <ClCompile Include="Constantbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dx11GraphicsAPI.cpp">
+    <ClCompile Include="VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BufferResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dx11GraphicsAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Base.h">

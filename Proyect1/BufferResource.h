@@ -17,8 +17,6 @@ public:
 
 	 uint32_t GetByteWidth() const { return m_byteWidth; }
 
-	 void SetByteWidth(uint32_t byteWidth) { m_byteWidth = byteWidth; }
-
 protected:
 	uint32_t m_byteWidth;
 	

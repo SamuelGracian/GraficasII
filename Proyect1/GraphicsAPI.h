@@ -2,17 +2,13 @@
 
 #include "Base.h"
 //Buffers
-#include "ConstantBuffer.h"
-#include "IndexBuffer.h"
 
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 
 class ConstantBuffer;
 
-
-struct CBNeverChanges
-{
-	DirectX::XMMATRIX mView;
-};
+static const uint32_t AvailableSlots = 8;
 
 /// <summary>
 /// Base class for graphics API.
@@ -26,42 +22,57 @@ public:
 
 	virtual void CleanUpResources() = 0;
 
-	virtual std::shared_ptr<ConstantBuffer> CreateConstanBuffer() = 0;
+	virtual std::weak_ptr<ConstantBuffer> CreateConstanBuffer(const uint32_t byteWidth = 0 , 
+		const void* initData = nullptr, 
+		const uint32_t slot = UINT32_MAX) = 0;
 
+	virtual std::weak_ptr<IndexBuffer> CreateIndexBuffer(const uint32_t byteWidth = 0,
+		const void* initData = nullptr,
+		uint32_t indexCount=0) = 0;
+
+	virtual std::weak_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset =0) = 0;
 };
 
 /// <summary>
 /// API for Dx11
 /// </summary>
+class Dx11ConstantBuffer;
+
 class Dx11GraphicsAPI : public GraphicsAPI
 {
 public:
 	Dx11GraphicsAPI(HWND windowHandler);
 
-	virtual ~Dx11GraphicsAPI() = default;
+	virtual ~Dx11GraphicsAPI();
 
 	void CleanUpResources() override;
 
-	std::shared_ptr<ConstantBuffer> CreateConstanBuffer() override;
+	std::weak_ptr<ConstantBuffer> CreateConstanBuffer(const uint32_t byteWidth = 0, 
+		const void* initData = nullptr, 
+		const uint32_t slot = UINT32_MAX) override;
 
-	std::shared_ptr<IndexBuffer> CreateIndexBuffer();
+	std::weak_ptr<IndexBuffer> CreateIndexBuffer(const uint32_t byteWidth =0,
+		const void* initData = nullptr,
+		uint32_t indexCount = 0) override;
 
-private:
+	std::weak_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset = 0
+		) override;
 
-	std::shared_ptr <ConstantBuffer> m_constanBuffer;
+
+	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
+
+	std::vector<std::shared_ptr<RenderResource>> RendeResourceList;
+
+	//________________
 
 	HWND							m_wWnd;
-
 	ID3D11Device*					m_device;
 	ID3D11DeviceContext*			m_immediateContext;
 	IDXGISwapChain*					m_swapChain;
-	IDXGISwapChain1*				m_swapChain1;
-
-
-	ID3D11DeviceContext1* m_pImmediateContext1;
-	D3D_FEATURE_LEVEL                   m_featureLevel = D3D_FEATURE_LEVEL_11_0;
-
-	ID3D11Device1* g_pd3dDevice1 = nullptr;
-	ID3D11DeviceContext* g_pImmediateContext = nullptr;
-
 };

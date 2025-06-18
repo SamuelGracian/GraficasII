@@ -129,19 +129,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Dx11GraphicsAPI.cpp" />
     <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
     <ClCompile Include="Constantbuffer.cpp" />
     <ClCompile Include="InIndexBuffer.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="VertexBuffers.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Base.h" />
-    <ClInclude Include="Dx11GraphicsAPI.h" />
     <ClInclude Include="BufferResource.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GraphicsAPI.h" />

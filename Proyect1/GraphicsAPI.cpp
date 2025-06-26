@@ -208,6 +208,7 @@ std::weak_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t b
     buffer->m_offset = offset;
     buffer->m_stride = stride;
     buffer->m_buffer = (BuildBuffer(byteWidth,vertices, D3D11_BIND_VERTEX_BUFFER));
+
     RendeResourceList.push_back(buffer);
     return buffer;
 

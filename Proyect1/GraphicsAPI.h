@@ -39,7 +39,6 @@ public:
 /// <summary>
 /// API for Dx11
 /// </summary>
-class Dx11ConstantBuffer;
 
 class Dx11GraphicsAPI : public GraphicsAPI
 {

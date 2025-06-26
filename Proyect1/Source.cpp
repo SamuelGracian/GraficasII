@@ -56,6 +56,12 @@ struct CBChangesEveryFrame
     XMFLOAT4 vMeshColor;
 };
 
+
+//--------------------------------------------------------------------------------------
+// Global Variables
+//--------------------------------------------------------------------------------------
+
+
 //___ GAPI___
 
 std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
@@ -64,11 +70,8 @@ std::weak_ptr<ConstantBuffer> ConstBuffer;
 
 std::weak_ptr <IndexBuffer>INDXBuffer;
 
-//std::weak_ptr<VertexBuffer> VrtxBuffer;
+std::weak_ptr<VertexBuffer> VrtxBuffer;
 
-//--------------------------------------------------------------------------------------
-// Global Variables
-//--------------------------------------------------------------------------------------
 HINSTANCE                           g_hInst = nullptr;
 HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
@@ -79,18 +82,13 @@ D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 //ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
 //IDXGISwapChain* g_pSwapChain = nullptr;
 //IDXGISwapChain1* g_pSwapChain1 = nullptr;
+
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 ID3D11Texture2D* g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 ID3D11VertexShader* g_pVertexShader = nullptr;
 ID3D11PixelShader* g_pPixelShader = nullptr;
 ID3D11InputLayout* g_pVertexLayout = nullptr;
-///___ VertexBuffer___
-ID3D11Buffer* g_pVertexBuffer = nullptr;
-///Index buffer
-//ID3D11Buffer* g_pIndexBuffer = nullptr;
-///__ConstanBuffer___
-//ID3D11Buffer* g_pCBNeverChanges = nullptr;
 ID3D11Buffer* g_pCBChangeOnResize = nullptr;
 ID3D11Buffer* g_pCBChangesEveryFrame = nullptr;
 ID3D11ShaderResourceView* g_pTextureRV = nullptr;
@@ -505,27 +503,31 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
 
     D3D11_SUBRESOURCE_DATA InitData = {};
     InitData.pSysMem = vertices;
-    hr = GAPI->m_device->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
-    if (FAILED(hr))
-        return hr;
+    //hr = GAPI->m_device->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
+
+    VrtxBuffer = GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * 24, vertices, sizeof(SimpleVertex));
+    if (VrtxBuffer.expired()) {
+        std::cout << "Error: VertexBuffer no creado correctamente" << std::endl;
+        return E_FAIL;
+    }
+
     ///Create vertex buffer
-    //VrtxBuffer = GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * 24, &InitData, 0);
 
 
     // Set vertex buffer
     UINT stride = sizeof(SimpleVertex);
     UINT offset = 0;
-    // Extract the ID3D11Buffer* from the weak_ptr
-    //std::shared_ptr<VertexBuffer> sharedVrtxBuffer = VrtxBuffer.lock();
-    //if (sharedVrtxBuffer)
-    //{
-    //    auto dx11VrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(sharedVrtxBuffer);
-    //    ID3D11Buffer* buffer = dx11VrtxBuffer->m_buffer;
+    std::shared_ptr<VertexBuffer> sharedVrtxBuffer = VrtxBuffer.lock();
+    if (sharedVrtxBuffer)
+    {
+        auto dx11VrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(sharedVrtxBuffer);
+        ID3D11Buffer* buffer = dx11VrtxBuffer->m_buffer;
 
-    //    GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &buffer, &stride, &offset);
-    //}
+        GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &buffer, &stride, &offset);
+    }
 
-    GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+    //GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
     // Create index buffer
     // Create vertex buffer
@@ -659,8 +661,8 @@ void CleanupDevice()
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
     if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
-    if (g_pVertexBuffer) g_pVertexBuffer->Release();
-    //if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
+    //if (g_pVertexBuffer) g_pVertexBuffer->Release();
+    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     //if (g_pIndexBuffer) g_pIndexBuffer->Release();
     if (g_pVertexLayout) g_pVertexLayout->Release();
@@ -737,6 +739,17 @@ void Render()
     g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
     g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
+
+    UINT stride = sizeof(SimpleVertex);
+    UINT offset = 0;
+    std::shared_ptr<VertexBuffer> sharedVrtxBuffer = VrtxBuffer.lock();
+    if (sharedVrtxBuffer)
+    {
+        auto dx11VrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(sharedVrtxBuffer);
+        ID3D11Buffer* buffer = dx11VrtxBuffer->m_buffer;
+        GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &buffer, &stride, &offset);
+    }
+
     //
     // Clear the back buffer
     //
@@ -774,6 +787,7 @@ void Render()
     GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
     GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+
 
     //
     // Present our back buffer to our front buffer

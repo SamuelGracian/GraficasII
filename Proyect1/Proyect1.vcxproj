@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExternalIncludePath>$(IMGUI);$(IMGUI)backends\;$(ExternalIncludePath)</ExternalIncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -129,6 +132,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_demo.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
@@ -139,6 +149,11 @@
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imconfig.h" />
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui.h" />
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_internal.h" />
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Base.h" />
     <ClInclude Include="BufferResource.h" />

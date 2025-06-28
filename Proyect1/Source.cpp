@@ -29,6 +29,10 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
+
 using namespace DirectX;
 
 //--------------------------------------------------------------------------------------
@@ -60,6 +64,11 @@ struct CBChangesEveryFrame
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
+
+//____IMGUI camera variables ____
+XMVECTOR g_Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
+static float g_cameraEye[3] = { 0.0f, 3.0f,-6.0f };
+static float g_cameraAt[3] = { 0.0f, 1.0f , 0.0f };
 
 
 //___ GAPI___
@@ -624,10 +633,10 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     g_World = XMMatrixIdentity();
 
     // Initialize the view matrix
-    XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
+    g_Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
     XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    g_View = XMMatrixLookAtLH(Eye, At, Up);
+    g_View = XMMatrixLookAtLH(g_Eye, At, Up);
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
@@ -644,6 +653,31 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     CBChangeOnResize cbChangesOnResize;
     cbChangesOnResize.mProjection = XMMatrixTranspose(g_Projection);
     GAPI->m_immediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, nullptr, &cbChangesOnResize, 0, 0);
+
+
+    ImGui_ImplWin32_EnableDpiAwareness();
+    float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(g_hWnd);
+    ImGui_ImplDX11_Init(GAPI->m_device, GAPI->m_immediateContext);
 
     return S_OK;
 }
@@ -788,6 +822,38 @@ void Render()
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
     GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
 
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    // 3. Show another simple window.
+        ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Hello from another window!");
+        ImGui::End();
+
+    //Camera controls
+        ImGui::Begin("Camera controls");
+        ImGui::SliderFloat3("Eye", g_cameraEye, -10.0f, 10.0f);
+        ImGui::SliderFloat3("At", g_cameraAt, -10.0f, 10.0f);
+        ImGui::End();
+
+        g_Eye = XMVectorSet(g_cameraEye[0], g_cameraEye[1], g_cameraEye[2], 0.0f);
+        XMVECTOR At = XMVectorSet(g_cameraAt[0], g_cameraAt[1], g_cameraAt[2], 0.0f);
+        XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        g_View = XMMatrixLookAtLH(g_Eye, At, Up);
+
+        CBNeverChanges cbNeverChanges;
+        cbNeverChanges.mView = XMMatrixTranspose(g_View);
+        if (!ConstBuffer.expired())
+        {
+            auto pConstanBuffer = std::static_pointer_cast<Dx11ConstantBuffer>(ConstBuffer.lock());
+            GAPI->m_immediateContext->UpdateSubresource(pConstanBuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+        }
+
+        // Rendering
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     //
     // Present our back buffer to our front buffer

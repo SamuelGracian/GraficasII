@@ -14,7 +14,8 @@ class Dx11SwapChain : public SwapChain
         : m_swapChain(swapChain) {
     }
 
-    ~Dx11SwapChain() override {
+    ~Dx11SwapChain()
+    {
         if (m_swapChain) m_swapChain->Release();
     }
 

@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{dd0fef93-4b57-4242-bd02-e83cff8d4b1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="IMGUI sources">
+      <UniqueIdentifier>{20e300a8-f3d4-4792-b37e-18d3d42451cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -41,6 +44,27 @@
     </ClCompile>
     <ClCompile Include="swapChain.h">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_demo.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_draw.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_dx11.cpp">
+      <Filter>IMGUI sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.cpp">
+      <Filter>IMGUI sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +97,21 @@
     </ClInclude>
     <ClInclude Include="Textures.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imconfig.h">
+      <Filter>IMGUI sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui.h">
+      <Filter>IMGUI sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_internal.h">
+      <Filter>IMGUI sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_dx11.h">
+      <Filter>IMGUI sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.h">
+      <Filter>IMGUI sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -81,25 +81,20 @@ std::weak_ptr <IndexBuffer>INDXBuffer;
 
 std::weak_ptr<VertexBuffer> VrtxBuffer;
 
+std::weak_ptr<ConstantBuffer>GA_changeEveryFrame;
+
+std::weak_ptr<ConstantBuffer> GAPI_ChangeonResize;
+
 HINSTANCE                           g_hInst = nullptr;
 HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
-//ID3D11Device* g_pd3dDevice = nullptr;
-//ID3D11Device1* g_pd3dDevice1 = nullptr;
-//ID3D11DeviceContext* g_pImmediateContext = nullptr;
-//ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
-//IDXGISwapChain* g_pSwapChain = nullptr;
-//IDXGISwapChain1* g_pSwapChain1 = nullptr;
-
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 ID3D11Texture2D* g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 ID3D11VertexShader* g_pVertexShader = nullptr;
 ID3D11PixelShader* g_pPixelShader = nullptr;
 ID3D11InputLayout* g_pVertexLayout = nullptr;
-ID3D11Buffer* g_pCBChangeOnResize = nullptr;
-ID3D11Buffer* g_pCBChangesEveryFrame = nullptr;
 ID3D11ShaderResourceView* g_pTextureRV = nullptr;
 ID3D11SamplerState* g_pSamplerLinear = nullptr;
 XMMATRIX                            g_World;
@@ -107,6 +102,8 @@ XMMATRIX                            g_View;
 XMMATRIX                            g_Projection;
 XMFLOAT4                            g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
+static const int meshes = 10000;
+XMMATRIX                            MeshWoldTransform[meshes];
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -117,6 +114,9 @@ void CleanupDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void Render();
 
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //--------------------------------------------------------------------------------------
 // Entry point to the program. Initializes everything and goes into a message processing 
@@ -140,6 +140,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     MSG msg = { 0 };
     while (WM_QUIT != msg.message)
     {
+        if (ImGui_ImplWin32_WndProcHandler(g_hWnd, msg.message, msg.wParam, msg.lParam))
+            return true;
+
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -247,125 +250,6 @@ HRESULT InitDevice()
     GetClientRect(g_hWnd, &rc);
     UINT width = rc.right - rc.left;
     UINT height = rc.bottom - rc.top;
-
-    /*
-    UINT createDeviceFlags = 0;
-#ifdef _DEBUG
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-    D3D_DRIVER_TYPE driverTypes[] =
-    {
-        D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE,
-    };
-    UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-    D3D_FEATURE_LEVEL featureLevels[] =
-    {
-        D3D_FEATURE_LEVEL_11_1,
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
-    };
-    UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-
-    for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
-    {
-        g_driverType = driverTypes[driverTypeIndex];
-        hr = D3D11CreateDevice(nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
-            D3D11_SDK_VERSION, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
-
-        if (hr == E_INVALIDARG)
-        {
-            // DirectX 11.0 platforms will not recognize D3D_FEATURE_LEVEL_11_1 so we need to retry without it
-            hr = D3D11CreateDevice(nullptr, g_driverType, nullptr, createDeviceFlags, &featureLevels[1], numFeatureLevels - 1,
-                D3D11_SDK_VERSION, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
-        }
-
-        if (SUCCEEDED(hr))
-            break;
-    }
-    if (FAILED(hr))
-        return hr;
-
-    // Obtain DXGI factory from device (since we used nullptr for pAdapter above)
-    IDXGIFactory1* dxgiFactory = nullptr;
-    {
-        IDXGIDevice* dxgiDevice = nullptr;
-        hr = g_pd3dDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
-        if (SUCCEEDED(hr))
-        {
-            IDXGIAdapter* adapter = nullptr;
-            hr = dxgiDevice->GetAdapter(&adapter);
-            if (SUCCEEDED(hr))
-            {
-                hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory));
-                adapter->Release();
-            }
-            dxgiDevice->Release();
-        }
-    }
-    if (FAILED(hr))
-        return hr;
-
-    // Create swap chain
-    IDXGIFactory2* dxgiFactory2 = nullptr;
-    hr = dxgiFactory->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2));
-    if (dxgiFactory2)
-    {
-        // DirectX 11.1 or later
-        hr = g_pd3dDevice->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&g_pd3dDevice1));
-        if (SUCCEEDED(hr))
-        {
-            (void)g_pImmediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&g_pImmediateContext1));
-        }
-
-        DXGI_SWAP_CHAIN_DESC1 sd = {};
-        sd.Width = width;
-        sd.Height = height;
-        sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount = 1;
-
-        hr = dxgiFactory2->CreateSwapChainForHwnd(g_pd3dDevice, g_hWnd, &sd, nullptr, nullptr, &g_pSwapChain1);
-        if (SUCCEEDED(hr))
-        {
-            hr = g_pSwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&g_pSwapChain));
-        }
-
-        dxgiFactory2->Release();
-    }
-    else
-    {
-        // DirectX 11.0 systems
-        DXGI_SWAP_CHAIN_DESC sd = {};
-        sd.BufferCount = 1;
-        sd.BufferDesc.Width = width;
-        sd.BufferDesc.Height = height;
-        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-        sd.BufferDesc.RefreshRate.Denominator = 1;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.OutputWindow = g_hWnd;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.Windowed = TRUE;
-
-        hr = dxgiFactory->CreateSwapChain(g_pd3dDevice, &sd, &g_pSwapChain);
-    }
-
-    // Note this tutorial doesn't handle full-screen swapchains so we block the ALT+ENTER shortcut
-    dxgiFactory->MakeWindowAssociation(g_hWnd, DXGI_MWA_NO_ALT_ENTER);
-
-    dxgiFactory->Release();
-
-    if (FAILED(hr))
-        return hr;
-        */
     
 GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
 
@@ -590,31 +474,13 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     // Set primitive topology
     GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // Create the constant buffers
-   /* bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(CBNeverChanges);
-    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    bd.CPUAccessFlags = 0;
-    hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);
-    if (FAILED(hr))
-        return hr;*/
+
 
       ConstBuffer = GAPI->CreateConstanBuffer(sizeof(CBNeverChanges), nullptr, 0);
 
-    bd.ByteWidth = sizeof(CBChangeOnResize);
-    hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
-    if (FAILED(hr))
-        return hr;
+    GAPI_ChangeonResize = GAPI->CreateConstanBuffer(sizeof(CBChangeOnResize), nullptr, 0);
 
-    bd.ByteWidth = sizeof(CBChangesEveryFrame);
-    hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
-    if (FAILED(hr))
-        return hr;
-
-    //// Load the Texture
-    //hr = CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
-    //if (FAILED(hr))
-    //    return hr;
+    GA_changeEveryFrame = GAPI->CreateConstanBuffer(sizeof(CBChangesEveryFrame), nullptr, 0);
 
     // Create the sample state
     D3D11_SAMPLER_DESC sampDesc = {};
@@ -652,8 +518,11 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
 
     CBChangeOnResize cbChangesOnResize;
     cbChangesOnResize.mProjection = XMMatrixTranspose(g_Projection);
-    GAPI->m_immediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, nullptr, &cbChangesOnResize, 0, 0);
-
+    if (!GAPI_ChangeonResize.expired())
+    {
+        auto AutochangeonREsize = std::static_pointer_cast<Dx11ConstantBuffer>(GAPI_ChangeonResize.lock());
+        GAPI->m_immediateContext->UpdateSubresource(AutochangeonREsize->m_buffer, 0, nullptr, &cbChangesOnResize, 0, 0);
+    }
 
     ImGui_ImplWin32_EnableDpiAwareness();
     float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
@@ -675,6 +544,16 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
     style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 
+    for (int i = 0; i < meshes; ++i)
+    {
+        int randX = (rand() % 100) - 50;
+        int randY = (rand() % 50) - 25;
+        int randZ = (rand() % 100) - 50;
+
+        int randW = (rand() % 5) + 1;
+        MeshWoldTransform[i] = XMMatrixTranslation(randX, randY, randZ) * XMMatrixScaling(randW, randW, randW);
+    }
+
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(g_hWnd);
     ImGui_ImplDX11_Init(GAPI->m_device, GAPI->m_immediateContext);
@@ -691,14 +570,7 @@ void CleanupDevice()
 
     if (g_pSamplerLinear) g_pSamplerLinear->Release();
     if (g_pTextureRV) g_pTextureRV->Release();
-    //if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
-    if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
-    if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
-    //if (g_pVertexBuffer) g_pVertexBuffer->Release();
-    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
-    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
-    //if (g_pIndexBuffer) g_pIndexBuffer->Release();
     if (g_pVertexLayout) g_pVertexLayout->Release();
     if (g_pVertexShader) g_pVertexShader->Release();
     if (g_pPixelShader) g_pPixelShader->Release();
@@ -794,47 +666,74 @@ void Render()
     //
     GAPI->m_immediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    //
-    // Update variables that change once per frame
-    //
-    CBChangesEveryFrame cb;
-    cb.mWorld = XMMatrixTranspose(g_World);
-    cb.vMeshColor = g_vMeshColor;
-    GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
+    static bool DrawTest = false;
+    int CurrentMeshes = DrawTest ? meshes : 1;
 
-    //
-    // Render the cube
-    //
     GAPI->m_immediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
 
     if (!ConstBuffer.expired())
     {
         auto testbuffer = std::static_pointer_cast<Dx11ConstantBuffer> (ConstBuffer.lock());
-        GAPI->m_immediateContext-> VSSetConstantBuffers(0, 1, &testbuffer->m_buffer);
+        GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &testbuffer->m_buffer);
 
     }
 
-    GAPI->m_immediateContext-> VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
-    GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    if (!GAPI_ChangeonResize.expired());
+    {
+        auto AUTOChangeonResize = std::static_pointer_cast<Dx11ConstantBuffer>(GAPI_ChangeonResize.lock());
+        GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &AUTOChangeonResize->m_buffer);
+    }
+
+    std::shared_ptr<ConstantBuffer> SharedChangeeveryFrame = GA_changeEveryFrame.lock();
+
+    if (SharedChangeeveryFrame)
+    {
+        auto AutoFrame = std::static_pointer_cast<Dx11ConstantBuffer>(SharedChangeeveryFrame);
+        ID3D11Buffer* CHNGBufferP = AutoFrame->m_buffer;
+        GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &CHNGBufferP);
+    }
     GAPI->m_immediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-    GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    //GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
-    GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+
+    for (int i = 0; i < CurrentMeshes; ++i)
+    {
+
+        //
+        // Update variables that change once per frame
+        //
+        CBChangesEveryFrame cb;
+        cb.mWorld = XMMatrixTranspose(DrawTest ? MeshWoldTransform[i]: g_World);
+        cb.vMeshColor = g_vMeshColor;
+        if (SharedChangeeveryFrame)
+        {
+            auto changeEFrame = std::static_pointer_cast<Dx11ConstantBuffer>(SharedChangeeveryFrame);
+            ID3D11Buffer* chngEveryFrame = changeEFrame->m_buffer;
+            GAPI->m_immediateContext->UpdateSubresource(chngEveryFrame, 0, nullptr, &cb, 0, 0);
+        }
+        //
+        // Render the cube
+        //
+        
+        GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+    }
 
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    ImGuiIO& io = ImGui::GetIO();
     // 3. Show another simple window.
         ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello from another window!");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::Checkbox("Draw test.", &DrawTest);
         ImGui::End();
 
     //Camera controls
         ImGui::Begin("Camera controls");
-        ImGui::SliderFloat3("Eye", g_cameraEye, -10.0f, 10.0f);
+        ImGui::SliderFloat3("Eye", g_cameraEye, -1000.0f, 10.0f);
         ImGui::SliderFloat3("At", g_cameraAt, -10.0f, 10.0f);
         ImGui::End();
 

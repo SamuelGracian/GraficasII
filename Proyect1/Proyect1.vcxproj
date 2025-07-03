@@ -139,6 +139,7 @@
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="Dx112Dtexture.cpp" />
     <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
@@ -162,7 +163,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="IPixelShader.h" />
     <ClInclude Include="RenderResource.h" />
-    <ClInclude Include="Textures.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

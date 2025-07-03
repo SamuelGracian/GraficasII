@@ -264,6 +264,8 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     if (FAILED(hr))
         return hr;
 
+
+    ///create texture
     // Create depth stencil texture
     D3D11_TEXTURE2D_DESC descDepth = {};
     descDepth.Width = width;

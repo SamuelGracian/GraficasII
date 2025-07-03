@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.cpp">
       <Filter>IMGUI sources</Filter>
     </ClCompile>
+    <ClCompile Include="Dx112Dtexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h">
@@ -95,9 +98,6 @@
     <ClInclude Include="RenderResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Textures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\imconfig.h">
       <Filter>IMGUI sources</Filter>
     </ClInclude>
@@ -112,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Devlibs\imgui-master\backends\imgui_impl_win32.h">
       <Filter>IMGUI sources</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

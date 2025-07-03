@@ -19,3 +19,17 @@ protected:
     uint32_t m_height;
     uint32_t m_mipLevels;
 };
+
+class ShaderResourceTexture : public Texture
+{
+public:
+    ShaderResourceTexture() : Texture() {}
+    virtual ~ShaderResourceTexture() {}
+
+};
+
+class DepthStencilTexture : public Texture
+{
+    DepthStencilTexture() : Texture() {}
+    virtual ~DepthStencilTexture() {}
+};

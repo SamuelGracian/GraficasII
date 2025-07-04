@@ -214,6 +214,50 @@ std::weak_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t b
 
 }
 
+std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
+    const uint32_t width,
+    const uint32_t height,
+    const uint32_t mipLevels,
+    const void* initData)
+{
+    auto texture = std::make_shared<Dx11ShaderResourceTexture>();
+    texture->m_width = width;
+    texture->m_height = height;
+    texture->m_mipLevels = mipLevels;
+
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = mipLevels;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initDataDesc = {};
+    initDataDesc.pSysMem = initData;
+
+    ID3D11Texture2D* d3dTexture = nullptr;
+    HRESULT hr = m_device->CreateTexture2D(
+        &desc,
+        initData ? &initDataDesc : nullptr,
+        &d3dTexture);
+
+    if (FAILED(hr)) {
+        return std::weak_ptr<Texture>();
+    }
+
+    texture->m_texture = d3dTexture; 
+
+    RendeResourceList.push_back(texture);
+    return texture;
+}
+
+
 ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initData, uint32_t bindFlag)
 {
     if (byteWidth == 0 || bindFlag == 0)

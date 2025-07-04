@@ -5,6 +5,8 @@
 
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "texture.h"
+#include "Dx11texture.h"
 
 class ConstantBuffer;
 
@@ -34,6 +36,21 @@ public:
 		const void* vertices = nullptr,
 		const uint32_t stride = 0,
 		const uint32_t offset =0) = 0;
+
+	virtual std::weak_ptr<Texture> CreateShaderResource(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) = 0;
+
+	virtual std::weak_ptr<Texture> CreateDepthStencil(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) = 0;
+
+	virtual std::weak_ptr<Texture> CreateRenderTarget(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) = 0;
 };
 
 /// <summary>
@@ -62,6 +79,25 @@ public:
 		const uint32_t stride = 0,
 		const uint32_t offset = 0
 		) override;
+
+	//only reading
+	std::weak_ptr<Texture> CreateShaderResource(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) override;
+
+
+	//depth mask writting and reading texture
+	std::weak_ptr<Texture> CreateDepthStencil(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) override;
+
+	//writting and reading texture 
+	std::weak_ptr<Texture> CreateRenderTarget(const uint32_t width = 0,
+		const uint32_t height = 0,
+		const uint32_t mipLevels = 1,
+		const void* initData = nullptr) override;
 
 
 	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);

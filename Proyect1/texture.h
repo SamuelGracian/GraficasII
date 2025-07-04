@@ -25,11 +25,20 @@ class ShaderResourceTexture : public Texture
 public:
     ShaderResourceTexture() : Texture() {}
     virtual ~ShaderResourceTexture() {}
-
 };
+
 
 class DepthStencilTexture : public Texture
 {
+public:
     DepthStencilTexture() : Texture() {}
     virtual ~DepthStencilTexture() {}
+};
+
+class RenderTarget :public Texture
+{
+public:
+    RenderTarget() : Texture() {}
+
+    virtual ~RenderTarget() {}
 };

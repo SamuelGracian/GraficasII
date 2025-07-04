@@ -7,6 +7,7 @@
 #include "VertexBuffer.h"
 #include "texture.h"
 #include "Dx11texture.h"
+#include "Dx11Shaders.h"
 
 class ConstantBuffer;
 
@@ -51,6 +52,16 @@ public:
 		const uint32_t height = 0,
 		const uint32_t mipLevels = 1,
 		const void* initData = nullptr) = 0;
+	
+	virtual std::weak_ptr<Shader> CreateVertexShader(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset = 0) = 0;
+
+	virtual std::weak_ptr<Shader> CreatePixelShader(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset = 0) = 0;
 };
 
 /// <summary>
@@ -99,6 +110,15 @@ public:
 		const uint32_t mipLevels = 1,
 		const void* initData = nullptr) override;
 
+	std::weak_ptr<Shader> CreateVertexShader(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset = 0) override;
+
+	std::weak_ptr <Shader> CreatePixelShader(const uint32_t byteWidth = 0,
+		const void* vertices = nullptr,
+		const uint32_t stride = 0,
+		const uint32_t offset = 0) override;
 
 	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
 

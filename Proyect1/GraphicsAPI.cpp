@@ -258,6 +258,61 @@ std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
 }
 
 
+std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWidth, const void* shaderBytecode = nullptr, const void* vertices, const uint32_t stride, const uint32_t offset)
+{
+
+    ID3DBlob* pVSBlob = nullptr;
+    if (!shaderBytecode) {
+
+        HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
+        if (FAILED(hr)) {
+            return std::weak_ptr<Shader>();
+        }
+    }
+    else {
+
+        pVSBlob = (ID3DBlob*)shaderBytecode;
+    }
+
+
+    ID3D11VertexShader* vertexShader = nullptr;
+    HRESULT hr = m_device->CreateVertexShader(
+        pVSBlob->GetBufferPointer(),
+        pVSBlob->GetBufferSize(),
+        nullptr,
+        &vertexShader);
+    if (FAILED(hr)) {
+        if (!shaderBytecode && pVSBlob) pVSBlob->Release();
+        return std::weak_ptr<Shader>();
+    }
+
+
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    UINT numElements = ARRAYSIZE(layout);
+
+    ID3D11InputLayout* inputLayout = nullptr;
+    hr = m_device->CreateInputLayout(
+        layout, numElements,
+        pVSBlob->GetBufferPointer(),
+        pVSBlob->GetBufferSize(),
+        &inputLayout);
+    if (FAILED(hr)) {
+        vertexShader->Release();
+        if (!shaderBytecode && pVSBlob) pVSBlob->Release();
+        return std::weak_ptr<Shader>();
+    }
+
+
+    auto shaderPtr = std::make_shared<Dx11VertexShader>(vertexShader, inputLayout);
+
+    if (!shaderBytecode && pVSBlob) pVSBlob->Release();
+
+    return shaderPtr;
+}
+
 ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initData, uint32_t bindFlag)
 {
     if (byteWidth == 0 || bindFlag == 0)

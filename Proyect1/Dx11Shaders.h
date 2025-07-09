@@ -8,28 +8,45 @@
 class Dx11VertexShader : public Shader
 {
 public:
-    Dx11VertexShader() : Shader(ShaderType::Vertex), m_shader(nullptr), m_blob(nullptr) {}
-    ~Dx11VertexShader() override { CleanUpResources(); }
-    void CleanUpResources() override
-    {
-        if (m_shader) m_shader->Release();
-        if (m_blob) m_blob->Release();
-        m_shader = nullptr;
-        m_blob = nullptr;
+    Dx11VertexShader(ID3D11VertexShader* shader, ID3D11InputLayout* layout)
+        : Shader(ShaderType::Vertex), m_shader(shader), m_inputLayout(layout) {
     }
-    ID3D11VertexShader* m_shader;
-    ID3DBlob* m_blob; // Para el input layout
+
+    ~Dx11VertexShader() override {
+        CleanUpResources();
+    }
+
+    void CleanUpResources() override {
+        if (m_shader) { m_shader->Release(); m_shader = nullptr; }
+        if (m_inputLayout) { m_inputLayout->Release(); m_inputLayout = nullptr; }
+    }
+
+    ID3D11VertexShader* GetNativeShader() const { return m_shader; }
+    ID3D11InputLayout* GetInputLayout() const { return m_inputLayout; }
+
+private:
+    ID3D11VertexShader* m_shader = nullptr;
+    ID3D11InputLayout* m_inputLayout = nullptr;
 };
 
-class Dx11PixelShader : public Shader 
+
+class Dx11PixelShader : public Shader
 {
 public:
-    Dx11PixelShader() : Shader(ShaderType::Pixel), m_shader(nullptr) {}
-    ~Dx11PixelShader() override { CleanUpResources(); }
-    void CleanUpResources() override 
-    {
-        if (m_shader) m_shader->Release();
-        m_shader = nullptr;
+    Dx11PixelShader(ID3D11PixelShader* shader)
+        : Shader(ShaderType::Pixel), m_shader(shader) {
     }
-    ID3D11PixelShader* m_shader;
+
+    ~Dx11PixelShader() override {
+        CleanUpResources();
+    }
+
+    void CleanUpResources() override {
+        if (m_shader) { m_shader->Release(); m_shader = nullptr; }
+    }
+
+    ID3D11PixelShader* GetNativeShader() const { return m_shader; }
+
+private:
+    ID3D11PixelShader* m_shader = nullptr;
 };

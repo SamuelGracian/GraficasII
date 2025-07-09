@@ -139,12 +139,18 @@
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="Dx11SAmpler.cpp" />
     <ClCompile Include="Dx11texture.h" />
+    <ClCompile Include="Dx11Topology.cpp" />
+    <ClCompile Include="Dx11ViewPort.cpp" />
     <ClCompile Include="GapiDx11VertexShader.h" />
     <ClCompile Include="InConstantBuffer.cpp" />
     <ClCompile Include="GraphicsAPI.cpp" />
     <ClCompile Include="Constantbuffer.cpp" />
     <ClCompile Include="InIndexBuffer.cpp" />
+    <ClCompile Include="pase.cpp" />
+    <ClCompile Include="RenderElement.cpp" />
+    <ClCompile Include="RenderMaterial.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="swapChain.h" />
     <ClCompile Include="VertexBuffer.cpp" />
@@ -159,14 +165,24 @@
     <ClInclude Include="Base.h" />
     <ClInclude Include="BufferResource.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DepthStencil.h" />
+    <ClInclude Include="Dx11Sampler.h" />
     <ClInclude Include="Dx11Shaders.h" />
+    <ClInclude Include="Dx11Topology.h" />
+    <ClInclude Include="Dx11ViewPort.h" />
     <ClInclude Include="GraphicsAPI.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="IPixelShader.h" />
+    <ClInclude Include="pase.h" />
+    <ClInclude Include="PrimitiveTopology.h" />
+    <ClInclude Include="RenderElement.h" />
+    <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="RenderResource.h" />
+    <ClInclude Include="Sampler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="ViewPort.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\Downloads\Tutorial07.fxh" />

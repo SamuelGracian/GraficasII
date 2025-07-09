@@ -54,6 +54,7 @@ public:
 		const void* initData = nullptr) = 0;
 	
 	virtual std::weak_ptr<Shader> CreateVertexShader(const uint32_t byteWidth = 0,
+		const void* shaderBytecode = nullptr,
 		const void* vertices = nullptr,
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) = 0;
@@ -62,6 +63,8 @@ public:
 		const void* vertices = nullptr,
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) = 0;
+
+	virtual RenderPase() = 0;
 };
 
 /// <summary>
@@ -111,6 +114,7 @@ public:
 		const void* initData = nullptr) override;
 
 	std::weak_ptr<Shader> CreateVertexShader(const uint32_t byteWidth = 0,
+		const void* shaderBytecode = nullptr,
 		const void* vertices = nullptr,
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) override;

@@ -14,7 +14,7 @@ public:
 
     virtual void CleanUpResources() override = 0;
 
-protected:
+public:
     uint32_t m_width;
     uint32_t m_height;
     uint32_t m_mipLevels;

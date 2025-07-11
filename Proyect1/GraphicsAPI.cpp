@@ -159,11 +159,11 @@ Dx11GraphicsAPI::~Dx11GraphicsAPI()
 
 void Dx11GraphicsAPI::CleanUpResources()
 {
-    for (auto &element : RendeResourceList)
+    for (auto &element : m_renderResourceList)
     {
         element.reset();
     }
-    RendeResourceList.clear();
+    m_renderResourceList.clear();
     RELEASE(m_swapChain);
     RELEASE(m_immediateContext);
     RELEASE(m_device);
@@ -178,7 +178,7 @@ std::weak_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstanBuffer(const uint32_
     buffer->m_slot = slot;
     buffer->m_buffer = BuildBuffer(byteWidth, initData, D3D11_BIND_CONSTANT_BUFFER);
 
-    RendeResourceList.push_back(buffer);
+    m_renderResourceList.push_back(buffer);
 
     return buffer;
 }
@@ -194,7 +194,7 @@ std::weak_ptr <IndexBuffer> Dx11GraphicsAPI::CreateIndexBuffer(const uint32_t by
     buffer->m_byteWidth = byteWidth;
     buffer->m_buffer = BuildBuffer(byteWidth, initData, D3D11_BIND_INDEX_BUFFER);
      
-    RendeResourceList.push_back(buffer);
+    m_renderResourceList.push_back(buffer);
     return buffer;
 }
 std::weak_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t byteWidth,
@@ -209,7 +209,7 @@ std::weak_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t b
     buffer->m_stride = stride;
     buffer->m_buffer = (BuildBuffer(byteWidth,vertices, D3D11_BIND_VERTEX_BUFFER));
 
-    RendeResourceList.push_back(buffer);
+    m_renderResourceList.push_back(buffer);
     return buffer;
 
 }
@@ -253,7 +253,7 @@ std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
 
     texture->m_texture = d3dTexture; 
 
-    RendeResourceList.push_back(texture);
+    m_renderResourceList.push_back(texture);
     return texture;
 }
 
@@ -310,7 +310,36 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
 
     if (!shaderBytecode && pVSBlob) pVSBlob->Release();
 
+    m_renderResourceList.push_back(shaderPtr);
+
     return shaderPtr;
+}
+
+std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(const uint32_t byteWidth, const void* vertices, const uint32_t stride, const uint32_t offset)
+{
+    return std::weak_ptr<Shader>();
+}
+
+std::weak_ptr<Sampler> Dx11GraphicsAPI::CreateSampler()
+{
+
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	auto sampler = std::make_shared<Dx11Sampler>();
+    
+    if (!sampler->GetSamplerState())
+    {
+		return std::weak_ptr<Sampler>();
+    }
+    m_renderResourceList.push_back(std::static_pointer_cast<RenderResource>(sampler));
+	return sampler;
 }
 
 ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initData, uint32_t bindFlag)
@@ -338,3 +367,33 @@ ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initD
     return pBuffer;
 }
 
+
+HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+{
+    HRESULT hr = S_OK;
+
+    // Open the file
+    std::ifstream shaderFile(szFileName);
+    if (!shaderFile.is_open())
+    {
+        return E_FAIL;
+    }
+ 
+    std::string shaderCode((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+    shaderFile.close();
+
+    ID3DBlob* pErrorBlob = nullptr;
+    hr = D3DCompile(shaderCode.c_str(), shaderCode.size(), nullptr, nullptr, nullptr, szEntryPoint, szShaderModel, 0, 0, ppBlobOut, &pErrorBlob);
+    if (FAILED(hr))
+    {
+        if (pErrorBlob)
+        {
+            OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+            pErrorBlob->Release();
+        }
+        return hr;
+    }
+    if (pErrorBlob) pErrorBlob->Release();
+
+    return S_OK;
+}

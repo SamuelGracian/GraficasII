@@ -16,7 +16,7 @@ public:
         if (m_texture) { m_texture->Release(); m_texture = nullptr; }
     }
 
-protected:
+public:
     ID3D11Texture2D* m_texture;
     ID3D11ShaderResourceView* m_srv;
 };

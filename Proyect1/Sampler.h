@@ -3,6 +3,7 @@
 
 class Sampler : public RenderResource
 {
+protected:
 	Sampler();
 	~Sampler();
 };

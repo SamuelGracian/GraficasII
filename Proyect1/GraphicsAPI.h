@@ -6,8 +6,11 @@
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 #include "texture.h"
+#include "Sampler.h"
+
 #include "Dx11texture.h"
 #include "Dx11Shaders.h"
+#include "Dx11Sampler.h"
 
 class ConstantBuffer;
 
@@ -64,7 +67,9 @@ public:
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) = 0;
 
-	virtual RenderPase() = 0;
+	virtual std::weak_ptr<Sampler> CreateSampler() = 0;
+
+	virtual void RenderPase() = 0;
 };
 
 /// <summary>
@@ -124,9 +129,11 @@ public:
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) override;
 
+	std::weak_ptr<Sampler> CreateSampler() override;
+
 	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
 
-	std::vector<std::shared_ptr<RenderResource>> RendeResourceList;
+	std::vector<std::shared_ptr<RenderResource>> m_renderResourceList;
 
 	//________________
 

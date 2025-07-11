@@ -1,8 +1,11 @@
 #pragma once
 #include "Base.h"
 
-class Dx11Sampler
+#include "Sampler.h"
+
+class Dx11Sampler : public Sampler
 {
+    friend class Dx11GraphicsAPI;
 public:
     Dx11Sampler(ID3D11Device* device, const D3D11_SAMPLER_DESC& desc)
         : m_samplerState(nullptr)

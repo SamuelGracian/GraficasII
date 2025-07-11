@@ -317,7 +317,33 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
 
 std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(const uint32_t byteWidth, const void* vertices, const uint32_t stride, const uint32_t offset)
 {
-    return std::weak_ptr<Shader>();
+    ID3DBlob* pPSBlob = nullptr;
+    HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
+    if (FAILED(hr)) 
+    {
+
+        if (pPSBlob) pPSBlob->Release();
+        return std::weak_ptr<Shader>();
+    }
+
+    ID3D11PixelShader* pixelShader = nullptr;
+    hr = m_device->CreatePixelShader(
+        pPSBlob->GetBufferPointer(),
+        pPSBlob->GetBufferSize(),
+        nullptr,
+        &pixelShader
+    );
+    pPSBlob->Release();
+
+    if (FAILED(hr))
+    {
+        if (pixelShader) pixelShader->Release();
+        return std::weak_ptr<Shader>();
+    }
+
+    auto shaderPtr = std::make_shared<Dx11PixelShader>(pixelShader);
+    m_renderResourceList.push_back(shaderPtr);
+    return shaderPtr;
 }
 
 std::weak_ptr<Sampler> Dx11GraphicsAPI::CreateSampler()

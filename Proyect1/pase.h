@@ -44,7 +44,7 @@ public:
 
     void BindVertexShader(std::weak_ptr<VertexShader>& vertexShader);
 
-    void AddRenderElement(std::weak_ptr<RenderElement>element);
+    void AddRenderElement(std::weak_ptr<RenderElement>& element);
 
 private:
     std::vector<std::weak_ptr<ConstantBuffer>> m_ConstantBuffers;

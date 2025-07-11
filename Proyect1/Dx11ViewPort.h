@@ -2,23 +2,30 @@
 
 #include "ViewPort.h"
 
+#include "Dx11ViewPort.h"
+#include "GraphicsAPI.h" 
+
 class Dx11ViewPort : public ViewPort
 {
+	friend class Dx11GraphicsAPI;
 public:
-    Dx11ViewPort(int x, int y, int width, int height);
-    virtual ~Dx11ViewPort();
+    Dx11ViewPort(int x, int y, int width, int height)
+        : m_x(x), m_y(y), m_width(width), m_height(height) {
+    }
 
-    void Set(int x, int y, int width, int height) override;
+    virtual ~Dx11ViewPort() {CleanUpResources();}
 
-    int GetX() const override { return m_x; }
+	uint32_t GetX() const override { return m_x; }
+	uint32_t GetY() const override { return m_y; }
+	uint32_t GetWidth() const override { return m_width; }
+	uint32_t GetHeight() const override { return m_height; }
 
-    int GetY() const override { return m_y; }
+protected:
 
-    int GetWidth() const override { return m_width; }
+    void CleanUpResources() override{}
 
-    int GetHeight() const override { return m_height; }
-
-private:
-    int m_x, m_y, m_width, m_height;
+    uint32_t m_x;
+    uint32_t m_y;
+    uint32_t m_width;
+    uint32_t m_height;
 };
-

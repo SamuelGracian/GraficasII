@@ -2,12 +2,12 @@
 #include "RenderResource.h"
 class ViewPort : public RenderResource
 {
-	ViewPort();
-	//~ViewPort();
+public:
+    ViewPort();
+    virtual ~ViewPort();
 
-    virtual void Set(int x, int y, int width, int height) = 0;
-    virtual int GetX() const = 0;
-    virtual int GetY() const = 0;
-    virtual int GetWidth() const = 0;
-    virtual int GetHeight() const = 0;
+    virtual uint32_t GetX() const = 0;
+    virtual uint32_t GetY() const = 0;
+    virtual uint32_t GetWidth() const = 0;
+    virtual uint32_t GetHeight() const = 0;
 };

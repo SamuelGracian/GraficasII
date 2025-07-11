@@ -59,3 +59,8 @@ void Pase::BindVertexShader(std::weak_ptr<VertexShader>& vertexShader)
 {
     m_vertexShader = vertexShader;
 }
+
+void Pase::AddRenderElement(std::weak_ptr<RenderElement>& element)
+{
+	m_renderElement.push_back(element);
+}

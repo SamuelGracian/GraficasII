@@ -378,6 +378,10 @@ ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initD
     return pBuffer;
 }
 
+void Dx11GraphicsAPI::RenderPase()
+{
+}
+
 
 HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
@@ -407,4 +411,22 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
     if (pErrorBlob) pErrorBlob->Release();
 
     return S_OK;
+}
+
+std::weak_ptr<Dx11ViewPort> Dx11GraphicsAPI::CreateViewPort(int x, int y, int width, int height) {
+    auto viewport = std::make_shared<Dx11ViewPort>(x, y, width, height);
+    m_renderResourceList.push_back(viewport);
+    return viewport;
+}
+
+void Dx11GraphicsAPI::SetViewPort(const std::shared_ptr<Dx11ViewPort>& viewport) {
+    if (!viewport) return;
+    D3D11_VIEWPORT vp;
+    vp.TopLeftX = static_cast<FLOAT>(viewport->m_x);
+    vp.TopLeftY = static_cast<FLOAT>(viewport->m_y);
+    vp.Width = static_cast<FLOAT>(viewport->m_width);
+    vp.Height = static_cast<FLOAT>(viewport->m_height);
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+    m_immediateContext->RSSetViewports(1, &vp);
 }

@@ -12,6 +12,7 @@
 #include "Dx11texture.h"
 #include "Dx11Shaders.h"
 #include "Dx11Sampler.h"
+#include "Dx11ViewPort.h"
 
 class ConstantBuffer;
 
@@ -130,11 +131,18 @@ public:
 
 	std::weak_ptr<Sampler> CreateSampler() override;
 
+	std::weak_ptr<Dx11ViewPort> CreateViewPort(int x, int y, int width, int height);
+
+	void SetViewPort(const std::shared_ptr<Dx11ViewPort>& viewport);
+
 	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
 
+	void RenderPase() override;
+
+	//_________________________
 	std::vector<std::shared_ptr<RenderResource>> m_renderResourceList;
 
-	//________________
+	//________________________
 
 	HWND							m_wWnd;
 	ID3D11Device*					m_device;

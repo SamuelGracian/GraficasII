@@ -11,10 +11,13 @@ enum class ShaderType
 class Shader : public RenderResource
 {
 public:
-    Shader(ShaderType type) : m_type(type) {}
-    virtual ~Shader() {}
+    Shader(ShaderType type)
+		: m_type(type)
+    {}
 
-    ShaderType GetType() const { return m_type; }
+    virtual ~Shader() = default;
+
+    virtual ShaderType GetType() const = 0;
 
     virtual void* GetShaderPointer() const = 0;
 
@@ -28,9 +31,21 @@ public:
     Dx11PixelShader(ID3D11PixelShader* shader)
         : Shader(ShaderType::Pixel), m_shader(shader) {}
 
-    ~Dx11PixelShader() { if (m_shader) m_shader->Release(); }
+    ~Dx11PixelShader() { CleanUpResources(); }
+
+	ShaderType GetType() const override { return m_type; }
+
     void* GetShaderPointer() const override { return m_shader; }
 
-private:
+protected:
+
+    void CleanUpResources() override
+    {
+        if (m_shader) {
+            m_shader->Release();
+            m_shader = nullptr;
+        }
+	}
+
     ID3D11PixelShader* m_shader;
 };

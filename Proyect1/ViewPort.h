@@ -3,7 +3,7 @@
 class ViewPort : public RenderResource
 {
 	ViewPort();
-	virtual ~ViewPort();
+	//~ViewPort();
 
     virtual void Set(int x, int y, int width, int height) = 0;
     virtual int GetX() const = 0;

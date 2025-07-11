@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include<d3dcompiler.h>
 //Buffers
 
 #include "IndexBuffer.h"
@@ -62,10 +63,9 @@ public:
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) = 0;
 
-	virtual std::weak_ptr<Shader> CreatePixelShader(const uint32_t byteWidth = 0,
-		const void* vertices = nullptr,
-		const uint32_t stride = 0,
-		const uint32_t offset = 0) = 0;
+	virtual std::weak_ptr<Shader> CreatePixelShader(const uint32_t byteWidth,
+		const uint32_t stride,
+		const uint32_t offset) = 0;
 
 	virtual std::weak_ptr<Sampler> CreateSampler() = 0;
 
@@ -124,10 +124,9 @@ public:
 		const uint32_t stride = 0,
 		const uint32_t offset = 0) override;
 
-	std::weak_ptr <Shader> CreatePixelShader(const uint32_t byteWidth = 0,
-		const void* vertices = nullptr,
-		const uint32_t stride = 0,
-		const uint32_t offset = 0) override;
+	std::weak_ptr <Shader> CreatePixelShader(const uint32_t byteWidth,
+		const uint32_t stride,
+		const uint32_t offset) override;
 
 	std::weak_ptr<Sampler> CreateSampler() override;
 

@@ -1,5 +1,8 @@
 #pragma once
-class Dx11ViewPort
+
+#include "ViewPort.h"
+
+class Dx11ViewPort : public ViewPort
 {
 public:
     Dx11ViewPort(int x, int y, int width, int height);

@@ -2,6 +2,8 @@
 
 #include "ConstantBuffer.h"
 
+HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+
 Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
     m_wWnd(windowHandler),
     m_device(nullptr),
@@ -258,22 +260,18 @@ std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
 }
 
 
-std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWidth, const void* shaderBytecode = nullptr, const void* vertices, const uint32_t stride, const uint32_t offset)
+std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWidth, const void* shaderBytecode, const void* vertices, const uint32_t stride, const uint32_t offset)
 {
-
     ID3DBlob* pVSBlob = nullptr;
     if (!shaderBytecode) {
-
         HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
         if (FAILED(hr)) {
             return std::weak_ptr<Shader>();
         }
     }
     else {
-
         pVSBlob = (ID3DBlob*)shaderBytecode;
     }
-
 
     ID3D11VertexShader* vertexShader = nullptr;
     HRESULT hr = m_device->CreateVertexShader(
@@ -285,7 +283,6 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
         if (!shaderBytecode && pVSBlob) pVSBlob->Release();
         return std::weak_ptr<Shader>();
     }
-
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -305,26 +302,16 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
         return std::weak_ptr<Shader>();
     }
 
-
-    auto shaderPtr = std::make_shared<Dx11VertexShader>(vertexShader, inputLayout);
-
     if (!shaderBytecode && pVSBlob) pVSBlob->Release();
-
-    m_renderResourceList.push_back(shaderPtr);
-
-    return shaderPtr;
 }
 
-std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(const uint32_t byteWidth, const void* vertices, const uint32_t stride, const uint32_t offset)
+std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(
+    const uint32_t byteWidth,
+    const uint32_t stride,
+    const uint32_t offset)
 {
     ID3DBlob* pPSBlob = nullptr;
-    HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
-    if (FAILED(hr)) 
-    {
-
-        if (pPSBlob) pPSBlob->Release();
-        return std::weak_ptr<Shader>();
-    }
+    HRESULT hr = S_OK;
 
     ID3D11PixelShader* pixelShader = nullptr;
     hr = m_device->CreatePixelShader(
@@ -333,10 +320,8 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(const uint32_t byteWidt
         nullptr,
         &pixelShader
     );
-    pPSBlob->Release();
 
-    if (FAILED(hr))
-    {
+    if (FAILED(hr)) {
         if (pixelShader) pixelShader->Release();
         return std::weak_ptr<Shader>();
     }

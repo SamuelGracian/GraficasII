@@ -85,6 +85,8 @@ std::weak_ptr<ConstantBuffer>GA_changeEveryFrame;
 
 std::weak_ptr<ConstantBuffer> GAPI_ChangeonResize;
 
+std::weak_ptr<Shader> GAPI_pixelShader;
+
 HINSTANCE                           g_hInst = nullptr;
 HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
@@ -93,7 +95,7 @@ ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 ID3D11Texture2D* g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 ID3D11VertexShader* g_pVertexShader = nullptr;
-ID3D11PixelShader* g_pPixelShader = nullptr;
+//ID3D11PixelShader* g_pPixelShader = nullptr;
 ID3D11InputLayout* g_pVertexLayout = nullptr;
 ID3D11ShaderResourceView* g_pTextureRV = nullptr;
 ID3D11SamplerState* g_pSamplerLinear = nullptr;
@@ -351,7 +353,9 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     }
 
     // Create the pixel shader
-    hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &g_pPixelShader);
+	GAPI->CreatePixelShader(static_cast<uint32_t>(pPSBlob->GetBufferSize()), 0, 0);
+
+    //hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &g_pPixelShader);
     pPSBlob->Release();
     if (FAILED(hr))
         return hr;
@@ -575,14 +579,13 @@ void CleanupDevice()
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (g_pVertexLayout) g_pVertexLayout->Release();
     if (g_pVertexShader) g_pVertexShader->Release();
-    if (g_pPixelShader) g_pPixelShader->Release();
+   // if (g_pPixelShader) g_pPixelShader->Release();
     if (g_pDepthStencil) g_pDepthStencil->Release();
     if (g_pDepthStencilView) g_pDepthStencilView->Release();
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
     //if (g_pSwapChain1) g_pSwapChain1->Release();
     //if (g_pSwapChain) g_pSwapChain->Release();
-    //if (GAPI->m_immediateContext) GAPI->m_immediateContext->Release();
-    //if (GAPI->m_immediateContext) GAPI->m_immediateContext->Release();
+    if (GAPI->m_immediateContext) GAPI->m_immediateContext->Release();
     //if (GAPI->m_device) g_pd3dDevice1->Release();
     //if (g_pd3dDevice) g_pd3dDevice->Release();
     GAPI.reset();
@@ -694,7 +697,16 @@ void Render()
         ID3D11Buffer* CHNGBufferP = AutoFrame->m_buffer;
         GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &CHNGBufferP);
     }
-    GAPI->m_immediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+	
+
+	auto sharedPixelShader = GAPI_pixelShader.lock();
+	if (sharedPixelShader)
+    {
+		ID3D11PixelShader* pixelShaderPtr = static_cast<ID3D11PixelShader*>(sharedPixelShader->GetShaderPointer());
+		GAPI->m_immediateContext->PSSetShader(pixelShaderPtr, nullptr, 0);
+	}
+
+    //GAPI->m_immediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
     //GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);

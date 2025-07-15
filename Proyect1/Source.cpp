@@ -354,7 +354,7 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     }
 
     // Create the pixel shader
-	GAPI->CreatePixelShader(static_cast<uint32_t>(pPSBlob->GetBufferSize()), 0, 0);
+	GAPI_pixelShader = GAPI->CreatePixelShader(static_cast<uint32_t>(pPSBlob->GetBufferSize()), 0, 0);
 
     //hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &g_pPixelShader);
     pPSBlob->Release();
@@ -581,6 +581,7 @@ void CleanupDevice()
     if (g_pVertexLayout) g_pVertexLayout->Release();
     if (g_pVertexShader) g_pVertexShader->Release();
    // if (g_pPixelShader) g_pPixelShader->Release();
+    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (g_pDepthStencil) g_pDepthStencil->Release();
     if (g_pDepthStencilView) g_pDepthStencilView->Release();
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
@@ -708,8 +709,6 @@ void Render()
 		GAPI->m_immediateContext->PSSetShader(pixelShaderPtr, nullptr, 0);
 	}
 
-    //GAPI->m_immediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-    //GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
 

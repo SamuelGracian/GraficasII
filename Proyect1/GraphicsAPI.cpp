@@ -13,8 +13,6 @@
 #include "Dx11Sampler.h"
 #include "Dx11ViewPort.h"
 
-HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
-
 Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
     m_wWnd(windowHandler),
     m_device(nullptr),
@@ -329,10 +327,11 @@ std::weak_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(
     const uint32_t offset)
 {
     ID3DBlob* pPSBlob = nullptr;
-    HRESULT hr = S_OK;
+    HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
 
     ID3D11PixelShader* pixelShader = nullptr;
-    hr = m_device->CreatePixelShader(
+    hr = m_device->CreatePixelShader
+    (
         pPSBlob->GetBufferPointer(),
         pPSBlob->GetBufferSize(),
         nullptr,
@@ -403,7 +402,7 @@ void Dx11GraphicsAPI::RenderPase()
 }
 
 
-HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
+ HRESULT Dx11GraphicsAPI::CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
     HRESULT hr = S_OK;
 

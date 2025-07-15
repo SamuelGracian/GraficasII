@@ -81,7 +81,7 @@ public:
 
 	virtual std::weak_ptr<Sampler> CreateSampler() = 0;
 
-	virtual std::weak_ptr <ViewPort> CreateViewport() = 0;
+	virtual std::weak_ptr <ViewPort> CreateViewPort(int x, int y, int width, int height) = 0;
 
 	virtual void RenderPase() = 0;
 };
@@ -126,7 +126,7 @@ public:
 		const uint32_t mipLevels = 1,
 		const void* initData = nullptr) override;
 
-	//writting and reading texture 
+	//writing and reading texture 
 	std::weak_ptr<RenderTarget> CreateRenderTarget(const uint32_t width = 0,
 		const uint32_t height = 0,
 		const uint32_t mipLevels = 1,
@@ -144,14 +144,19 @@ public:
 
 	std::weak_ptr<Sampler> CreateSampler() override;
 
-	std::weak_ptr<ViewPort> CreateViewPort(int x, int y, int width, int height);
-
-	void SetViewPort(const std::shared_ptr<ViewPort>& viewport);
-
-	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
+	std::weak_ptr<ViewPort> CreateViewPort(int x, int y, int width, int height)  override;
 
 	virtual void RenderPase() override;
 
+
+	void SetViewPort(const std::shared_ptr<ViewPort>& viewport);
+
+private:
+	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);
+
+	HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
+
+public:
 	//_________________________
 	std::vector<std::shared_ptr<RenderResource>> m_renderResourceList;
 

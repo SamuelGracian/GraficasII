@@ -12,8 +12,6 @@ public:
     uint32_t GetHeight() const { return m_height; }
     uint32_t GetMipLevels() const { return m_mipLevels; }
 
-    virtual void CleanUpResources() override = 0;
-
 public:
     uint32_t m_width;
     uint32_t m_height;
@@ -23,22 +21,22 @@ public:
 class ShaderResourceTexture : public Texture
 {
 public:
-    ShaderResourceTexture() : Texture() {}
-    virtual ~ShaderResourceTexture() {}
+    ShaderResourceTexture() = default;
+    virtual ~ShaderResourceTexture() = default;
 };
 
 
 class DepthStencilTexture : public Texture
 {
 public:
-    DepthStencilTexture() : Texture() {}
-    virtual ~DepthStencilTexture() {}
+    DepthStencilTexture() = default;
+    virtual ~DepthStencilTexture() = default;
 };
 
 class RenderTarget :public Texture
 {
 public:
-    RenderTarget() : Texture() {}
+    RenderTarget() = default;
 
-    virtual ~RenderTarget() {}
+    virtual ~RenderTarget() = default;
 };

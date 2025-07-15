@@ -4,6 +4,6 @@
 class Sampler : public RenderResource
 {
 protected:
-	Sampler();
-	~Sampler();
+	Sampler() = default;
+	virtual ~Sampler() = default;
 };

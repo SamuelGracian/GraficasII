@@ -2,50 +2,53 @@
 #pragma once
 #include "RenderResource.h"
 
-enum class ShaderType
+
+
+class PixelShader : public RenderResource
 {
-    Vertex = 0,
-    Pixel = 1
+    public:
+    PixelShader() = default;
+
+    virtual ~PixelShader() = default;
 };
 
-class Shader : public RenderResource
+class VertexShader :public RenderResource
 {
 public:
-    Shader(ShaderType type)
-		: m_type(type)
-    {}
-
-    virtual ~Shader() = default;
-
-    virtual ShaderType GetType() const = 0;
-
-    virtual void* GetShaderPointer() const = 0;
-
-protected:
-    ShaderType m_type;
+    VertexShader() = default;
+    virtual ~VertexShader () = default;
 };
 
-class Dx11PixelShader : public Shader
+class Dx11PixelShader : public PixelShader
 {
+    friend class Dx11GraphicsAPI;
+
 public:
-    Dx11PixelShader(ID3D11PixelShader* shader)
-        : Shader(ShaderType::Pixel), m_shader(shader) {}
+    Dx11PixelShader() :
+        m_shader(nullptr){ }
 
     ~Dx11PixelShader() { CleanUpResources(); }
 
-	ShaderType GetType() const override { return m_type; }
-
-    void* GetShaderPointer() const override { return m_shader; }
-
 protected:
 
-    void CleanUpResources() override
-    {
-        if (m_shader) {
-            m_shader->Release();
-            m_shader = nullptr;
-        }
-	}
+    void CleanUpResources() override;
 
+public:
     ID3D11PixelShader* m_shader;
+};
+
+class Dx11VertexShader :public VertexShader
+{
+    friend class Dx11GraphicsAPI;
+public:
+    Dx11VertexShader();
+
+    ~Dx11VertexShader() { CleanUpResources(); }
+
+protected:
+    void CleanUpResources() override;
+
+public:
+    ID3D11PixelShader* m_shader;
+    ID3D11InputLayout* m_inputLayout;
 };

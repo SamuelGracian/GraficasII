@@ -3,11 +3,12 @@
 class ViewPort : public RenderResource
 {
 public:
-    ViewPort();
-    virtual ~ViewPort();
+    ViewPort() : m_x(0), m_y(0), m_width(0), m_height(0)
+    {};
+    virtual ~ViewPort() = default;
 
-    virtual uint32_t GetX() const = 0;
-    virtual uint32_t GetY() const = 0;
-    virtual uint32_t GetWidth() const = 0;
-    virtual uint32_t GetHeight() const = 0;
+    uint32_t m_x;
+    uint32_t m_y;
+    uint32_t m_width;
+    uint32_t m_height;
 };

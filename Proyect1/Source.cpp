@@ -28,6 +28,7 @@
 #include "ConstantBuffer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Shader.h"
 
 #include <imgui.h>
 #include <imgui_impl_win32.h>
@@ -85,7 +86,7 @@ std::weak_ptr<ConstantBuffer>GA_changeEveryFrame;
 
 std::weak_ptr<ConstantBuffer> GAPI_ChangeonResize;
 
-std::weak_ptr<Shader> GAPI_pixelShader;
+std::weak_ptr<PixelShader> GAPI_pixelShader;
 
 HINSTANCE                           g_hInst = nullptr;
 HWND                                g_hWnd = nullptr;
@@ -699,10 +700,11 @@ void Render()
     }
 	
 
-	auto sharedPixelShader = GAPI_pixelShader.lock();
+	auto sharedPixelShader = std::static_pointer_cast<Dx11PixelShader> ( GAPI_pixelShader.lock());
+
 	if (sharedPixelShader)
     {
-		ID3D11PixelShader* pixelShaderPtr = static_cast<ID3D11PixelShader*>(sharedPixelShader->GetShaderPointer());
+		ID3D11PixelShader* pixelShaderPtr = static_cast<ID3D11PixelShader*>(sharedPixelShader->m_shader);
 		GAPI->m_immediateContext->PSSetShader(pixelShaderPtr, nullptr, 0);
 	}
 

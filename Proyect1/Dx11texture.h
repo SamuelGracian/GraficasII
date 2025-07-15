@@ -3,50 +3,51 @@
 #include "Base.h"
 
 
+//__________________ShaderResourceTexture class_____________________
 class Dx11ShaderResourceTexture : public ShaderResourceTexture 
 {
+    friend class Dx11GraphicsAPI;
 public:
-    Dx11ShaderResourceTexture() : m_texture(nullptr), m_srv(nullptr) {}
+    Dx11ShaderResourceTexture();
 
     virtual ~Dx11ShaderResourceTexture() { CleanUpResources();}
 
-    virtual void CleanUpResources() override
-    {
-        if (m_srv) { m_srv->Release(); m_srv = nullptr; }
-        if (m_texture) { m_texture->Release(); m_texture = nullptr; }
-    }
+    virtual void CleanUpResources() override;
 
-public:
+protected:
     ID3D11Texture2D* m_texture;
     ID3D11ShaderResourceView* m_srv;
 };
 
+
+//____________________DepthStencilTexture class_____________________
 class Dx11DepthStencilTexture : public DepthStencilTexture
 {
+    friend class Dx11GraphicsAPI;
 public:
-    Dx11DepthStencilTexture() : m_texture(nullptr), m_dsv(nullptr) {}
+    Dx11DepthStencilTexture();
+
     virtual ~Dx11DepthStencilTexture() { CleanUpResources(); }
 
-    virtual void CleanUpResources() override 
-    {
-        if (m_dsv) { m_dsv->Release(); m_dsv = nullptr; }
-        if (m_texture) { m_texture->Release(); m_texture = nullptr; }
-    }
+    virtual void CleanUpResources() override;
 
+protected:
     ID3D11Texture2D* m_texture;
     ID3D11DepthStencilView* m_dsv;
 };
 
+
+//_____________RenderTarget class___________________
 class Dx11RenderTarget : public RenderTarget
 {
+    friend class Dx11GraphicsAPI;
 public:
-	Dx11RenderTarget() : m_texture(nullptr), m_rtv(nullptr) {}
+    Dx11RenderTarget();
 	virtual ~Dx11RenderTarget() { CleanUpResources(); }
-	virtual void CleanUpResources() override
-	{
-		if (m_rtv) { m_rtv->Release(); m_rtv = nullptr; }
-		if (m_texture) { m_texture->Release(); m_texture = nullptr; }
-	}
+
+    virtual void CleanUpResources() override;
+
+protected:
 	ID3D11Texture2D* m_texture;
 	ID3D11RenderTargetView* m_rtv;
 };

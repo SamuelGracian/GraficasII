@@ -1,6 +1,17 @@
 #include "GraphicsAPI.h"
+#include<d3dcompiler.h>
+#include <d3d11_1.h>
 
 #include "ConstantBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
+#include "texture.h"
+#include "Sampler.h"
+
+#include "Dx11texture.h"
+#include "Dx11Shaders.h"
+#include "Dx11Sampler.h"
+#include "Dx11ViewPort.h"
 
 HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 
@@ -216,7 +227,7 @@ std::weak_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t b
 
 }
 
-std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
+std::weak_ptr<ShaderResourceTexture> Dx11GraphicsAPI::CreateShaderResource(
     const uint32_t width,
     const uint32_t height,
     const uint32_t mipLevels,
@@ -249,9 +260,6 @@ std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
         initData ? &initDataDesc : nullptr,
         &d3dTexture);
 
-    if (FAILED(hr)) {
-        return std::weak_ptr<Texture>();
-    }
 
     texture->m_texture = d3dTexture; 
 
@@ -259,14 +267,24 @@ std::weak_ptr<Texture> Dx11GraphicsAPI::CreateShaderResource(
     return texture;
 }
 
+std::weak_ptr<DepthStencilTexture> Dx11GraphicsAPI::CreateDepthStencil(const uint32_t width, const uint32_t height, const uint32_t mipLevels, const void* initData)
+{
+    return std::weak_ptr<DepthStencilTexture>();
+}
 
-std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWidth, const void* shaderBytecode, const void* vertices, const uint32_t stride, const uint32_t offset)
+
+std::weak_ptr<RenderTarget> Dx11GraphicsAPI::CreateRenderTarget(const uint32_t width, const uint32_t height, const uint32_t mipLevels, const void* initData)
+{
+    return std::weak_ptr<RenderTarget>();
+}
+
+std::weak_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWidth, const void* shaderBytecode, const void* vertices, const uint32_t stride, const uint32_t offset)
 {
     ID3DBlob* pVSBlob = nullptr;
     if (!shaderBytecode) {
         HRESULT hr = CompileShaderFromFile(L"Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
         if (FAILED(hr)) {
-            return std::weak_ptr<Shader>();
+            return std::weak_ptr<VertexShader>();
         }
     }
     else {
@@ -281,7 +299,7 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
         &vertexShader);
     if (FAILED(hr)) {
         if (!shaderBytecode && pVSBlob) pVSBlob->Release();
-        return std::weak_ptr<Shader>();
+        return std::weak_ptr<VertexShader>();
     }
 
     D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -299,13 +317,13 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreateVertexShader(const uint32_t byteWid
     if (FAILED(hr)) {
         vertexShader->Release();
         if (!shaderBytecode && pVSBlob) pVSBlob->Release();
-        return std::weak_ptr<Shader>();
+        return std::weak_ptr<VertexShader>();
     }
 
     if (!shaderBytecode && pVSBlob) pVSBlob->Release();
 }
 
-std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(
+std::weak_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(
     const uint32_t byteWidth,
     const uint32_t stride,
     const uint32_t offset)
@@ -323,10 +341,13 @@ std::weak_ptr<Shader> Dx11GraphicsAPI::CreatePixelShader(
 
     if (FAILED(hr)) {
         if (pixelShader) pixelShader->Release();
-        return std::weak_ptr<Shader>();
+        return std::weak_ptr<PixelShader>();
     }
 
-    auto shaderPtr = std::make_shared<Dx11PixelShader>(pixelShader);
+    auto shaderPtr = std::make_shared<Dx11PixelShader>();
+
+    shaderPtr->m_shader = pixelShader;
+
     m_renderResourceList.push_back(shaderPtr);
     return shaderPtr;
 }
@@ -343,14 +364,13 @@ std::weak_ptr<Sampler> Dx11GraphicsAPI::CreateSampler()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	auto sampler = std::make_shared<Dx11Sampler>();
-    
-    if (!sampler->GetSamplerState())
-    {
-		return std::weak_ptr<Sampler>();
-    }
-    m_renderResourceList.push_back(std::static_pointer_cast<RenderResource>(sampler));
-	return sampler;
+    auto samplerPtr = std::make_shared<Dx11Sampler>();
+
+    m_device->CreateSamplerState(&sampDesc, &samplerPtr->m_samplerState);
+
+    m_renderResourceList.push_back(samplerPtr);
+
+	return samplerPtr;
 }
 
 ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initData, uint32_t bindFlag)
@@ -413,13 +433,15 @@ HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCS
     return S_OK;
 }
 
-std::weak_ptr<Dx11ViewPort> Dx11GraphicsAPI::CreateViewPort(int x, int y, int width, int height) {
-    auto viewport = std::make_shared<Dx11ViewPort>(x, y, width, height);
+std::weak_ptr<ViewPort> Dx11GraphicsAPI::CreateViewPort(int x, int y, int width, int height) {
+    auto viewport = std::make_shared<Dx11ViewPort>();
+
     m_renderResourceList.push_back(viewport);
+
     return viewport;
 }
 
-void Dx11GraphicsAPI::SetViewPort(const std::shared_ptr<Dx11ViewPort>& viewport) {
+void Dx11GraphicsAPI::SetViewPort(const std::shared_ptr<ViewPort>& viewport) {
     if (!viewport) return;
     D3D11_VIEWPORT vp;
     vp.TopLeftX = static_cast<FLOAT>(viewport->m_x);

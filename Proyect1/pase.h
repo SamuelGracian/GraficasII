@@ -24,6 +24,7 @@ class ConstantBuffer;
 class Pase final
 {
     friend class GraphicsAPI;
+	friend class Dx11GraphicsAPI;
 public:
     Pase();
     ~Pase();
@@ -46,7 +47,7 @@ public:
 
     void AddRenderElement(std::weak_ptr<RenderElement>& element);
 
-private:
+protected:
     std::vector<std::weak_ptr<ConstantBuffer>> m_ConstantBuffers;
     std::vector<std::weak_ptr<RenderTarget>> m_RenderTargets;
     std::vector<std::weak_ptr<Sampler>> m_Samplers;

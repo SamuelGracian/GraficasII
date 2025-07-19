@@ -26,6 +26,7 @@ class VertexShader;
 
 class ViewPort;
 
+class Pase;
 
 static const uint32_t AvailableSlots = 8;
 
@@ -83,7 +84,7 @@ public:
 
 	virtual std::weak_ptr <ViewPort> CreateViewPort(int x, int y, int width, int height) = 0;
 
-	virtual void RenderPase() = 0;
+	virtual void RenderPase(Pase& pase) = 0;
 };
 
 /// <summary>
@@ -146,7 +147,7 @@ public:
 
 	std::weak_ptr<ViewPort> CreateViewPort(int x, int y, int width, int height)  override;
 
-	virtual void RenderPase() override;
+	virtual void RenderPase(Pase& pase) override;
 
 
 	void SetViewPort(const std::shared_ptr<ViewPort>& viewport);

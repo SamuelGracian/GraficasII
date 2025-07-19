@@ -49,6 +49,6 @@ protected:
     void CleanUpResources() override;
 
 public:
-    ID3D11PixelShader* m_shader;
+    ID3D11VertexShader* m_shader;
     ID3D11InputLayout* m_inputLayout;
 };

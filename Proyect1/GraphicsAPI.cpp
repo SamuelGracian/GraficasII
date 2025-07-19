@@ -7,6 +7,7 @@
 #include "VertexBuffer.h"
 #include "texture.h"
 #include "Sampler.h"
+#include "pase.h"
 
 #include "Dx11texture.h"
 #include "Dx11Shaders.h"
@@ -397,11 +398,6 @@ ID3D11Buffer* Dx11GraphicsAPI::BuildBuffer(uint32_t byteWidth, const void* initD
     return pBuffer;
 }
 
-void Dx11GraphicsAPI::RenderPase()
-{
-}
-
-
  HRESULT Dx11GraphicsAPI::CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
     HRESULT hr = S_OK;
@@ -438,6 +434,93 @@ std::weak_ptr<ViewPort> Dx11GraphicsAPI::CreateViewPort(int x, int y, int width,
     m_renderResourceList.push_back(viewport);
 
     return viewport;
+}
+
+void Dx11GraphicsAPI::RenderPase(Pase& pase)
+{
+//    // Bind constant buffers
+//    for (size_t i = 0; i < pase.m_ConstantBuffers.size(); ++i) {
+//        if (!pase.m_ConstantBuffers[i].expired()) {
+//            auto cb = std::static_pointer_cast<Dx11ConstantBuffer>(pase.m_ConstantBuffers[i].lock());
+//            if (cb && cb->m_buffer) {
+//                m_immediateContext->VSSetConstantBuffers(static_cast<UINT>(i), 1, &cb->m_buffer);
+//                m_immediateContext->PSSetConstantBuffers(static_cast<UINT>(i), 1, &cb->m_buffer);
+//            }
+//        }
+//    }
+//
+//    // Bind render targets
+//    std::vector<ID3D11RenderTargetView*> rtvs;
+//    for (auto& rt : pase.m_RenderTargets) {
+//        if (!rt.expired()) {
+//            auto dx11rt = std::static_pointer_cast<Dx11RenderTarget>(rt.lock());
+//            if (dx11rt && dx11rt->m_renderTargetView) {
+//                rtvs.push_back(dx11rt->m_renderTargetView);
+//            }
+//        }
+//    }
+//    if (!rtvs.empty()) {
+//        m_immediateContext->OMSetRenderTargets(static_cast<UINT>(rtvs.size()), rtvs.data(), nullptr);
+//    }
+//
+//    // Bind samplers
+//    for (size_t i = 0; i < pase.m_Samplers.size(); ++i) {
+//        if (!pase.m_Samplers[i].expired()) {
+//            auto sampler = std::static_pointer_cast<Dx11Sampler>(pase.m_Samplers[i].lock());
+//            if (sampler && sampler->m_samplerState) {
+//                m_immediateContext->PSSetSamplers(static_cast<UINT>(i), 1, &sampler->m_samplerState);
+//            }
+//        }
+//    }
+//
+//    // Bind shader resource textures
+//    for (size_t i = 0; i < pase.m_ShaderResourceTextures.size(); ++i) {
+//        if (!pase.m_ShaderResourceTextures[i].expired()) {
+//            auto srt = std::static_pointer_cast<Dx11ShaderResourceTexture>(pase.m_ShaderResourceTextures[i].lock());
+//            if (srt && srt->m_shaderResourceView) {
+//                m_immediateContext->PSSetShaderResources(static_cast<UINT>(i), 1, &srt->m_shaderResourceView);
+//            }
+//        }
+//    }
+//
+//    // Bind depth stencil
+//    if (!pase.m_DepthStencils.expired()) {
+//        auto ds = std::static_pointer_cast<Dx11DepthStencilTexture>(pase.m_DepthStencils.lock());
+//        if (ds && ds->m_depthStencilView) {
+//            m_immediateContext->OMSetRenderTargets(0, nullptr, ds->m_depthStencilView);
+//        }
+//    }
+//
+//    // Bind viewport
+//    if (!pase.m_ViewPorts.expired()) {
+//        auto vp = std::static_pointer_cast<Dx11ViewPort>(pase.m_ViewPorts.lock());
+//        if (vp) {
+//            SetViewPort(vp);
+//        }
+//    }
+//
+//    // Bind shaders
+//    if (!pase.m_vertexShader.expired()) {
+//        auto vs = std::static_pointer_cast<Dx11VertexShader>(pase.m_vertexShader.lock());
+//        if (vs && vs->m_shader) {
+//            m_immediateContext->VSSetShader(vs->m_shader, nullptr, 0);
+//        }
+//    }
+//    if (!pase.m_pixelShader.expired()) {
+//        auto ps = std::static_pointer_cast<Dx11PixelShader>(pase.m_pixelShader.lock());
+//        if (ps && ps->m_shader) {
+//            m_immediateContext->PSSetShader(ps->m_shader, nullptr, 0);
+//        }
+//    }
+//
+//    // Render elements
+//    for (auto& elem : pase.m_renderElement) {
+//        if (!elem.expired()) {
+//            auto renderElem = elem.lock();
+//            // Aquí deberías llamar a la función de render de cada elemento
+//            // renderElem->Render(m_immediateContext);
+//        }
+//    }
 }
 
 void Dx11GraphicsAPI::SetViewPort(const std::shared_ptr<ViewPort>& viewport) {

@@ -88,6 +88,8 @@ std::weak_ptr<ConstantBuffer> GAPI_ChangeonResize;
 
 std::weak_ptr<PixelShader> GAPI_pixelShader;
 
+std::weak_ptr<VertexShader> GAPI_vertexShader;
+
 HINSTANCE                           g_hInst = nullptr;
 HWND                                g_hWnd = nullptr;
 D3D_DRIVER_TYPE                     g_driverType = D3D_DRIVER_TYPE_NULL;
@@ -95,7 +97,7 @@ D3D_FEATURE_LEVEL                   g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 ID3D11Texture2D* g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
-ID3D11VertexShader* g_pVertexShader = nullptr;
+//ID3D11VertexShader* g_pVertexShader = nullptr;
 //ID3D11PixelShader* g_pPixelShader = nullptr;
 ID3D11InputLayout* g_pVertexLayout = nullptr;
 ID3D11ShaderResourceView* g_pTextureRV = nullptr;
@@ -317,13 +319,14 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
         return hr;
     }
 
-    // Create the vertex shader
-    hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &g_pVertexShader);
-    if (FAILED(hr))
-    {
-        pVSBlob->Release();
-        return hr;
-    }
+	GAPI_vertexShader = GAPI->CreateVertexShader(static_cast<uint32_t>(pVSBlob->GetBufferSize()), pVSBlob->GetBufferPointer(), nullptr, 0, 0);
+    //// Create the vertex shader
+    //hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &g_pVertexShader);
+    //if (FAILED(hr))
+    //{
+    //    pVSBlob->Release();
+    //    return hr;
+    //}
 
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -579,7 +582,8 @@ void CleanupDevice()
     if (g_pTextureRV) g_pTextureRV->Release();
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (g_pVertexLayout) g_pVertexLayout->Release();
-    if (g_pVertexShader) g_pVertexShader->Release();
+    //if (g_pVertexShader) g_pVertexShader->Release();
+    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
    // if (g_pPixelShader) g_pPixelShader->Release();
     if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
     if (g_pDepthStencil) g_pDepthStencil->Release();
@@ -676,7 +680,13 @@ void Render()
     static bool DrawTest = false;
     int CurrentMeshes = DrawTest ? meshes : 1;
 
-    GAPI->m_immediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+    auto sharedVertexShader = std::static_pointer_cast<Dx11VertexShader>(GAPI_vertexShader.lock());
+    
+    if (!GAPI_vertexShader.expired())
+    {
+        ID3D11VertexShader* vertexshaderptr = static_cast <ID3D11VertexShader*> (sharedVertexShader->m_shader);
+        GAPI->m_immediateContext->VSSetShader(vertexshaderptr, nullptr, 0);
+    }
 
     if (!ConstBuffer.expired())
     {

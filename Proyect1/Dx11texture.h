@@ -33,7 +33,7 @@ public:
 
 protected:
     ID3D11Texture2D* m_texture;
-    ID3D11DepthStencilView* m_dsv;
+    ID3D11DepthStencilView* m_depthStencilView;
 };
 
 

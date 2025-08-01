@@ -167,4 +167,10 @@ public:
 	ID3D11Device*					m_device;
 	ID3D11DeviceContext*			m_immediateContext;
 	IDXGISwapChain*					m_swapChain;
+
+	//_________________________
+	std::vector<ID3D11Buffer*> m_constantBuffers;
+	std::vector<ID3D11ShaderResourceView*> m_shaderResourceViews;
+	std::vector<ID3D11RenderTargetView*> m_renderTargetViews;
+	std::vector <ID3D11SamplerState*> m_samplerStates;
 };

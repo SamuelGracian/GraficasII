@@ -15,6 +15,7 @@ public:
 
 protected:
 
+    D3D11_VIEWPORT m_viewPort;
     void CleanUpResources() override{}
 
 };

@@ -191,6 +191,7 @@ std::weak_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstanBuffer(const uint32_
     buffer->m_buffer = BuildBuffer(byteWidth, initData, D3D11_BIND_CONSTANT_BUFFER);
 
     m_renderResourceList.push_back(buffer);
+    m_constantBuffers.push_back(buffer->m_buffer);
 
     return buffer;
 }
@@ -266,11 +267,57 @@ std::weak_ptr<ShaderResourceTexture> Dx11GraphicsAPI::CreateShaderResource(
     return texture;
 }
 
-std::weak_ptr<DepthStencilTexture> Dx11GraphicsAPI::CreateDepthStencil(const uint32_t width, const uint32_t height, const uint32_t mipLevels, const void* initData)
+std::weak_ptr<DepthStencilTexture> Dx11GraphicsAPI::CreateDepthStencil(
+    const uint32_t width, 
+    const uint32_t height, 
+    const uint32_t mipLevels, 
+    const void* initData)
 {
-    return std::weak_ptr<DepthStencilTexture>();
-}
+    auto texture = std::make_shared<Dx11DepthStencilTexture>();
+    texture->m_width = width;
+    texture->m_height = height;
+    texture->m_mipLevels = mipLevels;
 
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = mipLevels;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+
+    ID3D11Texture2D* d3dTexture = nullptr;
+    HRESULT hr = m_device->CreateTexture2D(
+        &desc,
+        nullptr,
+        &d3dTexture);
+
+    if (FAILED(hr)) {
+        return std::weak_ptr<DepthStencilTexture>();
+    }
+
+    texture->m_texture = d3dTexture;
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = desc.Format;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
+
+    hr = m_device->CreateDepthStencilView(d3dTexture, &dsvDesc, &texture->m_depthStencilView);
+    if (FAILED(hr)) {
+        d3dTexture->Release();
+        return std::weak_ptr<DepthStencilTexture>();
+    }
+
+    m_renderResourceList.push_back(texture);
+
+    return texture;
+}
 
 std::weak_ptr<RenderTarget> Dx11GraphicsAPI::CreateRenderTarget(const uint32_t width, const uint32_t height, const uint32_t mipLevels, const void* initData)
 {
@@ -439,15 +486,11 @@ std::weak_ptr<ViewPort> Dx11GraphicsAPI::CreateViewPort(int x, int y, int width,
 
 void Dx11GraphicsAPI::RenderPase(Pase& pase)
 {
-    // Bind constant buffers
-    for (size_t i = 0; i < pase.m_ConstantBuffers.size(); ++i) {
-        if (!pase.m_ConstantBuffers[i].expired()) {
-            auto cb = std::static_pointer_cast<Dx11ConstantBuffer>(pase.m_ConstantBuffers[i].lock());
-            if (cb && cb->m_buffer) {
-                m_immediateContext->VSSetConstantBuffers(static_cast<UINT>(i), 1, &cb->m_buffer);
-                m_immediateContext->PSSetConstantBuffers(static_cast<UINT>(i), 1, &cb->m_buffer);
-            }
-        }
+    // Bind all constant buffers before rendering
+    for (size_t i = 0; i < m_constantBuffers.size(); ++i)
+    {
+        m_immediateContext->VSSetConstantBuffers(static_cast<UINT>(i), 1, &m_constantBuffers[i]);
+        m_immediateContext->PSSetConstantBuffers(static_cast<UINT>(i), 1, &m_constantBuffers[i]);
     }
 
     // Bind render targets 

@@ -17,13 +17,13 @@ void Dx11ShaderResourceTexture::CleanUpResources()
 
 //____________________DepthStencilTexture class_____________________
 Dx11DepthStencilTexture::Dx11DepthStencilTexture() 
-    : m_texture(nullptr), m_dsv(nullptr)
+    : m_texture(nullptr), m_depthStencilView(nullptr)
 {
 }
 
 void Dx11DepthStencilTexture::CleanUpResources()
 {
-    if (m_dsv) { m_dsv->Release(); m_dsv = nullptr; }
+    if (m_depthStencilView) { m_depthStencilView->Release(); m_depthStencilView = nullptr; }
     if (m_texture) { m_texture->Release(); m_texture = nullptr; }
 }
 

@@ -6,6 +6,9 @@
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 #include "texture.h"
+#include "ShaderResource.h"
+#include "DepthStencil.h"
+#include"RenderTarget.h"
 #include "Sampler.h"
 #include "pase.h"
 
@@ -13,6 +16,7 @@
 #include "Dx11Shaders.h"
 #include "Dx11Sampler.h"
 #include "Dx11ViewPort.h"
+
 
 Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
     m_wWnd(windowHandler),
@@ -531,7 +535,7 @@ void Dx11GraphicsAPI::RenderPase(Pase& pase)
         m_immediateContext->PSSetShaderResources(0, static_cast<UINT>(srvs.size()), srvs.data());
     }
 
-    // Bind depth stencil
+     //Bind depth stencil
     if (!pase.m_DepthStencils.expired()) {
         auto ds = std::static_pointer_cast<Dx11DepthStencilTexture>(pase.m_DepthStencils.lock());
         if (ds && ds->m_depthStencilView) {

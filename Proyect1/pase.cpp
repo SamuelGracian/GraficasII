@@ -40,7 +40,7 @@ void Pase::BindShaderTexture(std::weak_ptr<ShaderResourceTexture>& shaderTexture
     m_ShaderResourceTextures[slot] = shaderTexture;
 }
 
-void Pase::BindDepthStencil(std::weak_ptr<DepthStencil>& depthStencil)
+void Pase::BindDepthStencil(std::weak_ptr<DepthStencilTexture>& depthStencil)
 {
     m_DepthStencils = depthStencil;
 }

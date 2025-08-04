@@ -1,5 +1,8 @@
 #pragma once
 #include "texture.h"
+#include"ShaderResource.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 #include "Base.h"
 
 

@@ -34,6 +34,8 @@
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
 
+#include "Camera.h"
+
 using namespace DirectX;
 
 //--------------------------------------------------------------------------------------
@@ -70,7 +72,8 @@ struct CBChangesEveryFrame
 XMVECTOR g_Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
 static float g_cameraEye[3] = { 0.0f, 3.0f,-6.0f };
 static float g_cameraAt[3] = { 0.0f, 1.0f , 0.0f };
-
+//___ Camera ___
+Camera g_Camera;
 
 //___ GAPI___
 
@@ -118,7 +121,6 @@ HRESULT InitDevice();
 void CleanupDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void Render();
-
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -507,10 +509,12 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     g_World = XMMatrixIdentity();
 
     // Initialize the view matrix
-    g_Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
-    XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    g_View = XMMatrixLookAtLH(g_Eye, At, Up);
+    //g_Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
+    //XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    //XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    //g_View = XMMatrixLookAtLH(g_Eye, At, Up);
+      g_View = XMMatrixLookAtLH(g_Camera.GetEye(),g_Camera.GetAt(),g_Camera.GetUp());
+
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
@@ -678,13 +682,6 @@ void Render()
     static bool DrawTest = false;
     int CurrentMeshes = DrawTest ? meshes : 1;
 
-    //auto sharedVertexShader = std::static_pointer_cast<Dx11VertexShader>(GAPI_vertexShader.lock());
-    //
-    //if (!GAPI_vertexShader.expired())
-    //{
-    //    ID3D11VertexShader* vertexshaderptr = static_cast <ID3D11VertexShader*> (sharedVertexShader->m_shader);
-    //    GAPI->m_immediateContext->VSSetShader(vertexshaderptr, nullptr, 0);
-    //}
 
     if (!ConstBuffer.expired())
     {
@@ -756,10 +753,25 @@ void Render()
         ImGui::End();
 
     //Camera controls
-        ImGui::Begin("Camera controls");
-        ImGui::SliderFloat3("Eye", g_cameraEye, -1000.0f, 10.0f);
-        ImGui::SliderFloat3("At", g_cameraAt, -10.0f, 10.0f);
-        ImGui::End();
+    XMVECTOR eye = g_Camera.GetEye();
+    XMVECTOR at = g_Camera.GetAt();
+    XMVECTOR up = g_Camera.GetUp();
+
+    XMFLOAT3 eyeF, atF, upF;
+    XMStoreFloat3(&eyeF, eye);
+    XMStoreFloat3(&atF, at);
+    XMStoreFloat3(&upF, up);
+
+    // Sliders for camera
+    ImGui::Begin("Camera controls");
+    if (ImGui::SliderFloat3("Eye", (float*)&eyeF, -1000.0f, 10.0f))
+        g_Camera.SetEye(XMLoadFloat3(&eyeF));
+    if (ImGui::SliderFloat3("At", (float*)&atF, -10.0f, 10.0f))
+        g_Camera.SetAt(XMLoadFloat3(&atF));
+    if (ImGui::SliderFloat3("Up", (float*)&upF, -1.0f, 1.0f))
+        g_Camera.SetUp(XMLoadFloat3(&upF));
+    ImGui::End();
+
 
         g_Eye = XMVectorSet(g_cameraEye[0], g_cameraEye[1], g_cameraEye[2], 0.0f);
         XMVECTOR At = XMVectorSet(g_cameraAt[0], g_cameraAt[1], g_cameraAt[2], 0.0f);

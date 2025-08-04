@@ -7,7 +7,7 @@
 
 class ViewPort;
 
-class DepthStencil;
+class DepthStencilTexture;
 
 class RenderTarget;
 
@@ -37,7 +37,7 @@ public:
 
     void BindShaderTexture(std::weak_ptr<ShaderResourceTexture>& shaderTexture, uint32_t slot);
 
-    void BindDepthStencil(std::weak_ptr<DepthStencil>& depthStencil);
+    void BindDepthStencil(std::weak_ptr<DepthStencilTexture>& depthStencil);
 
     void BindViewPort(std::weak_ptr<ViewPort>& viewport);
 
@@ -53,7 +53,7 @@ protected:
     std::vector<std::weak_ptr<Sampler>> m_Samplers;
     std::vector<std::weak_ptr<ShaderResourceTexture>> m_ShaderResourceTextures;
 
-    std::weak_ptr<DepthStencil> m_DepthStencils;
+    std::weak_ptr<DepthStencilTexture> m_DepthStencils;
     std::weak_ptr<ViewPort> m_ViewPorts;
     std::weak_ptr<PixelShader> m_pixelShader;
     std::weak_ptr<VertexShader> m_vertexShader;

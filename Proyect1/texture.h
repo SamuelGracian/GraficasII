@@ -18,25 +18,5 @@ public:
     uint32_t m_mipLevels;
 };
 
-class ShaderResourceTexture : public Texture
-{
-public:
-    ShaderResourceTexture() = default;
-    virtual ~ShaderResourceTexture() = default;
-};
 
 
-class DepthStencilTexture : public Texture
-{
-public:
-    DepthStencilTexture() = default;
-    virtual ~DepthStencilTexture() = default;
-};
-
-class RenderTarget :public Texture
-{
-public:
-    RenderTarget() = default;
-
-    virtual ~RenderTarget() = default;
-};

@@ -139,6 +139,7 @@
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Dx11SAmpler.cpp" />
     <ClCompile Include="Dx11texture.cpp" />
     <ClCompile Include="Dx11texture.h" />
@@ -152,7 +153,9 @@
     <ClCompile Include="pase.cpp" />
     <ClCompile Include="RenderElement.cpp" />
     <ClCompile Include="RenderMaterial.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderResource.h" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="swapChain.h" />
     <ClCompile Include="VertexBuffer.cpp" />
@@ -166,6 +169,7 @@
     <ClInclude Include="..\..\..\..\Downloads\Resource.h" />
     <ClInclude Include="Base.h" />
     <ClInclude Include="BufferResource.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="Dx11Sampler.h" />
@@ -180,6 +184,7 @@
     <ClInclude Include="RenderElement.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="RenderResource.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="texture.h" />

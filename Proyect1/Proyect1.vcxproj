@@ -151,6 +151,7 @@
     <ClCompile Include="Constantbuffer.cpp" />
     <ClCompile Include="InIndexBuffer.cpp" />
     <ClCompile Include="pase.cpp" />
+    <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="RenderElement.cpp" />
     <ClCompile Include="RenderMaterial.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
@@ -181,6 +182,8 @@
     <ClInclude Include="IPixelShader.h" />
     <ClInclude Include="pase.h" />
     <ClInclude Include="PrimitiveTopology.h" />
+    <ClInclude Include="RasterizerDesc.h" />
+    <ClInclude Include="RasterizerState.h" />
     <ClInclude Include="RenderElement.h" />
     <ClInclude Include="RenderMaterial.h" />
     <ClInclude Include="RenderResource.h" />

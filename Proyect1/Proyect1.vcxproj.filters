@@ -105,6 +105,9 @@
     <ClCompile Include="RasterizerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Dx11RasterizerState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\Resource.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RasterizerDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dx11RasterizerState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

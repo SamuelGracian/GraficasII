@@ -16,6 +16,7 @@
 #include "Dx11Shaders.h"
 #include "Dx11Sampler.h"
 #include "Dx11ViewPort.h"
+#include "Dx11RasterizerState.h"
 
 
 Dx11GraphicsAPI::Dx11GraphicsAPI(HWND windowHandler):
@@ -583,4 +584,23 @@ void Dx11GraphicsAPI::SetViewPort(const std::shared_ptr<ViewPort>& viewport) {
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     m_immediateContext->RSSetViewports(1, &vp);
+}
+
+std::weak_ptr<RasterizerState> Dx11GraphicsAPI::CreateRasterizer(D3D11_FillMode fillMode, D3D11_CullMode cullMode)
+{
+    D3D11_RASTERIZER_DESC desc = {};
+    desc.FillMode = D3D11_FILL_SOLID;
+    desc.CullMode = D3D11_CULL_BACK;
+    desc.FrontCounterClockwise = false;
+    desc.DepthBias = 0;
+    desc.DepthBiasClamp = 0.0f;
+    desc.SlopeScaledDepthBias = 0.0f;
+    desc.DepthClipEnable = true;
+    desc.ScissorEnable = false;
+    desc.MultisampleEnable = false;
+    desc.AntialiasedLineEnable = false;
+
+    auto rasterizerPtr = std::make_shared<Dx11RasterizerState>(m_device, desc);
+    m_renderResourceList.push_back(rasterizerPtr);
+    return rasterizerPtr;
 }

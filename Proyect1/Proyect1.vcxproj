@@ -140,6 +140,7 @@
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\..\Devlibs\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Dx11RasterizerState.cpp" />
     <ClCompile Include="Dx11SAmpler.cpp" />
     <ClCompile Include="Dx11texture.cpp" />
     <ClCompile Include="Dx11texture.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DepthStencil.h" />
+    <ClInclude Include="Dx11RasterizerState.h" />
     <ClInclude Include="Dx11Sampler.h" />
     <ClInclude Include="Dx11Shaders.h" />
     <ClInclude Include="Dx11Topology.h" />

@@ -2,6 +2,8 @@
 
 #include "Base.h"
 
+#include "RasterizerDesc.h"
+
 class RenderResource;
 
 class ConstantBuffer;
@@ -27,6 +29,8 @@ class VertexShader;
 class ViewPort;
 
 class Pase;
+
+class RasterizerState;
 
 static const uint32_t AvailableSlots = 8;
 
@@ -85,6 +89,8 @@ public:
 	virtual std::weak_ptr <ViewPort> CreateViewPort(int x, int y, int width, int height) = 0;
 
 	virtual void RenderPase(Pase& pase) = 0;
+
+	virtual std::weak_ptr<RasterizerState> CreateRasterizer(D3D11_FillMode fillMode, D3D11_CullMode cullMode) = 0;
 };
 
 /// <summary>
@@ -149,8 +155,9 @@ public:
 
 	virtual void RenderPase(Pase& pase) override;
 
-
 	void SetViewPort(const std::shared_ptr<ViewPort>& viewport);
+
+	std::weak_ptr<RasterizerState> CreateRasterizer(D3D11_FillMode fillMode, D3D11_CullMode cullMode) override;
 
 private:
 	ID3D11Buffer* BuildBuffer(uint32_t byteWidth = 0, const void* initData = nullptr, uint32_t bindFlag =0);

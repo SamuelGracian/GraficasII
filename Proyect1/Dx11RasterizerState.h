@@ -2,7 +2,7 @@
 #include "RasterizerState.h"
 #include "GraphicsAPI.h"
 
-class Dx11RasterizerState : RasterizerState 
+class Dx11RasterizerState : public RasterizerState 
 {
 	friend class Dx11GraphicsAPI;
 public:

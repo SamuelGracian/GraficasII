@@ -71,6 +71,9 @@
     <ClInclude Include="Dx11SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DepthStencilView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fxh">

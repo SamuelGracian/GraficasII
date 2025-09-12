@@ -74,7 +74,7 @@ static float g_cameraEye[3] = { 0.0f, 3.0f,-6.0f };
 static float g_cameraAt[3] = { 0.0f, 1.0f , 0.0f };
 //___ Camera ___
 Camera g_Camera;
-
+Camera ShadowCamera;
 //___ GAPI___
 
 std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
@@ -513,6 +513,7 @@ GAPI = std::make_shared <Dx11GraphicsAPI>(g_hWnd);
     //XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     //XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     //g_View = XMMatrixLookAtLH(g_Eye, At, Up);
+
       g_View = XMMatrixLookAtLH(g_Camera.GetEye(),g_Camera.GetAt(),g_Camera.GetUp());
 
 

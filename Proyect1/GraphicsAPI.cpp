@@ -594,7 +594,7 @@ std::weak_ptr<RasterizerState> Dx11GraphicsAPI::CreateRasterizer(D3D11_FillMode 
     desc.FrontCounterClockwise = false;
     desc.DepthBias = 0;
     desc.DepthBiasClamp = 0.0f;
-    desc.SlopeScaledDepthBias = 0.0f;<
+    desc.SlopeScaledDepthBias = 0.0f;
     desc.DepthClipEnable = true;
     desc.ScissorEnable = false;
     desc.MultisampleEnable = false;

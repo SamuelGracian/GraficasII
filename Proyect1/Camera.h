@@ -16,6 +16,7 @@ public:
     void SetEye(const XMVECTOR& eye);
     void SetAt(const XMVECTOR& at);
     void SetUp(const XMVECTOR& up);
+    void SetOrthographic(float left, float right, float bottom, float top, float nearZ, float farZ);
 
     XMVECTOR GetEye() const;
     XMVECTOR GetAt()  const;

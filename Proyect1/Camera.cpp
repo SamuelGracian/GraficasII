@@ -15,6 +15,11 @@ void Camera::SetUp(const XMVECTOR& up)
 	m_Up = up;
 }
 
+void Camera ::SetOrthographic (float left, float right, float bottom, float top, float nearZ, float farZ)
+{
+	XMMATRIX orthographicMatrix = XMMatrixOrthographicOffCenterLH(left, right, bottom, top, nearZ, farZ); 
+}
+
 XMVECTOR Camera::GetEye() const
 {
 	return m_Eye;

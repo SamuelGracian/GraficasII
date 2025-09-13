@@ -137,6 +137,7 @@
     <ClInclude Include="DepthStecil.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Dx11DepthStecil.h" />
+    <ClInclude Include="Dx11DepthStecilView.h" />
     <ClInclude Include="Dx11PixelShader.h" />
     <ClInclude Include="Dx11SwapChain.h" />
     <ClInclude Include="Dx11VertexShader.h" />

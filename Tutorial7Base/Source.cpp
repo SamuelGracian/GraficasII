@@ -31,6 +31,8 @@
 
 /// DepthStencil
 #include "Dx11DepthStecil.h"
+///DepthStencilView
+#include "Dx11DepthStecilView.h"
 
 ///SwapChain
 #include "Dx11SwapChain.h"
@@ -49,6 +51,8 @@ Dx11PixelShader Gapi_pxlShader;
 Dx11DepthStencil Gapi_depthStencil;
 
 Dx11SwapChain Gapi_swpChain;
+
+Dx11DepthStencilView Gapi_dpStencilView;
 //--------------------------------------------------------------------------------------
 // Structures
 //--------------------------------------------------------------------------------------
@@ -91,7 +95,7 @@ ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
 IDXGISwapChain1* g_pSwapChain1 = nullptr;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 //ID3D11Texture2D* g_pDepthStencil = nullptr;
-ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
+//ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 //ID3D11VertexShader* g_pVertexShader = nullptr;
 //ID3D11PixelShader* g_pPixelShader = nullptr;
 ID3D11InputLayout* g_pVertexLayout = nullptr;
@@ -401,12 +405,13 @@ HRESULT InitDevice()
     descDSV.Format = descDepth.Format;
     descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     descDSV.Texture2D.MipSlice = 0;
-    //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
-    hr = g_pd3dDevice->CreateDepthStencilView(Gapi_depthStencil.m_depthStencil, &descDSV, &g_pDepthStencilView);
+    //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
+    hr = g_pd3dDevice->CreateDepthStencilView(Gapi_depthStencil.m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
     if (FAILED(hr))
         return hr;
 
-    g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
+    //g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
+    g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, Gapi_dpStencilView.m_depthStencilView);
 
     // Setup the viewport
     D3D11_VIEWPORT vp;
@@ -653,7 +658,8 @@ void CleanupDevice()
     if (Gapi_pxlShader.m_shader) Gapi_pxlShader.m_shader->Release();
     //if (g_pDepthStencil) g_pDepthStencil->Release();
     if (Gapi_depthStencil.m_depthStencil)Gapi_depthStencil.m_depthStencil->Release();
-    if (g_pDepthStencilView) g_pDepthStencilView->Release();
+    //if (g_pDepthStencilView) g_pDepthStencilView->Release();
+    if (Gapi_dpStencilView.m_depthStencilView) Gapi_dpStencilView.m_depthStencilView->Release();
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
     if (g_pSwapChain1) g_pSwapChain1->Release();
     //if (g_pSwapChain) g_pSwapChain->Release();
@@ -731,7 +737,8 @@ void Render()
     //
     // Clear the depth buffer to 1.0 (max depth)
     //
-    g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    //g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    g_pImmediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     //
     // Update variables that change once per frame

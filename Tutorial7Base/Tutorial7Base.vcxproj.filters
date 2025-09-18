@@ -77,6 +77,12 @@
     <ClInclude Include="Dx11DepthStecilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GRAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DX11GRAPI.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fxh">

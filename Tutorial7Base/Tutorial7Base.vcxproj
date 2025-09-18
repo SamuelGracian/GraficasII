@@ -138,12 +138,14 @@
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Dx11DepthStecil.h" />
     <ClInclude Include="Dx11DepthStecilView.h" />
+    <ClInclude Include="DX11GRAPI.H" />
     <ClInclude Include="Dx11PixelShader.h" />
     <ClInclude Include="Dx11SwapChain.h" />
     <ClInclude Include="Dx11VertexShader.h" />
     <ClInclude Include="Dx11ConstantBuffer.h" />
     <ClInclude Include="Dx11indexBuffer.h" />
     <ClInclude Include="Dx11VertexBuffer.h" />
+    <ClInclude Include="GRAPI.h" />
     <ClInclude Include="Indexbuffer.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Resource.h" />

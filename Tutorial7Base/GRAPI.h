@@ -22,4 +22,7 @@ public:
 	//Shader Functions
 	virtual VertexShader CreateVertexShader() = 0; 
 	virtual PixelShader* CreatePixelShader() = 0;
+
+	//Clean up function
+	virtual void CleanUpResources() = 0;
 };

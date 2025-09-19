@@ -1,28 +1,19 @@
 #pragma once
-
-#include "ConstantBuffer.h"
-#include "Vertexbuffer.h"
-#include "Indexbuffer.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-
-//Interface for graphics Api
-
-class GraphicsAPI
+class GRAPI
 {
 public:
-	GraphicsAPI();
-	virtual ~GraphicsAPI() = 0;
+	GRAPI() = default;
 
-	//Buffers functions
-	virtual ConstanBuffer* CreateConstantBuffer() = 0;
-	virtual VertexBuffer* CreateVertexBuffer() = 0;
-	virtual IndexBuffer* CreateIndexBuffer() = 0;
+	virtual ~GRAPI() = default;
 
-	//Shader Functions
-	virtual VertexShader CreateVertexShader() = 0; 
-	virtual PixelShader* CreatePixelShader() = 0;
-
-	//Clean up function
 	virtual void CleanUpResources() = 0;
+
+	//Buffer functions
+
+	virtual bool CreateSwapChain(HWND hwnd) = 0;
+
+	virtual std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, const uint32_t slot = 0, void* data = nullptr) = 0;
+
+	virtual bool SetConstantBuffer() = 0;
 };
+

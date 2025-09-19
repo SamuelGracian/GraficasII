@@ -21,6 +21,21 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Basebuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dx11ConstantBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11GRAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GRAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -77,10 +92,10 @@
     <ClInclude Include="Dx11DepthStecilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GRAPI.h">
+    <ClInclude Include="DX11GRAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX11GRAPI.H">
+    <ClInclude Include="GRAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

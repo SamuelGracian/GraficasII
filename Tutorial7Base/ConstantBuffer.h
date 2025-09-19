@@ -1,14 +1,13 @@
 #pragma once
 #include "Basebuffers.h"
 
-class ConstanBuffer : public BaseBufer
+class ConstanBuffer : public BaseBuffer
 {
 public:
-	ConstanBuffer()
-		: m_slot(0) 
-	{};
+	ConstanBuffer();
 
-	virtual ~ConstanBuffer() = default;
-
+	virtual ~ConstanBuffer();
+	
+private:
 	uint32_t m_slot;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include "Basebuffers.h"
 
-class VertexBuffer : public BaseBufer
+class VertexBuffer : public BaseBuffer
 {
 public:
 	VertexBuffer() = default;

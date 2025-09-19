@@ -129,6 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Basebuffers.cpp" />
+    <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="Dx11ConstantBuffer.cpp" />
+    <ClCompile Include="DX11GRAPI.cpp" />
+    <ClCompile Include="GRAPI.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +143,7 @@
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Dx11DepthStecil.h" />
     <ClInclude Include="Dx11DepthStecilView.h" />
-    <ClInclude Include="DX11GRAPI.H" />
+    <ClInclude Include="DX11GRAPI.h" />
     <ClInclude Include="Dx11PixelShader.h" />
     <ClInclude Include="Dx11SwapChain.h" />
     <ClInclude Include="Dx11VertexShader.h" />

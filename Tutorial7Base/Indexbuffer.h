@@ -1,7 +1,7 @@
 #pragma once
 #include "Basebuffers.h"
 
-class IndexBuffer : public BaseBufer
+class IndexBuffer : public BaseBuffer
 {
 public:
 	IndexBuffer() = default;

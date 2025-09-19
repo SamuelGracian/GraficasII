@@ -1,15 +1,19 @@
 #pragma once
 #include <cstdint>
 #include <d3d11.h>
+#include <cassert>
 
-class BaseBufer
+class BaseBuffer
 {
 public:
-	BaseBufer()
-		: m_byteWidth(0)
-	{};
+	BaseBuffer();
 
-	virtual ~BaseBufer() = default;
+	virtual ~BaseBuffer();
 
+	void SetByteWidth(const uint32_t bytewidth);
+
+	const uint32_t GetByteWidth()const;
+
+private:
 	uint32_t m_byteWidth;
 };

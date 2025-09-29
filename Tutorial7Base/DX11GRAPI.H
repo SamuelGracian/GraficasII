@@ -16,10 +16,9 @@ public:
 	//Clean up function
 	void CleanUpResources()override;
 
+	bool CreateSwapChain(HWND hwnd = nullptr, uint32_t width= 0, uint32_t height = 0 ) override;
+
 	//Buffer functions
-
-	bool CreateSwapChain(HWND hwnd) override;
-
 	std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth,const uint32_t slot, void* data) override;
 
 	bool SetConstantBuffer() override;
@@ -27,5 +26,5 @@ public:
 //private:
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_immediateContext;
-	IDXGISwapChain* m_swapchain;
+	IDXGISwapChain* m_swapChain;
 };

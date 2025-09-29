@@ -1,7 +1,31 @@
 #include "DX11GRAPI.H"
+#include <dxgi1_2.h>
+#include <d3d11_1.h> 
+#include "dxgiformat.h"
+
+#define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;} 
+
+//namespace GRAPIFormat
+//{
+//    enum Frmt
+//    {
+//        FORMAT_R8G8B8A8_UNORM = 28,
+//    };
+//}
+//uint32_t  GEtFormat(const GRAPIFormat::Frmt = GRAPIFormat::FORMAT_R8G8B8A8_UNORM)
+//{
+//    switch (GRAPIFormat::Frmt)
+//    {
+//        case GRAPIFormat::FORMAT_R8G8B8A8_UNORM;
+//            return;  DXGI_FORMAT::
+//    default:
+//        break;
+//    }
+//}
+
 
 Dx11GraphicsAPI::Dx11GraphicsAPI()
-	:m_device(nullptr),m_immediateContext(nullptr),m_swapchain(nullptr)
+	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr)
 {
     UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -30,7 +54,8 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
     {
         D3D_DRIVER_TYPE  g_driverType = driverTypes[driverTypeIndex];
         ///DELETE THIS 
-        D3D_FEATURE_LEVEL& g_featureLevel;
+        D3D_FEATURE_LEVEL g_featureLevel = D3D_FEATURE_LEVEL_11_0;
+
         hr = D3D11CreateDevice(nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
             D3D11_SDK_VERSION, &m_device, &g_featureLevel, &m_immediateContext);
 
@@ -63,8 +88,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
             dxgiDevice->Release();
         }
     }
-    if (FAILED(hr))
-        return hr;
+   assert (FAILED(hr));
 }
 
 Dx11GraphicsAPI::~Dx11GraphicsAPI()
@@ -74,7 +98,93 @@ Dx11GraphicsAPI::~Dx11GraphicsAPI()
 
 void Dx11GraphicsAPI::CleanUpResources()
 {
-	m_swapchain->Release();
-	m_immediateContext->Release();
-	m_device->Release();
+    SAFE_RELEASE(m_swapChain);
+    SAFE_RELEASE(m_immediateContext);
+	SAFE_RELEASE(m_device);
+}
+
+bool Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height )
+{
+    HRESULT hr = S_OK;
+
+    IDXGIFactory1* dxgiFactory = nullptr;
+    {
+        IDXGIDevice* dxgiDevice = nullptr;
+        hr = m_device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
+        if (SUCCEEDED(hr))
+        {
+            IDXGIAdapter* adapter = nullptr;
+            hr = dxgiDevice->GetAdapter(&adapter);
+            if (SUCCEEDED(hr))
+            {
+                hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory));
+                SAFE_RELEASE(adapter);
+            }
+            SAFE_RELEASE(dxgiDevice);
+        }
+    }
+    assert (FAILED(hr));
+
+    // Create swap chain
+    ID3D11Device* m_device1;
+    ID3D11DeviceContext1* m_immediateContext1;
+    IDXGISwapChain1* m_swapChain1;
+    IDXGIFactory2* dxgiFactory2 = nullptr;
+    hr = dxgiFactory->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2));
+    if (dxgiFactory2)
+    {
+        // DirectX 11.1 or later
+        hr = m_device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&m_device1));
+        if (SUCCEEDED(hr))
+        {
+            (void)m_immediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&m_immediateContext1));
+        }
+
+        DXGI_SWAP_CHAIN_DESC1 sd = {};
+        sd.Width = width;
+        sd.Height = height;
+        sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        sd.SampleDesc.Count = 1;
+        sd.SampleDesc.Quality = 0;
+        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        sd.BufferCount = 1;
+
+        hr = dxgiFactory2->CreateSwapChainForHwnd(m_device,hwnd, &sd, nullptr, nullptr, &m_swapChain1);
+        if (SUCCEEDED(hr))
+        {
+            //hr = g_pSwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&g_pSwapChain));
+            hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_immediateContext1));
+        }
+
+        SAFE_RELEASE(dxgiFactory2);
+    }
+    else
+    {
+        // DirectX 11.0 systems
+        DXGI_SWAP_CHAIN_DESC sd = {};
+        sd.BufferCount = 1;
+        sd.BufferDesc.Width = width;
+        sd.BufferDesc.Height = height;
+        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        sd.BufferDesc.RefreshRate.Numerator = 60;
+        sd.BufferDesc.RefreshRate.Denominator = 1;
+        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        sd.OutputWindow = hwnd;
+        sd.SampleDesc.Count = 1;
+        sd.SampleDesc.Quality = 0;
+        sd.Windowed = TRUE;
+
+        //hr = dxgiFactory->CreateSwapChain(g_pd3dDevice, &sd, &g_pSwapChain);
+        hr = dxgiFactory->CreateSwapChain(m_device, &sd, &m_swapChain);
+    }
+
+    // Note this tutorial doesn't handle full-screen swapchains so we block the ALT+ENTER shortcut
+    dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+
+    SAFE_RELEASE(dxgiFactory);
+    SAFE_RELEASE(m_swapChain1);
+    SAFE_RELEASE(m_immediateContext1);  
+    SAFE_RELEASE(m_device1);
+
+    assert (FAILED(hr));
 }

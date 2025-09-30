@@ -1,4 +1,7 @@
 #pragma once
+
+#include "ContainerFiles.h"
+
 class GRAPI
 {
 public:
@@ -12,7 +15,13 @@ public:
 	
 	//Buffer functions
 
-	virtual std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, const uint32_t slot = 0, void* data = nullptr) = 0;
+	virtual std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, 
+		const uint32_t slot = 0, 
+		void* data = nullptr) = 0;
+
+	virtual std::shared_ptr<IndexBuffer> CreateIndexBuffer(const uint32_t bytewidth = 0,
+		void* data = nullptr,
+		uint32_t indexcount = 0) = 0;
 
 };
 

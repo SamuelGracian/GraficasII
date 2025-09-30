@@ -4,6 +4,7 @@
 #include "dxgiformat.h"
 
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;} 
+#define HIGHER_AVAILABLE_SLOT 8
 
 //namespace GRAPIFormat
 //{
@@ -205,4 +206,9 @@ std::shared_ptr<ConstanBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint3
     buffer->m_buffer = Rawbuffer;
 
     return buffer;
+}
+
+std::shared_ptr<IndexBuffer> Dx11GraphicsAPI::CreateIndexBuffer(const uint32_t bytewidth, void* data, uint32_t indexcount)
+{
+    return std::shared_ptr<IndexBuffer>();
 }

@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Basebuffers.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="ContainerFiles.h" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="GRAPI.cpp" />

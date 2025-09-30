@@ -210,5 +210,20 @@ std::shared_ptr<ConstanBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint3
 
 std::shared_ptr<IndexBuffer> Dx11GraphicsAPI::CreateIndexBuffer(const uint32_t bytewidth, void* data, uint32_t indexcount)
 {
-    return std::shared_ptr<IndexBuffer>();
+    assert(bytewidth != 0);
+    D3D11_BUFFER_DESC bd = {};
+    ID3D11Buffer* Rawbuffer = nullptr;
+    D3D11_SUBRESOURCE_DATA InitData = {};
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = bytewidth;
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+    InitData.pSysMem = data;
+
+    assert(!FAILED(m_device->CreateBuffer(&bd, &InitData, &Rawbuffer)));
+
+    auto buffer = std::make_shared<Dx11IndexBuffer>();
+    buffer->m_buffer = Rawbuffer;
+    return buffer;
 }

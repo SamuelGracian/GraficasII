@@ -69,7 +69,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
         if (SUCCEEDED(hr))
             break;
     }
-    assert (FAILED(hr));
+    assert (!FAILED(hr));
 
     // Obtain DXGI factory from device (since we used nullptr for pAdapter above)
     IDXGIFactory1* dxgiFactory = nullptr;
@@ -88,7 +88,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
             dxgiDevice->Release();
         }
     }
-   assert (FAILED(hr));
+   assert (!FAILED(hr));
 }
 
 Dx11GraphicsAPI::~Dx11GraphicsAPI()
@@ -103,7 +103,7 @@ void Dx11GraphicsAPI::CleanUpResources()
 	SAFE_RELEASE(m_device);
 }
 
-bool Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height )
+void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height )
 {
     HRESULT hr = S_OK;
 
@@ -123,7 +123,7 @@ bool Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
             SAFE_RELEASE(dxgiDevice);
         }
     }
-    assert (FAILED(hr));
+    assert (!FAILED(hr));
 
     // Create swap chain
     ID3D11Device* m_device1;
@@ -186,5 +186,23 @@ bool Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
     SAFE_RELEASE(m_immediateContext1);  
     SAFE_RELEASE(m_device1);
 
-    assert (FAILED(hr));
+    assert (!FAILED(hr));
+}
+
+std::shared_ptr<ConstanBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint32_t bytewidth, const uint32_t slot, void* data)
+{
+    assert(bytewidth != 0);
+    ID3D11Buffer* Rawbuffer= nullptr;
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = bytewidth;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = 0;
+
+    assert(!FAILED(m_device->CreateBuffer(&bd, nullptr, &Rawbuffer)));
+
+    auto buffer = std::make_shared<Dx11ConstatBuffer>();
+    buffer->m_buffer = Rawbuffer;
+
+    return buffer;
 }

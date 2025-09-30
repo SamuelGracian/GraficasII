@@ -6,6 +6,7 @@
 //_______________________________________________________________
 #include "GRAPI.h"
 #include "ConstantBuffer.h"
+#include "Dx11ConstantBuffer.h"
 
 class Dx11GraphicsAPI : public GRAPI
 {
@@ -16,12 +17,11 @@ public:
 	//Clean up function
 	void CleanUpResources()override;
 
-	bool CreateSwapChain(HWND hwnd = nullptr, uint32_t width= 0, uint32_t height = 0 ) override;
+	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width= 0, uint32_t height = 0 ) override;
 
 	//Buffer functions
-	std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth,const uint32_t slot, void* data) override;
+	std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0,const uint32_t slot = 0, void* data = nullptr) override;
 
-	bool SetConstantBuffer() override;
 
 //private:
 	ID3D11Device* m_device;

@@ -12,7 +12,7 @@ BaseBuffer::~BaseBuffer()
 
 void BaseBuffer::SetByteWidth(const uint32_t bytewidth)
 {
-	assert(bytewidth == 0);
+	assert(bytewidth != 0);
 	m_byteWidth = bytewidth;
 }
 

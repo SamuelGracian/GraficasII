@@ -44,7 +44,7 @@ using namespace DirectX;
 //-------------------------------------------------------------------------------------
 // Graphics API
 //-------------------------------------------------------------------------------------
-Dx11ConstatBuffer Gapi_constbuffer;
+//Dx11ConstatBuffer Gapi_constbuffer;
 Dx11IndexBuffer Gapi_indxBuffer;
 Dx11VertexBuffer Gapi_vrtxBuffer;
 
@@ -119,7 +119,8 @@ XMFLOAT4                            g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 //Interface
 //--------------------------------------------------------------------------------------
 
-std::shared_ptr<Dx11GraphicsAPI> GAPI;
+std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
+std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
 
 
 //--------------------------------------------------------------------------------------
@@ -548,26 +549,23 @@ HRESULT InitDevice()
     // Create vertex buffer
     WORD indices[] =
     {
-        23,20,22,
-        2,1,3,
+           3,1,0,
+           2,1,3,
 
-        
-        7,4,6,
+           6,4,5,
+           7,4,6,
 
-        19,17,16,
-        
-        10,9,11,
-        6,4,5,
+           11,9,8,
+           10,9,11,
 
-        3,1,0,
-        15,12,14,
+           14,12,13,
+           15,12,14,
+           
+           19,17,16,
+           18,17,19,
 
-        11,9,8,
-        18,17,19,
-
-        14,12,13,
-        22,20,21,
-        
+           22,20,21,
+           23,20,22
     };
 
     bd.Usage = D3D11_USAGE_DEFAULT;

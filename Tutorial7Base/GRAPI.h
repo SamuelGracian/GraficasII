@@ -24,9 +24,7 @@ public:
 		uint32_t indexcount = 0) = 0;
 
 	virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0, 
-		const void* vertices = nullptr,
-		const uint32_t stride = 0,
-		const uint32_t offset = 0) = 0;
+		const void* vertices = nullptr) = 0;
 
 };
 

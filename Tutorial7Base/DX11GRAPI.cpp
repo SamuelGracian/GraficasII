@@ -127,9 +127,9 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
     assert (!FAILED(hr));
 
     // Create swap chain
-    ID3D11Device* m_device1;
-    ID3D11DeviceContext1* m_immediateContext1;
-    IDXGISwapChain1* m_swapChain1;
+    ID3D11Device* m_device1 = nullptr;
+    ID3D11DeviceContext1* m_immediateContext1 = nullptr;
+    IDXGISwapChain1* m_swapChain1 =  nullptr;
     IDXGIFactory2* dxgiFactory2 = nullptr;
     hr = dxgiFactory->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2));
     if (dxgiFactory2)
@@ -153,7 +153,6 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
         hr = dxgiFactory2->CreateSwapChainForHwnd(m_device,hwnd, &sd, nullptr, nullptr, &m_swapChain1);
         if (SUCCEEDED(hr))
         {
-            //hr = g_pSwapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&g_pSwapChain));
             hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_immediateContext1));
         }
 
@@ -175,11 +174,9 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
         sd.SampleDesc.Quality = 0;
         sd.Windowed = TRUE;
 
-        //hr = dxgiFactory->CreateSwapChain(g_pd3dDevice, &sd, &g_pSwapChain);
         hr = dxgiFactory->CreateSwapChain(m_device, &sd, &m_swapChain);
     }
 
-    // Note this tutorial doesn't handle full-screen swapchains so we block the ALT+ENTER shortcut
     dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
 
     SAFE_RELEASE(dxgiFactory);
@@ -228,7 +225,22 @@ std::shared_ptr<IndexBuffer> Dx11GraphicsAPI::CreateIndexBuffer(const uint32_t b
     return buffer;
 }
 
-std::shared_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t bytewidth, const void* vertices, const uint32_t stride, const uint32_t offset)
+std::shared_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t bytewidth, const void* vertices)
 {
-    return std::shared_ptr<VertexBuffer>();
+    ID3D11Buffer* Rawbuffer = nullptr;
+
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = bytewidth;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitData = {};
+    InitData.pSysMem = vertices;
+
+    assert(!FAILED( m_device->CreateBuffer(&bd, &InitData, &Rawbuffer)));
+
+    auto buffer = std::make_shared<Dx11VertexBuffer>();
+    buffer->m_buffer = Rawbuffer;
+    return buffer;
 }

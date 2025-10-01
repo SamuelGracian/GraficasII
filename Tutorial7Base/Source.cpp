@@ -44,10 +44,6 @@ using namespace DirectX;
 //-------------------------------------------------------------------------------------
 // Graphics API
 //-------------------------------------------------------------------------------------
-std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
-
-Dx11IndexBuffer Gapi_indxBuffer;
-Dx11VertexBuffer Gapi_vrtxBuffer;
 
 Dx11VertexShader Gapi_vrtxShader;
 Dx11PixelShader Gapi_pxlShader;
@@ -125,6 +121,8 @@ XMFLOAT4                            g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
 std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
+std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
+std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 
 
 //--------------------------------------------------------------------------------------
@@ -415,22 +413,24 @@ HRESULT InitDevice()
     };
 
     D3D11_BUFFER_DESC bd = {};
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(SimpleVertex) * 24;
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bd.CPUAccessFlags = 0;
+    //bd.Usage = D3D11_USAGE_DEFAULT;
+    //bd.ByteWidth = sizeof(SimpleVertex) * 24;
+    //bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    //bd.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA InitData = {};
-    InitData.pSysMem = vertices;
-    //hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
-    hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &Gapi_vrtxBuffer.m_buffer);
-    if (FAILED(hr))
-        return hr;
+    //D3D11_SUBRESOURCE_DATA InitData = {};
+    //InitData.pSysMem = vertices;
+    ////hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
+    //hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &Gapi_vrtxBuffer.m_buffer);
+    //if (FAILED(hr))
+    //    return hr;
+
+    Gapi_vrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * 24, vertices));
 
     // Set vertex buffer
     UINT stride = sizeof(SimpleVertex);
     UINT offset = 0;
-    g_pImmediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer.m_buffer, &stride, &offset);
+    g_pImmediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer->m_buffer, &stride, &offset);
 
     // Create index buffer
     // Create vertex buffer
@@ -467,7 +467,7 @@ HRESULT InitDevice()
 
     // Set index buffer
     //g_pImmediateContext->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-    g_pImmediateContext->IASetIndexBuffer(Gapi_indxBuffer.m_buffer, DXGI_FORMAT_R16_UINT, 0);
+    g_pImmediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
     g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -554,9 +554,9 @@ void CleanupDevice()
     if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
     if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
     //if (g_pVertexBuffer) g_pVertexBuffer->Release();
-    if (Gapi_vrtxBuffer.m_buffer) Gapi_vrtxBuffer.m_buffer->Release();
+    if (Gapi_vrtxBuffer->m_buffer) Gapi_vrtxBuffer->m_buffer->Release();
     //if (g_pIndexBuffer) g_pIndexBuffer->Release();
-    if (Gapi_indxBuffer.m_buffer) Gapi_indxBuffer.m_buffer->Release();
+    if (Gapi_indxBuffer->m_buffer) Gapi_indxBuffer->m_buffer->Release();
     if (g_pVertexLayout) g_pVertexLayout->Release();
     //if (g_pVertexShader) g_pVertexShader->Release();
     if (Gapi_vrtxShader.m_shader) Gapi_vrtxShader.m_shader->Release();

@@ -44,7 +44,8 @@ using namespace DirectX;
 //-------------------------------------------------------------------------------------
 // Graphics API
 //-------------------------------------------------------------------------------------
-Dx11ConstatBuffer Gapi_constbuffer;
+std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
+
 Dx11IndexBuffer Gapi_indxBuffer;
 Dx11VertexBuffer Gapi_vrtxBuffer;
 
@@ -526,7 +527,7 @@ HRESULT InitDevice()
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
     //g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, nullptr, &cbNeverChanges, 0, 0);
-    g_pImmediateContext->UpdateSubresource(Gapi_constbuffer.m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+    g_pImmediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
 
     // Initialize the projection matrix
     g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
@@ -549,7 +550,7 @@ void CleanupDevice()
     if (g_pSamplerLinear) g_pSamplerLinear->Release();
     if (g_pTextureRV) g_pTextureRV->Release();
     //if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
-    if (Gapi_constbuffer.m_buffer) Gapi_constbuffer.m_buffer->Release();
+    if (Gapi_constbuffer -> m_buffer) Gapi_constbuffer -> m_buffer->Release();
     if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
     if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
     //if (g_pVertexBuffer) g_pVertexBuffer->Release();
@@ -659,7 +660,7 @@ void Render()
     //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
     g_pImmediateContext->VSSetShader(Gapi_vrtxShader.m_shader, nullptr, 0);
     //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-    g_pImmediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer.m_buffer);
+    g_pImmediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
     g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
     g_pImmediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);

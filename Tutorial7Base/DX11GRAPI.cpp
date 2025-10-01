@@ -227,3 +227,8 @@ std::shared_ptr<IndexBuffer> Dx11GraphicsAPI::CreateIndexBuffer(const uint32_t b
     buffer->m_buffer = Rawbuffer;
     return buffer;
 }
+
+std::shared_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t bytewidth, const void* vertices, const uint32_t stride, const uint32_t offset)
+{
+    return std::shared_ptr<VertexBuffer>();
+}

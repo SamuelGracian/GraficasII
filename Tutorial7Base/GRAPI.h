@@ -26,5 +26,8 @@ public:
 	virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0, 
 		const void* vertices = nullptr) = 0;
 
+	//Shader functions
+	virtual std::shared_ptr<VertexShader> CreateVertexShader() = 0;
+
 };
 

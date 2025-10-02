@@ -417,7 +417,6 @@ HRESULT InitDevice()
     //bd.ByteWidth = sizeof(SimpleVertex) * 24;
     //bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     //bd.CPUAccessFlags = 0;
-
     //D3D11_SUBRESOURCE_DATA InitData = {};
     //InitData.pSysMem = vertices;
     ////hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);

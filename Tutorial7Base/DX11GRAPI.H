@@ -7,6 +7,14 @@
 #include "GRAPI.h"
 #include "ContainerFiles.h"
 
+class IndexBuffer;
+
+class  VertexBuffer;
+
+class CosntantBuffer;
+
+class VertexShader;
+
 class Dx11GraphicsAPI : public GRAPI
 {
 public:
@@ -30,6 +38,7 @@ public:
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0,
 		const void* vertices = nullptr) override;
 
+	std::shared_ptr<VertexShader> CreateVertexShader() override;
 
 //private:
 	ID3D11Device* m_device;

@@ -2,6 +2,14 @@
 
 #include "ContainerFiles.h"
 
+class IndexBuffer;
+
+class  VertexBuffer;
+
+class CosntantBuffer;
+
+class VertexShader;
+
 class GRAPI
 {
 public:

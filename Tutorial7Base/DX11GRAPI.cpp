@@ -244,3 +244,8 @@ std::shared_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t
     buffer->m_buffer = Rawbuffer;
     return buffer;
 }
+
+std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader()
+{
+    return std::shared_ptr<VertexShader>();
+}

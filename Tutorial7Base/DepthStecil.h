@@ -1,9 +1,9 @@
 #pragma once
 #include <d3d11_1.h>
 
-class DepthStecil
+class DepthStencil
 {
 public:
-	DepthStecil() = default;
-	~DepthStecil() = default;
+	DepthStencil() = default;
+	~DepthStencil() = default;
 };

@@ -2,7 +2,7 @@
 #include "ConstantBuffer.h"
 #include "DX11GRAPI.h"
 
-class Dx11ConstatBuffer : public ConstanBuffer
+class Dx11ConstatBuffer : public ConstantBuffer
 {
 	friend class Dx11GraphicsAPI;
 

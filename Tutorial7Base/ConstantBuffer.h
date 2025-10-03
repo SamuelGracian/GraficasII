@@ -1,12 +1,12 @@
 #pragma once
 #include "Basebuffers.h"
 
-class ConstanBuffer : public BaseBuffer
+class ConstantBuffer : public BaseBuffer
 {
 public:
-	ConstanBuffer();
+	ConstantBuffer();
 
-	virtual ~ConstanBuffer();
+	virtual ~ConstantBuffer();
 
 	void SetSlot(const uint32_t slot);
 	

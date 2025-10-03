@@ -8,12 +8,12 @@
 #include "ContainerFiles.h"
 
 class IndexBuffer;
-
 class  VertexBuffer;
-
-class CosntantBuffer;
-
+class ConstantBuffer;
 class VertexShader;
+class PixelShader;
+
+class DepthStencil;
 
 class Dx11GraphicsAPI : public GRAPI
 {
@@ -27,7 +27,7 @@ public:
 	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0 ) override;
 
 	//Buffer functions
-	std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0,
+	std::shared_ptr<ConstantBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0,
 		const uint32_t slot = 0,
 		void* data = nullptr) override;
 
@@ -38,7 +38,13 @@ public:
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0,
 		const void* vertices = nullptr) override;
 
-	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, void* classLink, ID3D11VertexShader* shader) override;
+	//Shaders functions
+	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11VertexShader* shader) override;
+
+	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11PixelShader* shader) override;
+
+	//DepthStencil
+	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) override;
 
 //private:
 	ID3D11Device* m_device;

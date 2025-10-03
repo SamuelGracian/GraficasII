@@ -12,3 +12,5 @@
 //Shaders
 #include "Dx11PixelShader.h"
 #include "Dx11VertexShader.h"
+
+#include "Dx11DepthStecil.h"

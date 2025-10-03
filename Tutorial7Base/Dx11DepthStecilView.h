@@ -1,7 +1,7 @@
 #pragma once
 #include "DepthStecil.h"
 
-class Dx11DepthStencilView : public DepthStecil
+class Dx11DepthStencilView : public DepthStencil
 {
 public:
 	Dx11DepthStencilView()

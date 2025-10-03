@@ -3,12 +3,11 @@
 #include "ContainerFiles.h"
 
 class IndexBuffer;
-
-class  VertexBuffer;
-
-class CosntantBuffer;
-
+class VertexBuffer;
+class ConstantBuffer;
 class VertexShader;
+class PixelShader;
+class DepthStencil;
 
 class GRAPI
 {
@@ -23,7 +22,7 @@ public:
 	
 	//Buffer functions
 
-	virtual std::shared_ptr<ConstanBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, 
+	virtual std::shared_ptr<ConstantBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, 
 		const uint32_t slot = 0, 
 		void* data = nullptr) = 0;
 
@@ -35,7 +34,11 @@ public:
 		const void* vertices = nullptr) = 0;
 
 	//Shader functions
-	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght, void* classLink, ID3D11VertexShader* shader) = 0;
+	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLInk, ID3D11VertexShader* shader) = 0;
 
+	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11PixelShader* shader) = 0;
+
+	//DepthStencil
+	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) = 0;
 };
 

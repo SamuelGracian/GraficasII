@@ -2,7 +2,7 @@
 
 #include "DepthStecil.h"
 
-class Dx11DepthStencil : public DepthStecil
+class Dx11DepthStencil : public DepthStencil 
 {
 public:
 	Dx11DepthStencil()

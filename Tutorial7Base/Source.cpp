@@ -335,8 +335,9 @@ HRESULT InitDevice()
         return hr;
     }
 
+    //-----------------------------------------------------------------
     // Create the vertex shader
-    //hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &g_pVertexShader);
+    
     hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
     if (FAILED(hr))
     {

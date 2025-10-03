@@ -38,7 +38,7 @@ public:
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0,
 		const void* vertices = nullptr) override;
 
-	std::shared_ptr<VertexShader> CreateVertexShader() override;
+	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, void* classLink, ID3D11VertexShader* shader) override;
 
 //private:
 	ID3D11Device* m_device;

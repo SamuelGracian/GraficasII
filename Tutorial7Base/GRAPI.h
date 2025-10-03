@@ -35,7 +35,7 @@ public:
 		const void* vertices = nullptr) = 0;
 
 	//Shader functions
-	virtual std::shared_ptr<VertexShader> CreateVertexShader() = 0;
+	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght, void* classLink, ID3D11VertexShader* shader) = 0;
 
 };
 

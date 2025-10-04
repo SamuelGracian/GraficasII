@@ -1,23 +1,35 @@
 #pragma once
-
-#include "ContainerFiles.h"
+#include <memory>
+#include <d3d11.h>
+////Buffers
+#include "ConstantBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
+//Shaders
+#include "PixelShader.h"
+#include "VertexShader.h"
 
 class IndexBuffer;
-class VertexBuffer;
-class ConstantBuffer;
+
+class  VertexBuffer;
+
+class CosntantBuffer;
+
 class VertexShader;
-class PixelShader;
-class DepthStencil;
+
 
 class GRAPI
 {
 public:
+
 	GRAPI() = default;
 
 	virtual ~GRAPI() = default;
 
+	//Clean up function
 	virtual void CleanUpResources() = 0;
 
+	//Swap chain function
 	virtual void CreateSwapChain(HWND hwnd = nullptr , uint32_t width = 0, uint32_t height = 0) = 0;
 	
 	//Buffer functions

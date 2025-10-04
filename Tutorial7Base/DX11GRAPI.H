@@ -4,8 +4,16 @@
 #include <memory>
 
 //_______________________________________________________________
+//includes
 #include "GRAPI.h"
-#include "ContainerFiles.h"
+//Buffers
+#include "Dx11ConstantBuffer.h"
+#include "Dx11indexBuffer.h"
+#include "Dx11VertexBuffer.h"
+//Shaders
+#include "PixelShader.h"
+#include "VertexShader.h"
+//_______________________________________________________________
 
 class IndexBuffer;
 class  VertexBuffer;
@@ -17,6 +25,7 @@ class DepthStencil;
 
 class Dx11GraphicsAPI : public GRAPI
 {
+
 public:
 	Dx11GraphicsAPI();
 	~Dx11GraphicsAPI();

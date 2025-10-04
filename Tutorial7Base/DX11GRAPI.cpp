@@ -2,6 +2,7 @@
 #include <dxgi1_2.h>
 #include <d3d11_1.h> 
 #include "dxgiformat.h"
+#include <iostream>
 
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;} 
 #define HIGHER_AVAILABLE_SLOT 8
@@ -90,6 +91,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
         }
     }
    assert (!FAILED(hr));
+
 }
 
 Dx11GraphicsAPI::~Dx11GraphicsAPI()
@@ -101,7 +103,7 @@ void Dx11GraphicsAPI::CleanUpResources()
 {
     SAFE_RELEASE(m_swapChain);
     SAFE_RELEASE(m_immediateContext);
-	SAFE_RELEASE(m_device);
+    SAFE_RELEASE(m_device);
 }
 
 void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height )

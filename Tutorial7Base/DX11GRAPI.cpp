@@ -271,25 +271,31 @@ std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const void* shad
 
 std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height)
 {
-    D3D11_TEXTURE2D_DESC descDepth = {};
-    descDepth.Width = width;
-    descDepth.Height = height;
-    descDepth.MipLevels = 1;
-    descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    descDepth.SampleDesc.Count = 1;
-    descDepth.SampleDesc.Quality = 0;
-    descDepth.Usage = D3D11_USAGE_DEFAULT;
-    descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    descDepth.CPUAccessFlags = 0;
-    descDepth.MiscFlags = 0;
-
-    ID3D11Texture2D* depthStencil = nullptr;
-    HRESULT hr = m_device->CreateTexture2D(&descDepth, nullptr, &depthStencil);
-    assert(SUCCEEDED(hr));
-
-    auto ds = std::make_shared<Dx11DepthStencil>();
-
-    ds->m_depthStencil = depthStencil;
-    return ds;
+    return std::shared_ptr<DepthStencil>();
 }
+
+//std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height)
+//{
+//    //D3D11_TEXTURE2D_DESC descDepth = {};
+//    //descDepth.Width = width;
+//    //descDepth.Height = height;
+//    //descDepth.MipLevels = 1;
+//    //descDepth.ArraySize = 1;
+//    //descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+//    //descDepth.SampleDesc.Count = 1;
+//    //descDepth.SampleDesc.Quality = 0;
+//    //descDepth.Usage = D3D11_USAGE_DEFAULT;
+//    //descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+//    //descDepth.CPUAccessFlags = 0;
+//    //descDepth.MiscFlags = 0;
+//
+//    //ID3D11Texture2D* depthStencil = nullptr;
+//    //HRESULT hr = m_device->CreateTexture2D(&descDepth, nullptr, &depthStencil);
+//    //assert(SUCCEEDED(hr));
+//
+//    //auto ds = std::make_shared<Dx11DepthStencil>();
+//
+//    //ds->m_depthStencil = depthStencil;
+//    //return ds;
+//    return;
+//}

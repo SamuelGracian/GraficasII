@@ -11,8 +11,8 @@
 #include "Dx11indexBuffer.h"
 #include "Dx11VertexBuffer.h"
 //Shaders
-#include "PixelShader.h"
-#include "VertexShader.h"
+#include "Dx11PixelShader.h"
+#include "Dx11VertexShader.h"
 //_______________________________________________________________
 
 class IndexBuffer;

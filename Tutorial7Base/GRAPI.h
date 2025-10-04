@@ -8,12 +8,14 @@
 //Shaders
 #include "PixelShader.h"
 #include "VertexShader.h"
+//Depth stencil
+#include "DepthStecil.h"
 
 class IndexBuffer;
 
 class  VertexBuffer;
 
-class CosntantBuffer;
+class ConstantBuffer;
 
 class VertexShader;
 

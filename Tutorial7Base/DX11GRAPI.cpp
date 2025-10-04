@@ -155,7 +155,7 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
         hr = dxgiFactory2->CreateSwapChainForHwnd(m_device,hwnd, &sd, nullptr, nullptr, &m_swapChain1);
         if (SUCCEEDED(hr))
         {
-            hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_immediateContext1));
+            hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
         }
 
         SAFE_RELEASE(dxgiFactory2);
@@ -175,6 +175,7 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
         sd.SampleDesc.Count = 1;
         sd.SampleDesc.Quality = 0;
         sd.Windowed = TRUE;
+        
 
         hr = dxgiFactory->CreateSwapChain(m_device, &sd, &m_swapChain);
     }
@@ -187,6 +188,13 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
     SAFE_RELEASE(m_device1);
 
     assert (!FAILED(hr));
+}
+
+std::shared_ptr<Dx11SwapChain> Dx11GraphicsAPI::GetSwapChain()
+{
+    auto SChain = std::make_shared<Dx11SwapChain>();
+    SChain->m_swapChain = m_swapChain;
+    return SChain;
 }
 
 std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint32_t bytewidth, const uint32_t slot, void* data)

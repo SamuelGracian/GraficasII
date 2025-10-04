@@ -13,6 +13,7 @@
 //Shaders
 #include "Dx11PixelShader.h"
 #include "Dx11VertexShader.h"
+#include "Dx11SwapChain.h"
 //_______________________________________________________________
 
 class IndexBuffer;
@@ -34,6 +35,8 @@ public:
 	void CleanUpResources() override;
 
 	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0 ) override;
+
+	std::shared_ptr<Dx11SwapChain>GetSwapChain();
 
 	//Buffer functions
 	std::shared_ptr<ConstantBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0,

@@ -10,6 +10,7 @@
 #include "VertexShader.h"
 //Depth stencil
 #include "DepthStecil.h"
+#include "SwapChain.h"
 
 class IndexBuffer;
 
@@ -32,7 +33,7 @@ public:
 	virtual void CleanUpResources() = 0;
 
 	//Swap chain function
-	virtual void CreateSwapChain(HWND hwnd = nullptr , uint32_t width = 0, uint32_t height = 0) = 0;
+	virtual void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0) = 0;
 	
 	//Buffer functions
 

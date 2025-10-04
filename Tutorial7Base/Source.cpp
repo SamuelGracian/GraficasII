@@ -50,7 +50,7 @@ Dx11PixelShader Gapi_pxlShader;
 
 Dx11DepthStencil Gapi_depthStencil;
 
-Dx11SwapChain Gapi_swpChain;
+
 
 Dx11DepthStencilView Gapi_dpStencilView;
 //--------------------------------------------------------------------------------------
@@ -123,6 +123,7 @@ std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
 std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
 std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
 std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
+std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
 
 
 //--------------------------------------------------------------------------------------
@@ -270,15 +271,19 @@ HRESULT InitDevice()
     if (GAPI)
     {
         GAPI->CreateSwapChain(g_hWnd, width, height);
+        Gapi_swpChain = GAPI->GetSwapChain();
     }
 
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
     //hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-    hr = Gapi_swpChain.m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+    hr = Gapi_swpChain->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     if (FAILED(hr))
         return hr;
 
+    ///-------------------------------
+    ///error
+    ///-------------------------------
     hr = g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
     pBackBuffer->Release();
     if (FAILED(hr))
@@ -569,7 +574,7 @@ void CleanupDevice()
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
     if (g_pSwapChain1) g_pSwapChain1->Release();
     //if (g_pSwapChain) g_pSwapChain->Release();
-    if (Gapi_swpChain.m_swapChain) Gapi_swpChain.m_swapChain->Release();
+    if (Gapi_swpChain->m_swapChain) Gapi_swpChain->m_swapChain->Release();
     if (g_pImmediateContext1) g_pImmediateContext1->Release();
     if (g_pImmediateContext) g_pImmediateContext->Release();
     if (g_pd3dDevice1) g_pd3dDevice1->Release();
@@ -674,5 +679,5 @@ void Render()
     // Present our back buffer to our front buffer
     //
     //g_pSwapChain->Present(0, 0);
-    Gapi_swpChain.m_swapChain->Present(0, 0);
+    Gapi_swpChain->m_swapChain->Present(0, 0);
 }

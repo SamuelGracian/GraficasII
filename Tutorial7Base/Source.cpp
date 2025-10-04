@@ -281,10 +281,8 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-    ///-------------------------------
-    ///error
-    ///-------------------------------
-    hr = g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
+
+    hr = GAPI->m_device->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
     pBackBuffer->Release();
     if (FAILED(hr))
         return hr;
@@ -303,7 +301,7 @@ HRESULT InitDevice()
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
     //hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
-    hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &Gapi_depthStencil.m_depthStencil);
+    hr = GAPI->m_device->CreateTexture2D(&descDepth, nullptr, &Gapi_depthStencil.m_depthStencil);
     if (FAILED(hr))
         return hr;
 
@@ -313,12 +311,13 @@ HRESULT InitDevice()
     descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     descDSV.Texture2D.MipSlice = 0;
     //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
-    hr = g_pd3dDevice->CreateDepthStencilView(Gapi_depthStencil.m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
+    hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil.m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
     if (FAILED(hr))
         return hr;
 
+    ///______________________________________________________________
     //g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
-    g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, Gapi_dpStencilView.m_depthStencilView);
+    GAPI->m_immediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, Gapi_dpStencilView.m_depthStencilView);
 
     // Setup the viewport
     D3D11_VIEWPORT vp;
@@ -328,7 +327,7 @@ HRESULT InitDevice()
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
-    g_pImmediateContext->RSSetViewports(1, &vp);
+    GAPI->m_immediateContext->RSSetViewports(1, &vp);
 
     // Compile the vertex shader
     ID3DBlob* pVSBlob = nullptr;
@@ -343,7 +342,7 @@ HRESULT InitDevice()
     //-----------------------------------------------------------------
     // Create the vertex shader
     
-    hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
+    hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
     if (FAILED(hr))
     {
         pVSBlob->Release();
@@ -359,14 +358,14 @@ HRESULT InitDevice()
     UINT numElements = ARRAYSIZE(layout);
 
     // Create the input layout
-    hr = g_pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
+    hr = GAPI->m_device->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
         pVSBlob->GetBufferSize(), &g_pVertexLayout);
     pVSBlob->Release();
     if (FAILED(hr))
         return hr;
 
     // Set the input layout
-    g_pImmediateContext->IASetInputLayout(g_pVertexLayout);
+    GAPI->m_immediateContext->IASetInputLayout(g_pVertexLayout);
 
     // Compile the pixel shader
     ID3DBlob* pPSBlob = nullptr;
@@ -379,7 +378,7 @@ HRESULT InitDevice()
     }
 
     // Create the pixel shader
-    hr = g_pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
+    hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
     pPSBlob->Release();
     if (FAILED(hr))
         return hr;
@@ -435,47 +434,35 @@ HRESULT InitDevice()
     // Set vertex buffer
     UINT stride = sizeof(SimpleVertex);
     UINT offset = 0;
-    g_pImmediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer->m_buffer, &stride, &offset);
+    GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer->m_buffer, &stride, &offset);
 
     // Create index buffer
     // Create vertex buffer
     WORD indices[] =
     {
-           3,1,0,
-           2,1,3,
-
-           6,4,5,
-           7,4,6,
-
-           11,9,8,
-           10,9,11,
-
-           14,12,13,
-           15,12,14,
-           
-           19,17,16,
-           18,17,19,
-
-           22,20,21,
-           23,20,22
+        3,1,0,
+        2,1,3,
+        6,4,5,
+        7,4,6,
+        11,9,8,
+        10,9,11,
+        14,12,13,
+        15,12,14,
+        19,17,16,
+        18,17,19,
+        22,20,21,
+        23,20,22
     };
 
-    //bd.Usage = D3D11_USAGE_DEFAULT;
-    //bd.ByteWidth = sizeof(WORD) * 36;
-    //bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    //bd.CPUAccessFlags = 0;
-    //InitData.pSysMem = indices;
-    ////hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pIndexBuffer);
-    //hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &Gapi_indxBuffer.m_buffer);
-    //if (FAILED(hr))
-    //    return hr;
+    Gapi_indxBuffer = std::static_pointer_cast<Dx11IndexBuffer>(
+        GAPI->CreateIndexBuffer(sizeof(indices), indices, ARRAYSIZE(indices))
+    );
 
     // Set index buffer
-    //g_pImmediateContext->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-    g_pImmediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
+    GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
-    g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
     // Create the constant buffers
@@ -493,12 +480,12 @@ HRESULT InitDevice()
 
 
     bd.ByteWidth = sizeof(CBChangeOnResize);
-    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
+    hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
     if (FAILED(hr))
         return hr;
 
     bd.ByteWidth = sizeof(CBChangesEveryFrame);
-    hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
+    hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBChangesEveryFrame);
     if (FAILED(hr))
         return hr;
 
@@ -516,7 +503,7 @@ HRESULT InitDevice()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
+    hr = GAPI->m_device->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
     if (FAILED(hr))
         return hr;
 
@@ -532,14 +519,14 @@ HRESULT InitDevice()
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
     //g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, nullptr, &cbNeverChanges, 0, 0);
-    g_pImmediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+    GAPI->m_immediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
 
     // Initialize the projection matrix
     g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
 
     CBChangeOnResize cbChangesOnResize;
     cbChangesOnResize.mProjection = XMMatrixTranspose(g_Projection);
-    g_pImmediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, nullptr, &cbChangesOnResize, 0, 0);
+    GAPI->m_immediateContext->UpdateSubresource(g_pCBChangeOnResize, 0, nullptr, &cbChangesOnResize, 0, 0);
 
     return S_OK;
 }
@@ -550,7 +537,7 @@ HRESULT InitDevice()
 //--------------------------------------------------------------------------------------
 void CleanupDevice()
 {
-    if (g_pImmediateContext) g_pImmediateContext->ClearState();
+    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
 
     if (g_pSamplerLinear) g_pSamplerLinear->Release();
     if (g_pTextureRV) g_pTextureRV->Release();
@@ -643,13 +630,13 @@ void Render()
     //
     // Clear the back buffer
     //
-    g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
+    GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
 
     //
     // Clear the depth buffer to 1.0 (max depth)
     //
     //g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-    g_pImmediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    GAPI->m_immediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     //
     // Update variables that change once per frame
@@ -657,23 +644,23 @@ void Render()
     CBChangesEveryFrame cb;
     cb.mWorld = XMMatrixTranspose(g_World);
     cb.vMeshColor = g_vMeshColor;
-    g_pImmediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
+    GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
 
     //
     // Render the cube
     //
     //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
-    g_pImmediateContext->VSSetShader(Gapi_vrtxShader.m_shader, nullptr, 0);
+    GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader.m_shader, nullptr, 0);
     //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-    g_pImmediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
-    g_pImmediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
-    g_pImmediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
+    GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
+    GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-    g_pImmediateContext->PSSetShader(Gapi_pxlShader.m_shader, nullptr, 0);
-    g_pImmediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-    g_pImmediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
-    g_pImmediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
-    g_pImmediateContext->DrawIndexed(36, 0, 0);
+    GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader.m_shader, nullptr, 0);
+    GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
+    GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
+    GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
 
     //
     // Present our back buffer to our front buffer

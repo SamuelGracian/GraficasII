@@ -57,3 +57,7 @@ public:
 	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) = 0;
 };
 
+/// TO DO
+/// shader functions delete class linkage
+/// Set y update functions
+/// 

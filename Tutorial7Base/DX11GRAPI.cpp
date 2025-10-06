@@ -4,7 +4,7 @@
 #include "dxgiformat.h"
 #include <iostream>
 
-#define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;} 
+#define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
 //namespace GRAPIFormat

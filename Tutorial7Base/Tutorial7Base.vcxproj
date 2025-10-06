@@ -136,6 +136,7 @@
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="GRAPI.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Vertexbuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basebuffers.h" />

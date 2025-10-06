@@ -39,6 +39,9 @@
     <ClCompile Include="ContainerFiles.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vertexbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">

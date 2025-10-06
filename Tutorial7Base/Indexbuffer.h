@@ -7,4 +7,10 @@ public:
 	IndexBuffer() = default;
 
 	~IndexBuffer() = default;
+
+private:
+	uint32_t m_Vertices;
 };
+///TO DO
+/// num indices
+/// format

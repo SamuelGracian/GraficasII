@@ -6,3 +6,7 @@ public:
 	PixelShader() = default;
 	~PixelShader() = default;
 };
+/// TO DO
+/// map strings
+/// add / remove macro
+/// base class shaders

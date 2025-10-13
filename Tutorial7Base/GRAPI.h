@@ -37,6 +37,7 @@ public:
 	
 	//Buffer functions
 
+	//Create buffers
 	virtual std::shared_ptr<ConstantBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0, 
 		const uint32_t slot = 0, 
 		void* data = nullptr) = 0;
@@ -47,6 +48,12 @@ public:
 
 	virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0, 
 		const void* vertices = nullptr) = 0;
+
+	//Set buffers
+	virtual void SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer ) = 0;
+
+	//Update buffers
+	virtual void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) = 0;
 
 	//Shader functions
 	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLInk, ID3D11VertexShader* shader) = 0;

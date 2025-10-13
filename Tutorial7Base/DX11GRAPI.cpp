@@ -255,6 +255,39 @@ std::shared_ptr<VertexBuffer> Dx11GraphicsAPI::CreateVertexBuffer(const uint32_t
     return buffer;
 }
 
+void Dx11GraphicsAPI::SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer)
+{
+    if (m_immediateContext == nullptr || buffer.expired())
+    {
+        return;
+    }
+    auto pbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(buffer.lock());
+
+    if (pbuffer == nullptr || pbuffer->GetSlot() == HIGHER_AVAILABLE_SLOT || pbuffer->m_buffer == nullptr)
+    {
+        return;
+    }
+
+    m_immediateContext->VSGetConstantBuffers(pbuffer->GetSlot(), 1, &pbuffer->m_buffer);
+}
+
+void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data)
+{
+
+    if (m_immediateContext == nullptr || buffer.expired() || Data == nullptr)
+    {
+        return;
+    }
+    auto pbuffer = std::static_pointer_cast<Dx11ConstatBuffer> (buffer.lock());
+
+    if (pbuffer == nullptr || pbuffer->m_buffer == nullptr || pbuffer->GetByteWidth() != bytewidth)
+    {
+        return;
+    }
+
+    m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, &Data, 0, 0);
+}
+
 std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11VertexShader* shader)
 {
     ID3D11VertexShader* vertexShader = nullptr;
@@ -282,28 +315,3 @@ std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width
     return std::shared_ptr<DepthStencil>();
 }
 
-//std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height)
-//{
-//    //D3D11_TEXTURE2D_DESC descDepth = {};
-//    //descDepth.Width = width;
-//    //descDepth.Height = height;
-//    //descDepth.MipLevels = 1;
-//    //descDepth.ArraySize = 1;
-//    //descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-//    //descDepth.SampleDesc.Count = 1;
-//    //descDepth.SampleDesc.Quality = 0;
-//    //descDepth.Usage = D3D11_USAGE_DEFAULT;
-//    //descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-//    //descDepth.CPUAccessFlags = 0;
-//    //descDepth.MiscFlags = 0;
-//
-//    //ID3D11Texture2D* depthStencil = nullptr;
-//    //HRESULT hr = m_device->CreateTexture2D(&descDepth, nullptr, &depthStencil);
-//    //assert(SUCCEEDED(hr));
-//
-//    //auto ds = std::make_shared<Dx11DepthStencil>();
-//
-//    //ds->m_depthStencil = depthStencil;
-//    //return ds;
-//    return;
-//}

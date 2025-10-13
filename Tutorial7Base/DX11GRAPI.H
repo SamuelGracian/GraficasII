@@ -50,6 +50,12 @@ public:
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(const uint32_t bytewidth = 0,
 		const void* vertices = nullptr) override;
 
+	//Setbuffers
+	void SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer ) override;
+
+	//update buffers
+	void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) override;
+
 	//Shaders functions
 	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11VertexShader* shader) override;
 

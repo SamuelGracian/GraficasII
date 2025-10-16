@@ -463,7 +463,7 @@ HRESULT InitDevice()
     GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
-    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
     // Create the constant buffers
@@ -517,6 +517,7 @@ HRESULT InitDevice()
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
     //g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, nullptr, &cbNeverChanges, 0, 0);
     //GAPI->m_immediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+    
     ///Update constant buffer
     GAPI->UpdateConstantBuffer(Gapi_constbuffer, sizeof(cbNeverChanges), &cbNeverChanges);
 

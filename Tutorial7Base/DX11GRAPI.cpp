@@ -288,7 +288,7 @@ void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer,
         return;
     }
 
-    m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, &Data, 0, 0);
+    m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, Data, 0, 0);
 }
 
 std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11VertexShader* shader)

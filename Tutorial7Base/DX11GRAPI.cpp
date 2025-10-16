@@ -211,7 +211,10 @@ std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint
 
     auto buffer = std::make_shared<Dx11ConstatBuffer>();
     buffer->m_buffer = Rawbuffer;
+    buffer->SetByteWidth(bytewidth);
+    buffer->SetSlot(slot); /// Cambio mas restrictivo el uso de info
 
+    ASSIGN_DEBUG_NAME(buffer.get(), Rawbuffer);
     return buffer;
 }
 
@@ -263,12 +266,12 @@ void Dx11GraphicsAPI::SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer)
     }
     auto pbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(buffer.lock());
 
-    if (pbuffer == nullptr || pbuffer->GetSlot() == HIGHER_AVAILABLE_SLOT || pbuffer->m_buffer == nullptr)
+    if (pbuffer == nullptr || pbuffer->m_buffer == nullptr || pbuffer->GetSlot() >= HIGHER_AVAILABLE_SLOT)
     {
         return;
     }
 
-    m_immediateContext->VSGetConstantBuffers(pbuffer->GetSlot(), 1, &pbuffer->m_buffer);
+    m_immediateContext->VSSetConstantBuffers(pbuffer->GetSlot(), 1, &pbuffer->m_buffer);
 }
 
 void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data)
@@ -288,10 +291,10 @@ void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer,
     m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, &Data, 0, 0);
 }
 
-std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11VertexShader* shader)
+std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11VertexShader* shader)
 {
     ID3D11VertexShader* vertexShader = nullptr;
-    HRESULT hr = m_device->CreateVertexShader(shaderBytecode, bytecodeLenght, classLink, &vertexShader);
+    HRESULT hr = m_device->CreateVertexShader(shaderBytecode, bytecodeLenght, nullptr, &vertexShader);
     assert(SUCCEEDED(hr));
 
     auto shaderPtr = std::make_shared<VertexShader>();
@@ -299,10 +302,10 @@ std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* sh
     return shaderPtr;
 }
 
-std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLength, ID3D11ClassLinkage* classLink, ID3D11PixelShader* shader)
+std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLength,  ID3D11PixelShader* shader)
 {
     ID3D11PixelShader* pixelShader = nullptr;
-    HRESULT hr = m_device->CreatePixelShader(shaderBytecode, bytecodeLength, classLink, &pixelShader);
+    HRESULT hr = m_device->CreatePixelShader(shaderBytecode, bytecodeLength, nullptr, &pixelShader);
     assert(SUCCEEDED(hr));
 
     auto shaderPtr = std::make_shared<Dx11PixelShader>();

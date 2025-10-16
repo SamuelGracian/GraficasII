@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <vector>
 #include <memory>
+#include <string>
 
 //_______________________________________________________________
 //includes
@@ -14,6 +15,29 @@
 #include "Dx11PixelShader.h"
 #include "Dx11VertexShader.h"
 #include "Dx11SwapChain.h"
+
+#if defined (DEBUG) || defined (_DEBUG)
+
+#if !defined(ASSIGN_DEBUG_NAME)
+#   define ASSIGN_DEBUG_NAME(t, a)                                                                  \
+   if (a)                                                                                          \
+    {                                                                                               \
+        std::string n = typeid(t).name();                                                                \
+        a->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<uint32_t>(n.size()), n.c_str());     \
+    }
+#endif
+
+#else 
+
+#if !defined(ASSIGN_DEBUG_NAME)
+#   define ASSIGN_DEBUG_NAME(s, a)                                                                  \
+
+#endif
+
+#endif // DEBUG
+
+
+
 //_______________________________________________________________
 
 class IndexBuffer;
@@ -57,9 +81,9 @@ public:
 	void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) override;
 
 	//Shaders functions
-	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11VertexShader* shader) override;
+	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11VertexShader* shader) override;
 
-	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11ClassLinkage* classLink, ID3D11PixelShader* shader) override;
+	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght,ID3D11PixelShader* shader) override;
 
 	//DepthStencil
 	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) override;

@@ -377,6 +377,7 @@ HRESULT InitDevice()
         return hr;
     }
 
+    ///To do compile dentro de Gx11
     // Create the pixel shader
     hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
     pPSBlob->Release();
@@ -462,7 +463,7 @@ HRESULT InitDevice()
     GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
-    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 
     // Create the constant buffers
@@ -471,12 +472,8 @@ HRESULT InitDevice()
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
 
-    //hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &g_pCBNeverChanges);
-    //hr = g_pd3dDevice->CreateBuffer(&bd, nullptr, &Gapi_constbuffer.m_buffer);
-    //if (FAILED(hr))
-    //    return hr;
 
-    Gapi_constbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(GAPI->CreateConstantBuffer(sizeof(CBNeverChanges),8,nullptr));
+    Gapi_constbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(GAPI->CreateConstantBuffer(sizeof(CBNeverChanges),0,nullptr));
 
 
     bd.ByteWidth = sizeof(CBChangeOnResize);
@@ -519,7 +516,10 @@ HRESULT InitDevice()
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
     //g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, nullptr, &cbNeverChanges, 0, 0);
-    GAPI->m_immediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+    //GAPI->m_immediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
+    ///Update constant buffer
+    GAPI->UpdateConstantBuffer(Gapi_constbuffer, sizeof(cbNeverChanges), &cbNeverChanges);
+
 
     // Initialize the projection matrix
     g_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f);
@@ -620,7 +620,8 @@ void Render()
     }
 
     // Rotate cube around the origin
-    g_World = XMMatrixRotationY(t);
+    //g_World = XMMatrixRotationY(t);
+    g_World = XMMatrixIdentity();
 
     // Modify the color
     g_vMeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
@@ -652,7 +653,8 @@ void Render()
     //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
     GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader.m_shader, nullptr, 0);
     //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-    GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
+    //GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
+    GAPI->SetConstantBuffer(Gapi_constbuffer);
     GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
     GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);

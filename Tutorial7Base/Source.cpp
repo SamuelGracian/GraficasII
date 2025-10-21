@@ -45,11 +45,6 @@ using namespace DirectX;
 // Graphics API
 //-------------------------------------------------------------------------------------
 
-Dx11VertexShader Gapi_vrtxShader;
-Dx11PixelShader Gapi_pxlShader;
-
-Dx11DepthStencil Gapi_depthStencil;
-
 
 
 Dx11DepthStencilView Gapi_dpStencilView;
@@ -116,7 +111,7 @@ XMFLOAT4                            g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 
 //--------------------------------------------------------------------------------------
-//Interface
+//Interface GRAPI
 //--------------------------------------------------------------------------------------
 
 std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
@@ -124,7 +119,9 @@ std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
 std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
 std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
-
+std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
+std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
+std::shared_ptr<Dx11DepthStencil> Gapi_depthStencil = nullptr;
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -287,7 +284,7 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-    // Create depth stencil texture
+ //   // Create depth stencil texture
     D3D11_TEXTURE2D_DESC descDepth = {};
     descDepth.Width = width;
     descDepth.Height = height;
@@ -300,10 +297,14 @@ HRESULT InitDevice()
     descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
-    //hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
-    hr = GAPI->m_device->CreateTexture2D(&descDepth, nullptr, &Gapi_depthStencil.m_depthStencil);
-    if (FAILED(hr))
-        return hr;
+ //   //hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
+ //   //---------------------------------------------
+	////DepthStencil com grapi
+ //   hr = GAPI->m_device->CreateTexture2D(&descDepth, nullptr, &Gapi_depthStencil.m_depthStencil);
+ //   if (FAILED(hr))
+ //       return hr;
+
+	Gapi_depthStencil = std::static_pointer_cast<Dx11DepthStencil>(GAPI->CreateDepthStencil(width, height));
 
     // Create the depth stencil view
     D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
@@ -311,7 +312,7 @@ HRESULT InitDevice()
     descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     descDSV.Texture2D.MipSlice = 0;
     //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
-    hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil.m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
+    hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil->m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
     if (FAILED(hr))
         return hr;
 
@@ -339,15 +340,17 @@ HRESULT InitDevice()
         return hr;
     }
 
-    //-----------------------------------------------------------------
+    ///-----------------------------------------------------------------
     // Create the vertex shader
     
-    hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
-    if (FAILED(hr))
-    {
-        pVSBlob->Release();
-        return hr;
-    }
+    //hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
+    //if (FAILED(hr))
+    //{
+    //    pVSBlob->Release();
+    //    return hr;
+    //}
+
+	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize()));
 
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -378,11 +381,14 @@ HRESULT InitDevice()
     }
 
     ///To do compile dentro de Gx11
-    // Create the pixel shader
-    hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
-    pPSBlob->Release();
-    if (FAILED(hr))
-        return hr;
+	/// --------------------------------------------------------------
+    /// Create the pixel shader
+    //hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
+    //pPSBlob->Release();
+    //if (FAILED(hr))
+    //    return hr;
+
+	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 
     // Create vertex buffer
     SimpleVertex vertices[] =
@@ -552,11 +558,11 @@ void CleanupDevice()
     if (Gapi_indxBuffer->m_buffer) Gapi_indxBuffer->m_buffer->Release();
     if (g_pVertexLayout) g_pVertexLayout->Release();
     //if (g_pVertexShader) g_pVertexShader->Release();
-    if (Gapi_vrtxShader.m_shader) Gapi_vrtxShader.m_shader->Release();
+    if (Gapi_vrtxShader->m_shader) Gapi_vrtxShader->m_shader->Release();
     //if (g_pPixelShader) g_pPixelShader->Release();
-    if (Gapi_pxlShader.m_shader) Gapi_pxlShader.m_shader->Release();
+    if (Gapi_pxlShader->m_shader) Gapi_pxlShader->m_shader->Release();
     //if (g_pDepthStencil) g_pDepthStencil->Release();
-    if (Gapi_depthStencil.m_depthStencil)Gapi_depthStencil.m_depthStencil->Release();
+    if (Gapi_depthStencil->m_depthStencil)Gapi_depthStencil->m_depthStencil->Release();
     //if (g_pDepthStencilView) g_pDepthStencilView->Release();
     if (Gapi_dpStencilView.m_depthStencilView) Gapi_dpStencilView.m_depthStencilView->Release();
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
@@ -652,14 +658,14 @@ void Render()
     // Render the cube
     //
     //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
-    GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader.m_shader, nullptr, 0);
+    GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
     //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
     //GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
     GAPI->SetConstantBuffer(Gapi_constbuffer);
     GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
     GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-    GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader.m_shader, nullptr, 0);
+    GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
     GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
     GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
     GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);

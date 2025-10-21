@@ -20,6 +20,9 @@ class ConstantBuffer;
 
 class VertexShader;
 
+class VertexShader;
+
+class PixelShader;
 
 class GRAPI
 {
@@ -56,9 +59,11 @@ public:
 	virtual void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) = 0;
 
 	//Shader functions
-	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght, ID3D11VertexShader* shader) = 0;
+	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght) = 0;
 
-	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11PixelShader* shader) = 0;
+	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght) = 0;
+
+	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
 
 	//DepthStencil
 	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) = 0;

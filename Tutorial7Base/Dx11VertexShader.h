@@ -1,7 +1,7 @@
 #pragma once
 #include "VertexShader.h"
 
-class Dx11VertexShader : VertexShader
+class Dx11VertexShader : public VertexShader
 {
 public:
 	Dx11VertexShader()

@@ -16,6 +16,8 @@
 #include "Dx11VertexShader.h"
 #include "Dx11SwapChain.h"
 
+#include "Dx11DepthStecil.h"
+
 #if defined (DEBUG) || defined (_DEBUG)
 
 #if !defined(ASSIGN_DEBUG_NAME)
@@ -58,7 +60,7 @@ public:
 	//Clean up function
 	void CleanUpResources() override;
 
-	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0 ) override;
+	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0) override;
 
 	std::shared_ptr<Dx11SwapChain>GetSwapChain();
 
@@ -75,21 +77,27 @@ public:
 		const void* vertices = nullptr) override;
 
 	//Setbuffers
-	void SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer ) override;
+	void SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer) override;
 
 	//update buffers
 	void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) override;
 
 	//Shaders functions
-	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght, ID3D11VertexShader* shader) override;
+	//Create shaders
+	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght) override;
 
-	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght,ID3D11PixelShader* shader) override;
+	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght) override;
+
+	//Set shaders
+	void SetVertexShader(std::weak_ptr<VertexShader> shader) override;
 
 	//DepthStencil
 	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) override;
 
 	ID3D11Device* m_device;
+
 	ID3D11DeviceContext* m_immediateContext;
-//private:
+
+private:
 	IDXGISwapChain* m_swapChain;
 };

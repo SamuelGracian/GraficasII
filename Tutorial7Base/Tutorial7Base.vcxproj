@@ -130,6 +130,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Basebuffers.cpp" />
+    <ClCompile Include="BaseShaders.cpp" />
+    <ClCompile Include="BaseShaders.h" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="ContainerFiles.h" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />

@@ -26,17 +26,22 @@ void Dx11CommandBuffer::BeginCommandBuffer()
 
 void Dx11CommandBuffer::UpdateConstBuffer(uint32_t Slot, uint32_t bytewidt, const void* data)
 {
-	if (m_context == nullptr || data == nullptr || Slot >= HIGHER_AVAILABLE_SLOT )
+	if (data == nullptr || Slot >= HIGHER_AVAILABLE_SLOT)
 	{
 		return;
 	}
+
 	auto Pbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(m_constantBufferList[Slot]);
 
-	if (Pbuffer == nullptr || Pbuffer->m_buffer == nullptr || Pbuffer->GetByteWidth() != bytewidt)
+	if (Pbuffer == nullptr || Pbuffer->GetByteWidth() != bytewidt)
 	{
 		return;
 	}
-	m_context->UpdateSubresource(Pbuffer->m_buffer, 0, nullptr, &data, 0, 0);
+
+	
+	memcpy(m_PendingConstantBufferData[Slot], data, Pbuffer->GetByteWidth());
+
+	m_isBufferReady = false;
 }
 
 void Dx11CommandBuffer::DispatchCommandBufer(std::weak_ptr<CommandBuffer> buffer)
@@ -76,22 +81,33 @@ void Dx11CommandBuffer::RecordCommandList()
 
 	/// Aqui van todas las instrucciones que se tienen que asignar
 
-	for (auto& buffers : m_constantBufferList)
+	for (uint8_t i = 0; i<HIGHER_AVAILABLE_SLOT ; i++)
 	{
-		if (buffers == nullptr)
+		auto pbuffer = m_constantBufferList[i];
+		auto pData = m_PendingConstantBufferData[i];
+
+		if (pbuffer == nullptr)
 		{
 			continue;
 		}
-		auto pDX11buffer = std::static_pointer_cast<Dx11ConstatBuffer>(buffers);
+		auto pDX11buffer = std::static_pointer_cast<Dx11ConstatBuffer>(pbuffer);
 
-		if (pDX11buffer == nullptr || pDX11buffer->m_buffer == nullptr || buffers->GetSlot() >= HIGHER_AVAILABLE_SLOT)
+		if (pDX11buffer == nullptr || pDX11buffer->m_buffer == nullptr || pbuffer->GetSlot() >= HIGHER_AVAILABLE_SLOT)
 		{
 			continue;
 		}
+
 		m_context->VSSetConstantBuffers(pDX11buffer->GetSlot(), 1, &pDX11buffer->m_buffer);
 		m_context->VSSetConstantBuffers(pDX11buffer->GetSlot(), 1, &pDX11buffer->m_buffer);
 
+		if (pData != nullptr)
+		{
+			continue;
+		}
+
+		m_context->UpdateSubresource(pDX11buffer->m_buffer, 0, nullptr, pData, 0, 0);
 	}
+
 
 	if (FAILED(m_context->FinishCommandList(false, &m_commandList)))
 	{

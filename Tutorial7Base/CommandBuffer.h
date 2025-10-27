@@ -33,6 +33,6 @@ protected:
 
 	bool m_isBufferReady;
 	std::vector<std::shared_ptr<ConstantBuffer>> m_constantBufferList;
-	std::vector<std::shared_ptr<ConstantBuffer>> m_constantBufferList;
+	std::vector<void*> m_PendingConstantBufferData;
 };
 

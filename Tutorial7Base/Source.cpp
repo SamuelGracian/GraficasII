@@ -122,6 +122,7 @@ std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
 std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
 std::shared_ptr<Dx11DepthStencil> Gapi_depthStencil = nullptr;
+std::shared_ptr<CommandBuffer> Gapi_CommandBuffer = nullptr;
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -297,12 +298,7 @@ HRESULT InitDevice()
     descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
- //   //hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
- //   //---------------------------------------------
-	////DepthStencil com grapi
- //   hr = GAPI->m_device->CreateTexture2D(&descDepth, nullptr, &Gapi_depthStencil.m_depthStencil);
- //   if (FAILED(hr))
- //       return hr;
+
 
 	Gapi_depthStencil = std::static_pointer_cast<Dx11DepthStencil>(GAPI->CreateDepthStencil(width, height));
 
@@ -341,14 +337,6 @@ HRESULT InitDevice()
     }
 
     ///-----------------------------------------------------------------
-    // Create the vertex shader
-    
-    //hr = GAPI->m_device->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &Gapi_vrtxShader.m_shader);
-    //if (FAILED(hr))
-    //{
-    //    pVSBlob->Release();
-    //    return hr;
-    //}
 
 	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize()));
 
@@ -383,10 +371,7 @@ HRESULT InitDevice()
     ///To do compile dentro de Gx11
 	/// --------------------------------------------------------------
     /// Create the pixel shader
-    //hr = GAPI->m_device->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, &Gapi_pxlShader.m_shader);
-    //pPSBlob->Release();
-    //if (FAILED(hr))
-    //    return hr;
+
 
 	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 
@@ -425,16 +410,6 @@ HRESULT InitDevice()
     };
 
     D3D11_BUFFER_DESC bd = {};
-    //bd.Usage = D3D11_USAGE_DEFAULT;
-    //bd.ByteWidth = sizeof(SimpleVertex) * 24;
-    //bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    //bd.CPUAccessFlags = 0;
-    //D3D11_SUBRESOURCE_DATA InitData = {};
-    //InitData.pSysMem = vertices;
-    ////hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
-    //hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &Gapi_vrtxBuffer.m_buffer);
-    //if (FAILED(hr))
-    //    return hr;
 
     Gapi_vrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * 24, vertices));
 
@@ -478,9 +453,30 @@ HRESULT InitDevice()
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
 
-
+    ///-----------------------------------------------------------------------------
+    ///Create constant buffer with GRAPI
+    ///-----------------------------------------------------------------------------
     Gapi_constbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(GAPI->CreateConstantBuffer(sizeof(CBNeverChanges),0,nullptr));
 
+    ///----------------------------------------------------------------------------
+    ///Command buffer
+    ///----------------------------------------------------------------------------
+    Gapi_CommandBuffer = GAPI->CreateCommandBuffer();
+
+    auto pCommand = std::static_pointer_cast<Dx11CommandBuffer>(Gapi_CommandBuffer);
+
+    // Initialize the view matrix
+    XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
+    XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    g_View = XMMatrixLookAtLH(Eye, At, Up);
+
+
+    if (pCommand)
+    {
+        pCommand->BeginCommandBuffer();
+        pCommand->UpdateConstantBuffer(Gapi_constbuffer, sizeof(CBNeverChanges),&CbNeverChanges) ;
+    }
 
     bd.ByteWidth = sizeof(CBChangeOnResize);
     hr = GAPI->m_device->CreateBuffer(&bd, nullptr, &g_pCBChangeOnResize);
@@ -492,10 +488,6 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-    //// Load the Texture
-    //hr = CreateDDSTextureFromFile(g_pd3dDevice, L"seafloor.dds", nullptr, &g_pTextureRV);
-    //if (FAILED(hr))
-    //    return hr;
 
     // Create the sample state
     D3D11_SAMPLER_DESC sampDesc = {};
@@ -513,11 +505,6 @@ HRESULT InitDevice()
     // Initialize the world matrices
     g_World = XMMatrixIdentity();
 
-    // Initialize the view matrix
-    XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
-    XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    g_View = XMMatrixLookAtLH(Eye, At, Up);
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
@@ -677,3 +664,7 @@ void Render()
     //g_pSwapChain->Present(0, 0);
     Gapi_swpChain->m_swapChain->Present(0, 0);
 }
+
+///To do
+// function create shder recibe string con los shdaer
+// string con los defines para compilacion

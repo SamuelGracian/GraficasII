@@ -132,8 +132,10 @@
     <ClCompile Include="Basebuffers.cpp" />
     <ClCompile Include="BaseShaders.cpp" />
     <ClCompile Include="BaseShaders.h" />
+    <ClCompile Include="CommandBuffer.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="ContainerFiles.h" />
+    <ClCompile Include="Dx11CommandBuffer.cpp" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="GRAPI.cpp" />
@@ -142,9 +144,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basebuffers.h" />
+    <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DepthStecil.h" />
     <ClInclude Include="DepthStencilView.h" />
+    <ClInclude Include="Dx11CommandBuffer.h" />
     <ClInclude Include="Dx11DepthStecil.h" />
     <ClInclude Include="Dx11DepthStecilView.h" />
     <ClInclude Include="DX11GRAPI.h" />

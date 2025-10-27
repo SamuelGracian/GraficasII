@@ -13,16 +13,12 @@
 #include "SwapChain.h"
 
 class IndexBuffer;
-
 class  VertexBuffer;
-
 class ConstantBuffer;
-
 class VertexShader;
-
 class VertexShader;
-
 class PixelShader;
+class CommandBuffer;
 
 class GRAPI
 {
@@ -57,6 +53,9 @@ public:
 
 	//Update buffers
 	virtual void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) = 0;
+
+	//Command buffers
+	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() = 0;
 
 	//Shader functions
 	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght) = 0;

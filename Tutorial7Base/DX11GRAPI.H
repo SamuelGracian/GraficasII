@@ -15,8 +15,10 @@
 #include "Dx11PixelShader.h"
 #include "Dx11VertexShader.h"
 #include "Dx11SwapChain.h"
-
+//Depth stencil
 #include "Dx11DepthStecil.h"
+//command buffer
+#include "Dx11CommandBuffer.h"
 
 #if defined (DEBUG) || defined (_DEBUG)
 
@@ -47,8 +49,8 @@ class  VertexBuffer;
 class ConstantBuffer;
 class VertexShader;
 class PixelShader;
-
 class DepthStencil;
+class CommandBuffer;
 
 class Dx11GraphicsAPI : public GRAPI
 {
@@ -81,6 +83,9 @@ public:
 
 	//update buffers
 	void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) override;
+
+	//Command Buffers
+	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() override; 
 
 	//Shaders functions
 	//Create shaders

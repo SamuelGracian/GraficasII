@@ -7,24 +7,6 @@
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
-//namespace GRAPIFormat
-//{
-//    enum Frmt
-//    {
-//        FORMAT_R8G8B8A8_UNORM = 28,
-//    };
-//}
-//uint32_t  GEtFormat(const GRAPIFormat::Frmt = GRAPIFormat::FORMAT_R8G8B8A8_UNORM)
-//{
-//    switch (GRAPIFormat::Frmt)
-//    {
-//        case GRAPIFormat::FORMAT_R8G8B8A8_UNORM;
-//            return;  DXGI_FORMAT::
-//    default:
-//        break;
-//    }
-//}
-
 
 Dx11GraphicsAPI::Dx11GraphicsAPI()
 	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr)
@@ -272,6 +254,7 @@ void Dx11GraphicsAPI::SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer)
     }
 
     m_immediateContext->VSSetConstantBuffers(pbuffer->GetSlot(), 1, &pbuffer->m_buffer);
+    m_immediateContext->PSSetConstantBuffers(pbuffer->GetSlot(), 1, &pbuffer->m_buffer);
 }
 
 void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data)
@@ -289,6 +272,23 @@ void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer,
     }
 
     m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, Data, 0, 0);
+}
+
+std::shared_ptr<CommandBuffer> Dx11GraphicsAPI::CreateCommandBuffer()
+{
+    assert(m_device != nullptr);
+
+    ID3D11DeviceContext* context = nullptr;
+
+    if (FAILED(m_device->CreateDeferredContext(0, &context)))
+    {
+        return nullptr;
+    }
+    auto Buffer = std::make_shared<Dx11CommandBuffer>();
+
+    Buffer->m_context = context;
+
+    return Buffer;
 }
 
 

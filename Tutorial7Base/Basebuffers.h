@@ -10,10 +10,11 @@ public:
 
 	virtual ~BaseBuffer();
 
-	void SetByteWidth(const uint32_t bytewidth);
+	void SetByteWidth(const uint32_t bytewidth = 0);
 
 	const uint32_t GetByteWidth()const;
 
-private:
+protected:
 	uint32_t m_byteWidth;
+
 };

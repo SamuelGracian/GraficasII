@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "ConstantBuffer.h"
+#include "RenderElement.h"
 
 #define HIGHER_AVAILABLE_SLOT 8
 
@@ -27,12 +28,16 @@ public:
 
 	const bool IsBufferReady() const;
 
+	void BindRenderElement(const std::shared_ptr<RenderElement>& element = nullptr);
+
+	void ClearRenderElement();
+
 protected:
 
 	virtual void RecordCommandList() = 0;
 
 	bool m_isBufferReady;
 	std::vector<std::shared_ptr<ConstantBuffer>> m_constantBufferList;
-	std::vector<void*> m_PendingConstantBufferData;
+	std::vector<std::shared_ptr<RenderElement>> m_renderElementList;
 };
 

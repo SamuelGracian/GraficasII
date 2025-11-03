@@ -38,9 +38,6 @@ void Dx11CommandBuffer::UpdateConstBuffer(uint32_t Slot, uint32_t bytewidt, cons
 		return;
 	}
 
-	
-	memcpy(m_PendingConstantBufferData[Slot], data, Pbuffer->GetByteWidth());
-
 	m_isBufferReady = false;
 }
 
@@ -84,7 +81,6 @@ void Dx11CommandBuffer::RecordCommandList()
 	for (uint8_t i = 0; i<HIGHER_AVAILABLE_SLOT ; i++)
 	{
 		auto pbuffer = m_constantBufferList[i];
-		auto pData = m_PendingConstantBufferData[i];
 
 		if (pbuffer == nullptr)
 		{
@@ -100,12 +96,12 @@ void Dx11CommandBuffer::RecordCommandList()
 		m_context->VSSetConstantBuffers(pDX11buffer->GetSlot(), 1, &pDX11buffer->m_buffer);
 		m_context->VSSetConstantBuffers(pDX11buffer->GetSlot(), 1, &pDX11buffer->m_buffer);
 
-		if (pData != nullptr)
+		if (pbuffer ->GetUpdatePending())
 		{
 			continue;
 		}
 
-		m_context->UpdateSubresource(pDX11buffer->m_buffer, 0, nullptr, pData, 0, 0);
+		m_context->UpdateSubresource(pDX11buffer->m_buffer, 0, nullptr, pbuffer ->GetRawData(), 0, 0);
 	}
 
 

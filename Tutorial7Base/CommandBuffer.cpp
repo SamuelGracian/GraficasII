@@ -60,3 +60,18 @@ const bool CommandBuffer::IsBufferReady() const
 {
 	return m_isBufferReady;
 }
+
+void CommandBuffer::BindRenderElement(const std::shared_ptr<RenderElement>& element)
+{
+	if (element == nullptr)
+	{
+		return;
+	}
+	m_renderElementList.push_back(element);
+	m_isBufferReady = false;
+}
+
+void CommandBuffer::ClearRenderElement()
+{
+	m_renderElementList.clear();
+}

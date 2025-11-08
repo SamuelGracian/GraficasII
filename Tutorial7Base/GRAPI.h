@@ -11,6 +11,10 @@
 //Depth stencil
 #include "DepthStecil.h"
 #include "SwapChain.h"
+//topology
+#include "Topology.h"
+//Render Pass
+#include "Pass.h"
 
 class IndexBuffer;
 class  VertexBuffer;
@@ -19,6 +23,8 @@ class VertexShader;
 class VertexShader;
 class PixelShader;
 class CommandBuffer;
+class Topology;
+class Pass;
 
 class GRAPI
 {
@@ -53,6 +59,10 @@ public:
 
 	//Update buffers
 	virtual void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) = 0;
+
+	// Topology
+	virtual std::shared_ptr<Topology> CreateTopology(Topology::Type type = Topology::Type::TriangleList) = 0;
+	virtual void SetTopology(std::weak_ptr<Topology> topology) = 0;
 
 	//Command buffers
 	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() = 0;

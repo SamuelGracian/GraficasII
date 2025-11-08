@@ -17,5 +17,4 @@ public:
 
 private:
 	std::shared_ptr<CommandBuffer> m_commandBuffer;
-
 };

@@ -123,6 +123,7 @@ std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
 std::shared_ptr<Dx11DepthStencil> Gapi_depthStencil = nullptr;
 std::shared_ptr<CommandBuffer> Gapi_CommandBuffer = nullptr;
+std::shared_ptr<Topology> Gapi_topology = nullptr;
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -444,8 +445,9 @@ HRESULT InitDevice()
     GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
     // Set primitive topology
-    GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+    //GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    Gapi_topology = GAPI->CreateTopology(Topology::Type::TriangleList);
+    GAPI->SetTopology(Gapi_topology);
 
     // Create the constant buffers
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -664,7 +666,3 @@ void Render()
     //g_pSwapChain->Present(0, 0);
     Gapi_swpChain->m_swapChain->Present(0, 0);
 }
-
-///To do
-// function create shder recibe string con los shdaer
-// string con los defines para compilacion

@@ -22,10 +22,6 @@ CommandBuffer::~CommandBuffer()
 
 }
 
-const bool CommandBuffer::IsbuffReady()
-{
-	return m_isBufferReady;
-}
 
 void CommandBuffer::BindConstBuffer(const std::shared_ptr<ConstantBuffer>& buffer)
 {

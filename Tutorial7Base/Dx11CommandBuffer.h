@@ -21,6 +21,8 @@ public:
 
 	virtual void CleanState() override;
 
+	void BindRenderElement(std::weak_ptr<RenderElement> element);
+
 protected:
 
 	virtual void RecordCommandList() override;

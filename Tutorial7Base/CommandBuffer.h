@@ -6,15 +6,18 @@
 #include "RenderElement.h"
 
 #define HIGHER_AVAILABLE_SLOT 8
+#define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 
+class ConstantBuffer;
+class RenderElement;
 
 class CommandBuffer
 {
+	friend class Pass;
+
 public:
 	CommandBuffer();
 	~CommandBuffer();
-
-	const bool IsbuffReady();
 
 	virtual void BeginCommandBuffer() = 0;
 
@@ -31,6 +34,7 @@ public:
 	void BindRenderElement(const std::shared_ptr<RenderElement>& element = nullptr);
 
 	void ClearRenderElement();
+
 
 protected:
 

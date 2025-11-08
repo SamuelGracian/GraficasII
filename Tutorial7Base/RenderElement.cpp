@@ -9,20 +9,9 @@ RenderElement :: ~RenderElement()
 
 void RenderElement :: BindConstBuffer(std::shared_ptr<ConstantBuffer>& buffer)
 {
+	if (buffer == nullptr || buffer->GetSlot() >= HIGHER_AVAILABLE_SLOT || buffer->GetByteWidth() == 0)
+	{
+		return;
+	}
+	m_constantBufferList[buffer->GetSlot()] = buffer;
 }
-void RenderElement::BindVertexBuffer(std::shared_ptr<VertexBuffer>& buffer)
-{
-}
-
-void RenderElement::BindIndexBuffer(std::shared_ptr<IndexBuffer>& buffer)
-{
-}
-
-void RenderElement::BindVertexShader(std::shared_ptr<VertexShader>& shader)
-{
-}
-
-void RenderElement::BindPixelShader(std::shared_ptr<PixelShader>& shader)
-{
-}
-

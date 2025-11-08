@@ -3,6 +3,7 @@
 #include <d3d11_1.h> 
 #include "dxgiformat.h"
 #include <iostream>
+#include "Dx11Topology.h"
 
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
@@ -274,6 +275,50 @@ void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer,
     m_immediateContext->UpdateSubresource(pbuffer->m_buffer, 0, nullptr, Data, 0, 0);
 }
 
+std::shared_ptr<Topology> Dx11GraphicsAPI::CreateTopology(Topology::Type type)
+{
+    auto topo = std::make_shared<Dx11Topology>();
+    // set base type and DX primitive accordingly
+    topo->SetType(type);
+
+    switch (type)
+    {
+    case Topology::Type::TriangleList:
+        topo-> m_dx11Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        break;
+    case Topology::Type::TriangleStrip:
+        topo-> m_dx11Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        break;
+    case Topology::Type::LineList:
+        topo->m_dx11Topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+        break;
+    case Topology::Type::PointList:
+        topo->m_dx11Topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+        break;
+    default:
+        topo->m_dx11Topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        break;
+    }
+
+    return topo;
+}
+
+void Dx11GraphicsAPI::SetTopology(std::weak_ptr<Topology> topology)
+{
+    if (m_immediateContext == nullptr || topology.expired())
+    {
+        return;
+    }
+
+    auto ptopo = std::static_pointer_cast<Dx11Topology>(topology.lock());
+    if (ptopo == nullptr)
+    {
+        return;
+    }
+
+    m_immediateContext->IASetPrimitiveTopology(ptopo->m_dx11Topology);
+}
+
 std::shared_ptr<CommandBuffer> Dx11GraphicsAPI::CreateCommandBuffer()
 {
     assert(m_device != nullptr);
@@ -325,6 +370,7 @@ void Dx11GraphicsAPI::RenderPass(std::weak_ptr<Pass> pase)
     {
         return;
     }
+
     pBuffer->RecordCommandList();
 
     if (pBuffer->m_commandList == nullptr)
@@ -333,6 +379,20 @@ void Dx11GraphicsAPI::RenderPass(std::weak_ptr<Pass> pase)
 	}
 
 	m_immediateContext->ExecuteCommandList(pBuffer->m_commandList, FALSE);
+}
+
+std::shared_ptr<Pass> Dx11GraphicsAPI::CreatePass()
+{
+    auto pass = std::make_shared<Pass>();
+
+    auto cmdBuffer = CreateCommandBuffer();
+    if (cmdBuffer)
+    {
+        cmdBuffer->BeginCommandBuffer();
+        pass->m_commandBuffer = cmdBuffer;
+    }
+
+    return pass;
 }
 
 

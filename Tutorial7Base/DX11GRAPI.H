@@ -15,6 +15,8 @@
 #include "Dx11PixelShader.h"
 #include "Dx11VertexShader.h"
 #include "Dx11SwapChain.h"
+//topology
+#include "Topology.h"
 //Depth stencil
 #include "Dx11DepthStecil.h"
 //command buffer
@@ -52,7 +54,9 @@ class ConstantBuffer;
 class VertexShader;
 class PixelShader;
 class DepthStencil;
+class Topology;
 class CommandBuffer;
+class Pass;
 
 class Dx11GraphicsAPI : public GRAPI
 {
@@ -86,10 +90,18 @@ public:
 	//update buffers
 	void UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer, const uint32_t bytewidth, void* Data = nullptr) override;
 
+	// Topology
+	std::shared_ptr<Topology> CreateTopology(Topology::Type type = Topology::Type::TriangleList) override;
+
+	void SetTopology(std::weak_ptr<Topology> topology) override;
+
 	//Command Buffers
 	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() override; 
 
 	virtual  void DispatchCommandBufer(std::weak_ptr<CommandBuffer> buffer) override;
+
+	//Pass 
+	std::shared_ptr<Pass> CreatePass() override;
 
 	virtual void RenderPass(std::weak_ptr<Pass> pase) override;
 

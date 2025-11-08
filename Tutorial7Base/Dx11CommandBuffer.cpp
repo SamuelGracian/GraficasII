@@ -1,4 +1,5 @@
 #include "Dx11CommandBuffer.h"
+#include <algorithm>
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
@@ -23,6 +24,8 @@ void Dx11CommandBuffer::BeginCommandBuffer()
 	m_context->ClearState();
 
 	SAFE_RELEASE(m_commandList);
+
+	m_isBufferReady = false;
 }
 
 
@@ -33,13 +36,19 @@ void Dx11CommandBuffer::UpdateConstBuffer(uint32_t Slot, uint32_t bytewidt, cons
 		return;
 	}
 
-	auto Pbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(m_constantBufferList[Slot]);
-
-	if (Pbuffer == nullptr || Pbuffer->GetByteWidth() != bytewidt)
+	if (Slot >= m_constantBufferList.size())
 	{
 		return;
 	}
 
+	auto pbuffer = m_constantBufferList[Slot];
+
+	if (pbuffer == nullptr || pbuffer->GetByteWidth() != bytewidt)
+	{
+		return;
+	}
+
+	pbuffer->UpdateData(data, bytewidt);
 	m_isBufferReady = false;
 }
 
@@ -65,14 +74,25 @@ void Dx11CommandBuffer::CleanState()
 	m_context->ClearState();
 
 	SAFE_RELEASE(m_commandList);
+
+	m_isBufferReady = false;
 }
 
 /// <summary>
 /// Antes era el DrawRenderElement
 /// </summary>
 /// <param name="element"></param>
-void Dx11CommandBuffer::BindRenderElement(std::weak_ptr<RenderElement> element)
+void Dx11CommandBuffer::BindRenderElement(const std::shared_ptr<RenderElement>& element)
 {
+	if (element == nullptr)
+		return;
+
+	auto it = std::find(m_renderElementList.begin(), m_renderElementList.end(), element);
+	if (it == m_renderElementList.end())
+	{
+		m_renderElementList.push_back(element);
+		m_isBufferReady = false;
+	}
 }
 
 void Dx11CommandBuffer::RecordCommandList()

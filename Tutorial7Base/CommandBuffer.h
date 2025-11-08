@@ -17,7 +17,7 @@ class CommandBuffer
 
 public:
 	CommandBuffer();
-	~CommandBuffer();
+	virtual ~CommandBuffer();
 
 	virtual void BeginCommandBuffer() = 0;
 
@@ -31,7 +31,7 @@ public:
 
 	const bool IsBufferReady() const;
 
-	void BindRenderElement(const std::shared_ptr<RenderElement>& element = nullptr);
+	virtual void BindRenderElement(const std::shared_ptr<RenderElement>& element = nullptr);
 
 	void ClearRenderElement();
 

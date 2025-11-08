@@ -21,7 +21,8 @@ public:
 
 	virtual void CleanState() override;
 
-	void BindRenderElement(std::weak_ptr<RenderElement> element);
+
+	void BindRenderElement(const std::shared_ptr<RenderElement>& element) override;
 
 protected:
 

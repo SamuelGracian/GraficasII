@@ -291,6 +291,50 @@ std::shared_ptr<CommandBuffer> Dx11GraphicsAPI::CreateCommandBuffer()
     return Buffer;
 }
 
+void Dx11GraphicsAPI::DispatchCommandBufer(std::weak_ptr<CommandBuffer> buffer)
+{
+    if (m_immediateContext == nullptr || buffer.expired())
+    {
+        return;
+    }
+    auto cmdBuffer = std::static_pointer_cast<Dx11CommandBuffer>(buffer.lock());
+    if (cmdBuffer == nullptr || cmdBuffer->m_commandList == nullptr)
+    {
+        return;
+    }
+	m_immediateContext->ExecuteCommandList(cmdBuffer->m_commandList, FALSE);
+}
+
+void Dx11GraphicsAPI::RenderPass(std::weak_ptr<Pass> pase)
+{
+    if (m_immediateContext == nullptr || pase.expired())
+    {
+        return;
+	}
+
+    auto pPass = pase.lock();
+
+    if (pPass->m_commandBuffer == nullptr)
+    {
+        return;
+	}
+
+	auto pBuffer = std::static_pointer_cast<Dx11CommandBuffer>(pPass->m_commandBuffer);
+
+    if (pBuffer == nullptr)
+    {
+        return;
+    }
+    pBuffer->RecordCommandList();
+
+    if (pBuffer->m_commandList == nullptr)
+    {
+        return;
+	}
+
+	m_immediateContext->ExecuteCommandList(pBuffer->m_commandList, FALSE);
+}
+
 
 std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght)
 {

@@ -57,6 +57,14 @@ public:
 	//Command buffers
 	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() = 0;
 
+	virtual void DispatchCommandBufer(std::weak_ptr<CommandBuffer> buffer) = 0;
+
+	//Pass
+
+	virtual std::shared_ptr<Pass> CreatePass() = 0;
+
+	virtual void RenderPass(std::weak_ptr<Pass> pase) = 0;
+
 	//Shader functions
 	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght) = 0;
 

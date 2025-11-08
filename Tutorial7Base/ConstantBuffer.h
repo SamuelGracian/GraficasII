@@ -18,7 +18,7 @@ public:
 
 	void SetByteWidth(const uint32_t bytewidth);
 
-	void UpdateData(const void* data = nullptr , const uint32_t byteWidth);
+	void UpdateData(const void* data = nullptr , const uint32_t byteWidth = 0);
 
 	const void* GetRawData() const;
 	

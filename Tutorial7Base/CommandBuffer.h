@@ -18,7 +18,7 @@ public:
 
 	virtual void BeginCommandBuffer() = 0;
 
-	void BindConstBuffer(std::shared_ptr<ConstantBuffer> &buffer);
+	void BindConstBuffer(const std::shared_ptr<ConstantBuffer>& buffer);
 
 	virtual void UpdateConstBuffer(uint32_t Slot = HIGHER_AVAILABLE_SLOT, uint32_t bytewidt = 0, const void* data = nullptr) = 0;
 

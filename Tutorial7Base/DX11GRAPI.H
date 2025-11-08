@@ -19,6 +19,8 @@
 #include "Dx11DepthStecil.h"
 //command buffer
 #include "Dx11CommandBuffer.h"
+//Pass
+#include "Pass.h"
 
 #if defined (DEBUG) || defined (_DEBUG)
 
@@ -86,6 +88,10 @@ public:
 
 	//Command Buffers
 	virtual std::shared_ptr<CommandBuffer> CreateCommandBuffer() override; 
+
+	virtual  void DispatchCommandBufer(std::weak_ptr<CommandBuffer> buffer) override;
+
+	virtual void RenderPass(std::weak_ptr<Pass> pase) override;
 
 	//Shaders functions
 	//Create shaders

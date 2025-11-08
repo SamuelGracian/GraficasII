@@ -139,6 +139,7 @@
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="GRAPI.cpp" />
+    <ClCompile Include="Pass.cpp" />
     <ClCompile Include="RenderElement.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Dx11VertexBuffer.h" />
     <ClInclude Include="GRAPI.h" />
     <ClInclude Include="Indexbuffer.h" />
+    <ClInclude Include="Pass.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="RenderElement.h" />
     <ClInclude Include="RenderPass.h" />

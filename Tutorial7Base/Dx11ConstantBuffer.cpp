@@ -11,5 +11,3 @@ Dx11ConstatBuffer::~Dx11ConstatBuffer()
 	SAFE_RELEASE(m_buffer);
 }
 
-///TO DO
-/// RELEASE a los objetos

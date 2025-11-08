@@ -475,7 +475,7 @@ HRESULT InitDevice()
     if (pCommand)
     {
         pCommand->BeginCommandBuffer();
-        pCommand->UpdateConstantBuffer(Gapi_constbuffer, sizeof(CBNeverChanges),&CbNeverChanges) ;
+        //pCommand->UpdateConstantBuffer(Gapi_constbuffer, sizeof(CBNeverChanges),&CbNeverChanges) ;
     }
 
     bd.ByteWidth = sizeof(CBChangeOnResize);

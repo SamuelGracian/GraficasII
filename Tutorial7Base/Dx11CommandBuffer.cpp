@@ -3,6 +3,8 @@
 #define HIGHER_AVAILABLE_SLOT 8
 
 Dx11CommandBuffer::Dx11CommandBuffer()
+	: m_context(nullptr),
+	m_commandList(nullptr)
 {
 	m_bufferList = std::vector<ID3D11Buffer*>(HIGHER_AVAILABLE_SLOT, nullptr);
 }

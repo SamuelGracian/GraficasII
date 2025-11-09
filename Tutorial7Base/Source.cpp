@@ -594,7 +594,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-
 //--------------------------------------------------------------------------------------
 // Render a frame
 //--------------------------------------------------------------------------------------
@@ -643,22 +642,30 @@ void Render()
     cb.vMeshColor = g_vMeshColor;
     GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
 
-    //
-    // Render the cube
-    //
-    //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
-    GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
-    //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-    //GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
-    GAPI->SetConstantBuffer(Gapi_constbuffer);
-    GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
-    GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-    //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-    GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
-    GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-    GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
-    GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
-    GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+    if (Gapi_CommandBuffer)
+    {
+        Gapi_CommandBuffer->Execute();
+    }
+    else
+    {
+        // Fallback / referencia: el render directo queda comentado para que puedas revisarlo.
+        /*
+        // Render the cube
+        //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+        GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
+        //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
+        //GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
+        GAPI->SetConstantBuffer(Gapi_constbuffer);
+        GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
+        GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+        //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+        GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
+        GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+        GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
+        GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
+        GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+        */
+    }
 
     //
     // Present our back buffer to our front buffer

@@ -165,3 +165,16 @@ void Dx11CommandBuffer::RecordCommandList()
 
 	m_isBufferReady = true;
 }
+
+void Dx11CommandBuffer::Execute()
+{
+	RecordCommandList();
+
+	if (m_context == nullptr)
+		return;
+
+	if (m_commandList)
+	{
+		m_context->ExecuteCommandList(m_commandList, false);
+	}
+}

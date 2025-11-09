@@ -31,10 +31,11 @@ public:
 
 	const bool IsBufferReady() const;
 
-	virtual void BindRenderElement(const std::shared_ptr<RenderElement>& element = nullptr);
-
 	void ClearRenderElement();
 
+	void BindRenderElement(const std::shared_ptr<RenderElement>& element);
+
+	virtual void Execute();
 
 protected:
 

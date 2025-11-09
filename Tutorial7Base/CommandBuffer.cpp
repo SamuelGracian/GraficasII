@@ -67,3 +67,9 @@ void CommandBuffer::ClearRenderElement()
 {
 	m_renderElementList.clear();
 }
+
+
+void CommandBuffer::Execute()
+{
+	RecordCommandList();
+}

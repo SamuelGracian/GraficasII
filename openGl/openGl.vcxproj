@@ -112,13 +112,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\DEV\Devlibs\GLFW\include;D:\DEV\Devlibs\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\DEV\Devlibs\GLEW-2.2.0\include;D:\DEV\Devlibs\GLFW\include;D:\DEV\Devlibs\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies);glew32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\DEV\Devlibs\GLFW\lib-vc2022;D:\DEV\Devlibs\GLEW\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\DEV\Devlibs\GLEW-2.2.0\lib\Release\x64;D:\DEV\Devlibs\GLFW\lib-vc2022;D:\DEV\Devlibs\GLEW\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,12 +129,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\DEV\Devlibs\GLFW\include;D:\DEV\Devlibs\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\DEV\Devlibs\GLEW-2.2.0\include;D:\DEV\Devlibs\GLFW\include;D:\DEV\Devlibs\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\DEV\Devlibs\GLFW\lib-vc2022;D:\DEV\Devlibs\GLEW\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\DEV\Devlibs\GLEW-2.2.0\lib\Release\x64;D:\DEV\Devlibs\GLFW\lib-vc2022;D:\DEV\Devlibs\GLEW\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);glew32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

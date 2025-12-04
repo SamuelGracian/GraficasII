@@ -92,11 +92,11 @@ ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 //IDXGISwapChain* g_pSwapChain = nullptr;
 //ID3D11Texture2D* g_pDepthStencil = nullptr;
 //ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
-//ID3D11VertexShader* g_pVertexShader = nullptr;
-//ID3D11PixelShader* g_pPixelShader = nullptr;
+ID3D11VertexShader* g_pVertexShader = nullptr;
+ID3D11PixelShader* g_pPixelShader = nullptr;
 //ID3D11Buffer* g_pVertexBuffer = nullptr;
 //ID3D11Buffer* g_pIndexBuffer = nullptr;
-//ID3D11Buffer* g_pCBNeverChanges = nullptr;
+ID3D11Buffer* g_pCBNeverChanges = nullptr;
 
 ID3D11InputLayout* g_pVertexLayout = nullptr;
 
@@ -648,23 +648,23 @@ void Render()
     }
     else
     {
-        // Fallback / referencia: el render directo queda comentado para que puedas revisarlo.
-        /*
-        // Render the cube
-        //g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+         //Fallback / referencia: el render directo queda comentado para que puedas revisarlo.
+        
+         //Render the cube
+        g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
         GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
-        //g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-        //GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
+        g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
+        GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
         GAPI->SetConstantBuffer(Gapi_constbuffer);
         GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
         GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-        //g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+        g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
         GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
         GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
         GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
         GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
         GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
-        */
+        
     }
 
     //

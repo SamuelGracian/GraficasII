@@ -259,11 +259,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GRAPIOpenGL.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GRAPIOpenGL.h" />
     <ClInclude Include="Math.cpp" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Shader.h" />

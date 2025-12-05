@@ -92,8 +92,8 @@ ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
 //IDXGISwapChain* g_pSwapChain = nullptr;
 //ID3D11Texture2D* g_pDepthStencil = nullptr;
 //ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
-ID3D11VertexShader* g_pVertexShader = nullptr;
-ID3D11PixelShader* g_pPixelShader = nullptr;
+//ID3D11VertexShader* g_pVertexShader = nullptr;
+//ID3D11PixelShader* g_pPixelShader = nullptr;
 //ID3D11Buffer* g_pVertexBuffer = nullptr;
 //ID3D11Buffer* g_pIndexBuffer = nullptr;
 ID3D11Buffer* g_pCBNeverChanges = nullptr;
@@ -614,62 +614,51 @@ void Render()
         t = (timeCur - timeStart) / 1000.0f;
     }
 
-    // Rotate cube around the origin
-    //g_World = XMMatrixRotationY(t);
+    // Reset world / color
     g_World = XMMatrixIdentity();
-
-    // Modify the color
     g_vMeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
     g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
     g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
-    //
-    // Clear the back buffer
-    //
+    // Clear targets
     GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
-
-    //
-    // Clear the depth buffer to 1.0 (max depth)
-    //
-    //g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
     GAPI->m_immediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    //
-    // Update variables that change once per frame
-    //
+    // Update per-frame CB
     CBChangesEveryFrame cb;
     cb.mWorld = XMMatrixTranspose(g_World);
     cb.vMeshColor = g_vMeshColor;
     GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
 
-    if (Gapi_CommandBuffer)
+    // If command buffer exists, execute only if it's ready. Otherwise perform direct draw.
+    if (Gapi_CommandBuffer && Gapi_CommandBuffer->IsBufferReady())
     {
         Gapi_CommandBuffer->Execute();
     }
     else
     {
-         //Fallback / referencia: el render directo queda comentado para que puedas revisarlo.
-        
-         //Render the cube
-        g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
-        GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
-        g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pCBNeverChanges);
-        GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &Gapi_constbuffer -> m_buffer);
-        GAPI->SetConstantBuffer(Gapi_constbuffer);
+        // Use only GAPI objects (avoid raw/uninitialized globals)
+        if (Gapi_vrtxShader && Gapi_vrtxShader->m_shader)
+            GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
+
+        // Bind constant buffers (slot 0 = never-changes, slot1 = projection, slot2 = per-frame)
+        ID3D11Buffer* cb0 = (Gapi_constbuffer && Gapi_constbuffer->m_buffer) ? Gapi_constbuffer->m_buffer : nullptr;
+        GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &cb0);
         GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
         GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-        g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-        GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
+
+        if (Gapi_pxlShader && Gapi_pxlShader->m_shader)
+            GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
+
         GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
         GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
         GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
+
+        // Ensure topology and vertex/index buffers already set in InitDevice()
         GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
-        
     }
 
-    //
-    // Present our back buffer to our front buffer
-    //
-    //g_pSwapChain->Present(0, 0);
-    Gapi_swpChain->m_swapChain->Present(0, 0);
+    // Present
+    if (Gapi_swpChain && Gapi_swpChain->m_swapChain)
+        Gapi_swpChain->m_swapChain->Present(0, 0);
 }

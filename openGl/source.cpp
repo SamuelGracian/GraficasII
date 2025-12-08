@@ -1,4 +1,4 @@
-
+#define OPENGL
 
 #include <iostream>
 #include <vector>
@@ -39,10 +39,10 @@ using std::endl;
 //    FragColor = vec4(vColor, 1.0);
 //}
 //)";
-
+#if defined (OPENGL)
 int main()
 {
-    GRAPIOpenGL app(800, 600, "Cube - OOP pipeline (no GLM)");
+    GRAPIOpenGL app(800, 600, "Cube OPENGL");
     if (!app.InitializeGL())
         return -1;
 
@@ -50,3 +50,5 @@ int main()
     app.ShutdownGL();
     return exitCode;
 }
+
+#endif

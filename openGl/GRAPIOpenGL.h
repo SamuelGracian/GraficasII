@@ -72,4 +72,3 @@ private:
 	static const char* vertexSrc;
 	static const char* fragmentSrc;
 };
-

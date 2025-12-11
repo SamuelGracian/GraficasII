@@ -20,6 +20,7 @@
 #include <directxcolors.h>
 //#include "DDSTextureLoader.h"
 #include "resource.h"
+#include "ObjLoader.h"
 
 /// Buffers
 #include "Dx11ConstantBuffer.h"
@@ -45,18 +46,12 @@ using namespace DirectX;
 // Graphics API
 //-------------------------------------------------------------------------------------
 
-
-
 Dx11DepthStencilView Gapi_dpStencilView;
+
+// NOTE: Removed duplicate `struct SimpleVertex` here. Use the one from ObjLoader.h
 //--------------------------------------------------------------------------------------
 // Structures
 //--------------------------------------------------------------------------------------
-struct SimpleVertex
-{
-    XMFLOAT3 Pos;
-    XMFLOAT2 Tex;
-};
-
 struct CBNeverChanges
 {
     XMMATRIX mView;
@@ -109,6 +104,8 @@ XMMATRIX                            g_View;
 XMMATRIX                            g_Projection;
 XMFLOAT4                            g_vMeshColor(0.7f, 0.7f, 0.7f, 1.0f);
 
+// Number of indices loaded from the OBJ; used by Render()
+UINT g_IndexCount = 0;
 
 //--------------------------------------------------------------------------------------
 //Interface GRAPI
@@ -377,7 +374,7 @@ HRESULT InitDevice()
 	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 
     // Create vertex buffer
-    SimpleVertex vertices[] =
+    /*SimpleVertex vertices[] =
     {
         { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
         { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
@@ -408,46 +405,43 @@ HRESULT InitDevice()
         { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
         { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
         { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
-    };
+    };*/
 
     D3D11_BUFFER_DESC bd = {};
 
-    Gapi_vrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * 24, vertices));
-
-    // Set vertex buffer
-    UINT stride = sizeof(SimpleVertex);
-    UINT offset = 0;
-    GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer->m_buffer, &stride, &offset);
-
-    // Create index buffer
-    // Create vertex buffer
-    WORD indices[] =
+    ///Replace with OBJ loading
     {
-        3,1,0,
-        2,1,3,
-        6,4,5,
-        7,4,6,
-        11,9,8,
-        10,9,11,
-        14,12,13,
-        15,12,14,
-        19,17,16,
-        18,17,19,
-        22,20,21,
-        23,20,22
-    };
+        std::vector<SimpleVertex> meshVertices;
+        std::vector<uint16_t> meshIndices;
+        std::string loadErr;
+        // path is relative to executable working directory; use full path if necessary
+        if (!LoadOBJSimple("Assets/model.obj", meshVertices, meshIndices, loadErr))
+        {
+            // show error and fallback or fail
+            MessageBoxA(nullptr, loadErr.c_str(), "OBJ load error", MB_OK);
+            return E_FAIL;
+        }
 
-    Gapi_indxBuffer = std::static_pointer_cast<Dx11IndexBuffer>(
-        GAPI->CreateIndexBuffer(sizeof(indices), indices, ARRAYSIZE(indices))
-    );
+        // Create vertex buffer using your GRAPI
+        Gapi_vrtxBuffer = std::static_pointer_cast<Dx11VertexBuffer>(
+            GAPI->CreateVertexBuffer(sizeof(SimpleVertex) * meshVertices.size(), meshVertices.data()));
 
-    // Set index buffer
-    GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
+        // Set vertex buffer (same as before)
+        UINT stride = sizeof(SimpleVertex);
+        UINT offset = 0;
+        GAPI->m_immediateContext->IASetVertexBuffers(0, 1, &Gapi_vrtxBuffer->m_buffer, &stride, &offset);
 
-    // Set primitive topology
-    //GAPI->m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    Gapi_topology = GAPI->CreateTopology(Topology::Type::TriangleList);
-    GAPI->SetTopology(Gapi_topology);
+        // Create index buffer using your GRAPI (16-bit)
+        Gapi_indxBuffer = std::static_pointer_cast<Dx11IndexBuffer>(
+            GAPI->CreateIndexBuffer(sizeof(uint16_t) * meshIndices.size(), meshIndices.data(), static_cast<uint32_t>(meshIndices.size()))
+        );
+
+        // Set index buffer (same format used in Source.cpp)
+        GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
+
+        // store index count for Render()
+        g_IndexCount = static_cast<UINT>(meshIndices.size());
+    }
 
     // Create the constant buffers
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -469,8 +463,8 @@ HRESULT InitDevice()
 
     // Initialize the view matrix
     XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
-    XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMVECTOR At   = XMVectorSet(0.0f, 1.0f,  0.0f, 0.0f);
+    XMVECTOR Up   = XMVectorSet(0.0f, 1.0f,  0.0f, 0.0f);
     g_View = XMMatrixLookAtLH(Eye, At, Up);
 
 
@@ -655,7 +649,7 @@ void Render()
         GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
 
         // Ensure topology and vertex/index buffers already set in InitDevice()
-        GAPI->m_immediateContext->DrawIndexed(36, 0, 0);
+        GAPI->m_immediateContext->DrawIndexed(g_IndexCount, 0, 0);
     }
 
     // Present

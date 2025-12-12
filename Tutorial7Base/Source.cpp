@@ -13,6 +13,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License (MIT).
 //--------------------------------------------------------------------------------------
+#define DIRECTX11
+
+
+#ifdef DIRECTX11
+
 #include <windows.h>
 #include <d3d11_1.h>
 #include <d3dcompiler.h>
@@ -662,3 +667,5 @@ void Render()
     if (Gapi_swpChain && Gapi_swpChain->m_swapChain)
         Gapi_swpChain->m_swapChain->Present(0, 0);
 }
+
+#endif

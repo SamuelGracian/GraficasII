@@ -192,7 +192,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;OPENGL;DIRECTX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -242,6 +242,7 @@
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="Dx11Topology.cpp" />
     <ClCompile Include="GRAPI.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="RenderElement.cpp" />
     <ClCompile Include="RenderPass.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="Dx11VertexBuffer.h" />
     <ClInclude Include="GRAPI.h" />
     <ClInclude Include="Indexbuffer.h" />
+    <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="RenderElement.h" />

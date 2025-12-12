@@ -26,11 +26,8 @@ void main()
 }
 )";
 
-GRAPIOpenGL::GRAPIOpenGL(int width, int height, const char* title)
-    : m_width(width)
-    , m_height(height)
-    , m_title(title)
-    , m_eye{ 2.0f, 2.0f, 2.0f }
+GRAPIOpenGL::GRAPIOpenGL(int, int, const char*)
+    : m_eye{ 2.0f, 2.0f, 2.0f }
     , m_center{ 0.0f, 0.0f, 0.0f }
     , m_up{ 0.0f, 1.0f, 0.0f }
 {
@@ -41,26 +38,21 @@ GRAPIOpenGL::~GRAPIOpenGL()
     ShutdownGL();
 }
 
-bool GRAPIOpenGL::InitializeGL()
+bool GRAPIOpenGL::InitializeGL(GLFWwindow* window)
 {
-    if (!InitGLFW()) return false;
-
-    m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), NULL, NULL);
-    if (!m_window)
+    if (!window)
     {
-        std::cout << "Failed to create window\n";
-        glfwTerminate();
+        std::cout << "GRPIOpenGL:: initializeGL - null window" << std::endl;
         return false;
     }
+    m_window = window;
+
+    glfwMakeContextCurrent(m_window);
 
     glfwGetFramebufferSize(m_window, &m_bufferWidth, &m_bufferHeight);
-    glfwMakeContextCurrent(m_window);
-    glfwSwapInterval(1);
 
     if (!InitGLEW())
     {
-        glfwDestroyWindow(m_window);
-        glfwTerminate();
         return false;
     }
 
@@ -69,24 +61,9 @@ bool GRAPIOpenGL::InitializeGL()
     glDepthFunc(GL_LESS);
 
     SetupScene();
-
     return true;
 }
 
-bool GRAPIOpenGL::InitGLFW()
-{
-    if (!glfwInit())
-    {
-        std::cout << "GLFW Failed to initialize\n";
-        return false;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    return true;
-}
 
 bool GRAPIOpenGL::InitGLEW()
 {

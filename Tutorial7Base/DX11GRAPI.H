@@ -121,6 +121,8 @@ public:
 
 	ID3D11DeviceContext* m_immediateContext;
 
+	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
+
 private:
 	IDXGISwapChain* m_swapChain;
 };

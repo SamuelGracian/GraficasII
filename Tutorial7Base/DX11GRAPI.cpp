@@ -9,6 +9,19 @@
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
+DXGI_FORMAT GetDX11Format_internal (const FORMAT::K format)
+{ 
+    switch (format)
+    {
+    default:
+        return DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
+        break;
+
+    case FORMAT::FORMAT_D24_UNORM_S8_UINT:
+        return DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+        break;
+    }
+}
 
 Dx11GraphicsAPI::Dx11GraphicsAPI()
 	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr)
@@ -425,9 +438,11 @@ void Dx11GraphicsAPI::SetVertexShader(std::weak_ptr<VertexShader> shader)
 }
 
 
-std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height)
+std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height, const FORMAT::K format)
 {
-    assert(width != 0 && height != 0);
+    assert(width != 0 && height != 0 && format != FORMAT::FORMAT_UNKNOWN);
+
+    std::shared_ptr<Dx11DepthStencil> ResultStencil = nullptr;
 
     // Describe the depth-stencil texture
     D3D11_TEXTURE2D_DESC descDepth = {};
@@ -435,7 +450,7 @@ std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width
     descDepth.Height = height;
     descDepth.MipLevels = 1;
     descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    descDepth.Format = GetDX11Format_internal(format);
     descDepth.SampleDesc.Count = 1;
     descDepth.SampleDesc.Quality = 0;
     descDepth.Usage = D3D11_USAGE_DEFAULT;
@@ -445,19 +460,33 @@ std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width
 
     ID3D11Texture2D* rawDepth = nullptr;
     HRESULT hr = m_device->CreateTexture2D(&descDepth, nullptr, &rawDepth);
-    if (FAILED(hr))
+    if (SUCCEEDED(hr))
     {
-        SAFE_RELEASE(rawDepth);
-        return nullptr;
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+        descDSV.Format = descDepth.Format;
+        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        descDSV.Texture2D.MipSlice = 0;
+
+        ID3D11DepthStencilView* DepthStencilView = nullptr;
+        hr = m_device->CreateDepthStencilView(rawDepth, &descDSV, &DepthStencilView);
+        if (SUCCEEDED(hr))
+        {
+            ResultStencil = std::make_shared<Dx11DepthStencil>();
+            ResultStencil->m_depthStencil = rawDepth;
+            ASSIGN_DEBUG_NAME(ResultStencil.get(), rawDepth);
+        }
     }
 
     // Wrap the raw D3D resource into the Dx11 depth-stencil object (same pattern as buffer creators)
-    auto ds = std::make_shared<Dx11DepthStencil>();
-    ds->m_depthStencil = rawDepth;
-    ASSIGN_DEBUG_NAME(ds.get(), rawDepth);
-
-    return ds;
+    SAFE_RELEASE(rawDepth);
+    return ResultStencil;
 }
+
+void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencil>& depthStencil)
+{
+
+}
+
 
 HRESULT Dx11GraphicsAPI::CompileShaderFromFile(const WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut)
 {

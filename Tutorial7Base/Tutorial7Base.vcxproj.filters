@@ -89,7 +89,7 @@
     <ClInclude Include="Indexbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dx11indexBuffer.h">
+    <ClInclude Include="Dx11IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertexbuffer.h">
@@ -110,7 +110,7 @@
     <ClInclude Include="PixelShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStecil.h">
+    <ClInclude Include="DepthStencil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dx11DepthStecil.h">
@@ -125,7 +125,7 @@
     <ClInclude Include="DepthStencilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dx11DepthStecilView.h">
+    <ClInclude Include="Dx11DepthStencilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX11GRAPI.h">
@@ -156,6 +156,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GRAPIGenerals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

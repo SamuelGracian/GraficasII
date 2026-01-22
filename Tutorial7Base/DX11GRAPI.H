@@ -19,10 +19,13 @@
 #include "Topology.h"
 //Depth stencil
 #include "Dx11DepthStecil.h"
+#include "Dx11DepthStencilView.h"
 //command buffer
 #include "Dx11CommandBuffer.h"
 //Pass
 #include "Pass.h"
+
+#include "GRAPIGenerals.h"
 
 #if defined (DEBUG) || defined (_DEBUG)
 
@@ -115,7 +118,11 @@ public:
 	void SetVertexShader(std::weak_ptr<VertexShader> shader) override;
 
 	//DepthStencil
-	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) override;
+	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0 , const FORMAT::K format) override;
+
+
+	void SetRenderTarget(const std::weak_ptr <DepthStencil>& depthStencil) override;
+
 
 	ID3D11Device* m_device;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DepthStecil.h"
+#include "DepthStencil.h"
 
 class Dx11DepthStencil : public DepthStencil 
 {

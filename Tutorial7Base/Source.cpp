@@ -15,33 +15,39 @@
 //--------------------------------------------------------------------------------------
 #define DIRECTX11
 
-
-#ifdef DIRECTX11
-
 #include <windows.h>
-//#include <d3d11_1.h>
-//#include <d3dcompiler.h>
-#include <directxmath.h>
-#include <directxcolors.h>
-//#include "DDSTextureLoader.h"
 #include "resource.h"
 #include "ObjLoader.h"
 
+#ifdef DIRECTX11
+#include <directxmath.h>
+
+
+/// TO DO
+    // bajar compilar mathfoo
+	// hacer matrices
+    // cpp de Dx11, constructor
+    // private variables contenidas 
+    // quitar dx11 contenedores base
+    // coinicidir en nombres
+    /// Render targets, funcion de set
+ 
+
 /// Buffers
-#include "Dx11ConstantBuffer.h"
-#include "Dx11indexBuffer.h"
-#include "Dx11VertexBuffer.h"
+#include "ConstantBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 /// Shaders
-#include "Dx11VertexShader.h"
-#include "Dx11PixelShader.h"
+#include "VertexShader.h"
+#include "PixelShader.h"
 
 /// DepthStencil
-#include "Dx11DepthStecil.h"
+#include "DepthStencil.h"
 ///DepthStencilViewoo
-#include "Dx11DepthStecilView.h"
+#include "DepthStencilView.h"
 
 ///SwapChain
-#include "Dx11SwapChain.h"
+#include "SwapChain.h"
 
 ///GRAPI
 #include "DX11GRAPI.h"
@@ -51,7 +57,7 @@ using namespace DirectX;
 // Graphics API
 //-------------------------------------------------------------------------------------
 
-Dx11DepthStencilView Gapi_dpStencilView;
+DepthStencilView Gapi_dpStencilView;
 
 // NOTE: Removed duplicate `struct SimpleVertex` here. Use the one from ObjLoader.h
 //--------------------------------------------------------------------------------------
@@ -123,9 +129,10 @@ std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
 std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
-std::shared_ptr<Dx11DepthStencil> Gapi_depthStencil = nullptr;
+std::shared_ptr<DepthStencil> Gapi_depthStencil = nullptr;
 std::shared_ptr<CommandBuffer> Gapi_CommandBuffer = nullptr;
 std::shared_ptr<Topology> Gapi_topology = nullptr;
+
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -289,31 +296,33 @@ HRESULT InitDevice()
         return hr;
 
  //   // Create depth stencil texture
-    D3D11_TEXTURE2D_DESC descDepth = {};
-    descDepth.Width = width;
-    descDepth.Height = height;
-    descDepth.MipLevels = 1;
-    descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    descDepth.SampleDesc.Count = 1;
-    descDepth.SampleDesc.Quality = 0;
-    descDepth.Usage = D3D11_USAGE_DEFAULT;
-    descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    descDepth.CPUAccessFlags = 0;
-    descDepth.MiscFlags = 0;
+ //   D3D11_TEXTURE2D_DESC descDepth = {};
+ //   descDepth.Width = width;
+ //   descDepth.Height = height;
+ //   descDepth.MipLevels = 1;
+ //   descDepth.ArraySize = 1;
+ //   descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+ //   descDepth.SampleDesc.Count = 1;
+ //   descDepth.SampleDesc.Quality = 0;
+ //   descDepth.Usage = D3D11_USAGE_DEFAULT;
+ //   descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+ //   descDepth.CPUAccessFlags = 0;
+ //   descDepth.MiscFlags = 0;
 
 
-	Gapi_depthStencil = std::static_pointer_cast<Dx11DepthStencil>(GAPI->CreateDepthStencil(width, height));
+	//Gapi_depthStencil = std::static_pointer_cast<Dx11DepthStencil>(GAPI->CreateDepthStencil(width, height));
 
-    // Create the depth stencil view
-    D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-    descDSV.Format = descDepth.Format;
-    descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    descDSV.Texture2D.MipSlice = 0;
-    //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
-    hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil->m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
-    if (FAILED(hr))
-        return hr;
+ //   // Create the depth stencil view
+ //   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+ //   descDSV.Format = descDepth.Format;
+ //   descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+ //   descDSV.Texture2D.MipSlice = 0;
+ //   //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
+ //   hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil->m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
+ //   if (FAILED(hr))
+ //       return hr;
+
+    Gapi_depthStencil = GAPI->CreateDepthStencil(width, height, FORMAT::FORMAT_D24_UNORM_S8_UINT);
 
     ///______________________________________________________________
     //g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
@@ -331,7 +340,7 @@ HRESULT InitDevice()
 
     // Compile the vertex shader
     ID3DBlob* pVSBlob = nullptr;
-	hr = GAPI->CompileShaderFromFile(L"Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
+	hr = GAPI->CompileShaderFromFile(L"Resources/RawData/Shaders/Tutorial07.fxh", "VS", "vs_4_0", &pVSBlob);
     if (FAILED(hr))
     {
         MessageBox(nullptr,
@@ -363,7 +372,7 @@ HRESULT InitDevice()
 
     // Compile the pixel shader
     ID3DBlob* pPSBlob = nullptr;
-    hr = GAPI->CompileShaderFromFile(L"Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
+    hr = GAPI->CompileShaderFromFile(L"Resources/RawData/Shaders/Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
     if (FAILED(hr))
     {
         MessageBox(nullptr,
@@ -387,7 +396,7 @@ HRESULT InitDevice()
         std::vector<uint16_t> meshIndices;
         std::string loadErr;
         // path is relative to executable working directory; use full path if necessary
-        if (!LoadOBJSimple("Assets/model.obj", meshVertices, meshIndices, loadErr))
+        if (!LoadOBJSimple("Resources/RawData/3DModels/drakefire-pistol/drakefire_pistol_low.obj", meshVertices, meshIndices, loadErr))
         {
             // show error and fallback or fail
             MessageBoxA(nullptr, loadErr.c_str(), "OBJ load error", MB_OK);
@@ -434,7 +443,7 @@ HRESULT InitDevice()
     auto pCommand = std::static_pointer_cast<Dx11CommandBuffer>(Gapi_CommandBuffer);
 
     // Initialize the view matrix
-    XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
+    XMVECTOR Eye = XMVectorSet(6.0f, 3.0f, 0.0f, 0.0f);
     XMVECTOR At   = XMVectorSet(0.0f, 1.0f,  0.0f, 0.0f);
     XMVECTOR Up   = XMVectorSet(0.0f, 1.0f,  0.0f, 0.0f);
     g_View = XMMatrixLookAtLH(Eye, At, Up);
@@ -586,8 +595,10 @@ void Render()
     g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
     g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
+    float Color[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+
     // Clear targets
-    GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
+    GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Color);
     GAPI->m_immediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Update per-frame CB

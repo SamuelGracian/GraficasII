@@ -9,12 +9,14 @@
 #include "PixelShader.h"
 #include "VertexShader.h"
 //Depth stencil
-#include "DepthStecil.h"
+#include "DepthStencil.h"
 #include "SwapChain.h"
 //topology
 #include "Topology.h"
 //Render Pass
 #include "Pass.h"
+
+#include "GRAPIGenerals.h"
 
 class IndexBuffer;
 class  VertexBuffer;
@@ -78,12 +80,15 @@ public:
 	//Shader functions
 	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght) = 0;
 
-	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght) = 0;
+	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght ) = 0;
 
 	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
 
 	//DepthStencil
-	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0) = 0;
+	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0, const FORMAT::K format) = 0;
+
+	virtual void SetRenderTarget(const std::weak_ptr <DepthStencil>& depthStencil ) = 0;
+
 };
 
 /// TO DO

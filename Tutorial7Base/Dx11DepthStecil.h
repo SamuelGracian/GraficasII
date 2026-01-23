@@ -1,14 +1,11 @@
 #pragma once
-
+#include <d3d11_1.h>
 #include "DepthStencil.h"
 
 class Dx11DepthStencil : public DepthStencil 
 {
 public:
-	Dx11DepthStencil()
-		: m_depthStencil(nullptr)
-	{
-	};
+	Dx11DepthStencil();
 
 	~Dx11DepthStencil() = default;
 

@@ -239,8 +239,14 @@
     <ClCompile Include="ContainerFiles.h" />
     <ClCompile Include="Dx11CommandBuffer.cpp" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
+    <ClCompile Include="Dx11DepthStecil.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
+    <ClCompile Include="Dx11IndexBuffer.cpp" />
+    <ClCompile Include="Dx11PixelShader.cpp" />
+    <ClCompile Include="Dx11SwapChain.cpp" />
     <ClCompile Include="Dx11Topology.cpp" />
+    <ClCompile Include="Dx11VertexBuffer.cpp" />
+    <ClCompile Include="Dx11VertexShader.cpp" />
     <ClCompile Include="GRAPI.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Pass.cpp" />

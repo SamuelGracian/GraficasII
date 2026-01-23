@@ -4,9 +4,7 @@
 class Dx11PixelShader : public PixelShader
 {
 public:
-	Dx11PixelShader()
-		: m_shader(nullptr)
-	{};
+	Dx11PixelShader();
 
 	~Dx11PixelShader() = default;
 

@@ -57,7 +57,7 @@ using namespace DirectX;
 // Graphics API
 //-------------------------------------------------------------------------------------
 
-DepthStencilView Gapi_dpStencilView;
+//DepthStencilView Gapi_dpStencilView;
 
 // NOTE: Removed duplicate `struct SimpleVertex` here. Use the one from ObjLoader.h
 //--------------------------------------------------------------------------------------
@@ -284,7 +284,6 @@ HRESULT InitDevice()
 
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
-    //hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     hr = Gapi_swpChain->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     if (FAILED(hr))
         return hr;
@@ -295,38 +294,12 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
- //   // Create depth stencil texture
- //   D3D11_TEXTURE2D_DESC descDepth = {};
- //   descDepth.Width = width;
- //   descDepth.Height = height;
- //   descDepth.MipLevels = 1;
- //   descDepth.ArraySize = 1;
- //   descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
- //   descDepth.SampleDesc.Count = 1;
- //   descDepth.SampleDesc.Quality = 0;
- //   descDepth.Usage = D3D11_USAGE_DEFAULT;
- //   descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
- //   descDepth.CPUAccessFlags = 0;
- //   descDepth.MiscFlags = 0;
 
-
-	//Gapi_depthStencil = std::static_pointer_cast<Dx11DepthStencil>(GAPI->CreateDepthStencil(width, height));
-
- //   // Create the depth stencil view
- //   D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
- //   descDSV.Format = descDepth.Format;
- //   descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
- //   descDSV.Texture2D.MipSlice = 0;
- //   //hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView)
- //   hr = GAPI->m_device->CreateDepthStencilView(Gapi_depthStencil->m_depthStencil, &descDSV, &Gapi_dpStencilView.m_depthStencilView);
- //   if (FAILED(hr))
- //       return hr;
-
-    Gapi_depthStencil = GAPI->CreateDepthStencil(width, height, FORMAT::FORMAT_D24_UNORM_S8_UINT);
+    Gapi_depthStencil = GAPI->CreateDepthStencil(width, height, GAPI_FORMAT::FORMAT_D24_UNORM_S8_UINT);
 
     ///______________________________________________________________
     //g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
-    GAPI->m_immediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, Gapi_dpStencilView.m_depthStencilView);
+  
 
     // Setup the viewport
     D3D11_VIEWPORT vp;
@@ -526,9 +499,9 @@ void CleanupDevice()
     //if (g_pPixelShader) g_pPixelShader->Release();
     if (Gapi_pxlShader->m_shader) Gapi_pxlShader->m_shader->Release();
     //if (g_pDepthStencil) g_pDepthStencil->Release();
-    if (Gapi_depthStencil->m_depthStencil)Gapi_depthStencil->m_depthStencil->Release();
+    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
     //if (g_pDepthStencilView) g_pDepthStencilView->Release();
-    if (Gapi_dpStencilView.m_depthStencilView) Gapi_dpStencilView.m_depthStencilView->Release();
+    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
     if (g_pRenderTargetView) g_pRenderTargetView->Release();
     if (g_pSwapChain1) g_pSwapChain1->Release();
     //if (g_pSwapChain) g_pSwapChain->Release();
@@ -574,6 +547,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 //--------------------------------------------------------------------------------------
 void Render()
 {
+
+    GAPI->m_immediateContext->OMSetRenderTargets(1, &GAPI->m_backBufferRT, GAPI->m_backBufferDS);
+
     // Update our time
     static float t = 0.0f;
     if (g_driverType == D3D_DRIVER_TYPE_REFERENCE)
@@ -599,7 +575,7 @@ void Render()
 
     // Clear targets
     GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Color);
-    GAPI->m_immediateContext->ClearDepthStencilView(Gapi_dpStencilView.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    GAPI->m_immediateContext->ClearDepthStencilView(GAPI->m_backBufferDS, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Update per-frame CB
     CBChangesEveryFrame cb;

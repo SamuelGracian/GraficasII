@@ -9,7 +9,7 @@
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
-DXGI_FORMAT GetDX11Format_internal (const FORMAT::K format)
+DXGI_FORMAT GetDX11Format_internal (const GAPI_FORMAT::K format)
 { 
     switch (format)
     {
@@ -17,14 +17,92 @@ DXGI_FORMAT GetDX11Format_internal (const FORMAT::K format)
         return DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
         break;
 
-    case FORMAT::FORMAT_D24_UNORM_S8_UINT:
+    case GAPI_FORMAT::FORMAT_D24_UNORM_S8_UINT:
         return DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
         break;
     }
 }
 
+uint32_t GetDx11BindFlag_internal(uint32_t bindFlags)
+{
+    uint32_t ResultFlags = 0;
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_CONSTANT_BUFFER)) != 0)
+    {
+        ResultFlags += D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+    }
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_INDEX_BUFFER)) != 0)
+    {
+        ResultFlags += D3D11_BIND_INDEX_BUFFER;
+    }
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_VERTEX_BUFFER)) != 0)
+    {
+        ResultFlags += D3D11_BIND_VERTEX_BUFFER;
+    }
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::DEPTH_STENCIL)) != 0)
+    {
+        ResultFlags += D3D11_BIND_DEPTH_STENCIL;
+    }
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::RENDER_TARGET)) != 0)
+    {
+        ResultFlags += D3D11_BIND_RENDER_TARGET;
+    }
+
+
+    if ((bindFlags & (1 << GAPI_BIND_FLAGS::SHADER_RESOURCE)) != 0)
+    {
+        ResultFlags += D3D11_BIND_SHADER_RESOURCE;
+    }
+
+    return ResultFlags;
+}
+
+ID3D11RenderTargetView* Dx11GraphicsAPI:: GetBackBuffer_internal()
+{
+    ID3D11RenderTargetView* ResultRender = nullptr;
+
+    if (m_swapChain != nullptr && m_device != nullptr && m_immediateContext != nullptr)
+    {
+        ID3D11Texture2D* pBackBuffer = nullptr;
+        HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+        if (SUCCEEDED(hr))
+        {
+            hr = m_device->CreateRenderTargetView(pBackBuffer, nullptr, &ResultRender);
+        }
+    }
+    return ResultRender;
+}
+
+ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)
+{
+    assert(width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN);
+
+    // Describe the depth-stencil texture
+    D3D11_TEXTURE2D_DESC descTexture = {};
+    descTexture.Width = width;
+    descTexture.Height = height;
+    descTexture.MipLevels = 1;
+    descTexture.ArraySize = 1;
+    descTexture.Format = GetDX11Format_internal(format);
+    descTexture.SampleDesc.Count = 1;
+    descTexture.SampleDesc.Quality = 0;
+    descTexture.Usage = D3D11_USAGE_DEFAULT;
+    descTexture.BindFlags = GetDx11BindFlag_internal(bindFlags);
+    descTexture.CPUAccessFlags = 0;
+    descTexture.MiscFlags = 0;
+
+    ID3D11Texture2D* ResultTexture = nullptr;
+    m_device->CreateTexture2D(&descTexture, nullptr, &ResultTexture);
+
+    return ResultTexture;
+}
+
 Dx11GraphicsAPI::Dx11GraphicsAPI()
-	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr)
+	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr), m_backBufferDS(nullptr), m_backBufferRT(nullptr)
 {
     UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -88,6 +166,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
         }
     }
    assert (!FAILED(hr));
+
 
 }
 
@@ -185,6 +264,8 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
     SAFE_RELEASE(m_device1);
 
     assert (!FAILED(hr));
+
+    m_backBufferRT = 
 }
 
 std::shared_ptr<Dx11SwapChain> Dx11GraphicsAPI::GetSwapChain()
@@ -438,38 +519,24 @@ void Dx11GraphicsAPI::SetVertexShader(std::weak_ptr<VertexShader> shader)
 }
 
 
-std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height, const FORMAT::K format)
+std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height, const GAPI_FORMAT::K format)
 {
-    assert(width != 0 && height != 0 && format != FORMAT::FORMAT_UNKNOWN);
+    assert(width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN);
 
     std::shared_ptr<Dx11DepthStencil> ResultStencil = nullptr;
 
-    // Describe the depth-stencil texture
-    D3D11_TEXTURE2D_DESC descDepth = {};
-    descDepth.Width = width;
-    descDepth.Height = height;
-    descDepth.MipLevels = 1;
-    descDepth.ArraySize = 1;
-    descDepth.Format = GetDX11Format_internal(format);
-    descDepth.SampleDesc.Count = 1;
-    descDepth.SampleDesc.Quality = 0;
-    descDepth.Usage = D3D11_USAGE_DEFAULT;
-    descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    descDepth.CPUAccessFlags = 0;
-    descDepth.MiscFlags = 0;
+    ID3D11Texture2D* rawDepth = CreateTexture2D_internal(width, height, format, GAPI_BIND_FLAGS::DEPTH_STENCIL);
 
-    ID3D11Texture2D* rawDepth = nullptr;
-    HRESULT hr = m_device->CreateTexture2D(&descDepth, nullptr, &rawDepth);
-    if (SUCCEEDED(hr))
+    if (rawDepth != nullptr)
     {
         D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-        descDSV.Format = descDepth.Format;
+        descDSV.Format = GetDX11Format_internal(format);
         descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
         descDSV.Texture2D.MipSlice = 0;
 
+      
         ID3D11DepthStencilView* DepthStencilView = nullptr;
-        hr = m_device->CreateDepthStencilView(rawDepth, &descDSV, &DepthStencilView);
-        if (SUCCEEDED(hr))
+        if (SUCCEEDED(m_device->CreateDepthStencilView(rawDepth, &descDSV, &DepthStencilView)))
         {
             ResultStencil = std::make_shared<Dx11DepthStencil>();
             ResultStencil->m_depthStencil = rawDepth;
@@ -480,6 +547,25 @@ std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width
     // Wrap the raw D3D resource into the Dx11 depth-stencil object (same pattern as buffer creators)
     SAFE_RELEASE(rawDepth);
     return ResultStencil;
+}
+
+void Dx11GraphicsAPI::CreateRenderTarget()
+{
+    //m_immediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, nullptr);
+
+
+    //DXGI_SWAP_CHAIN_DESC scDesc = {};
+    //if (SUCCEEDED(m_swapChain->GetDesc(&scDesc)))
+    //{
+    //    D3D11_VIEWPORT vp = {};
+    //    vp.TopLeftX = 0.0f;
+    //    vp.TopLeftY = 0.0f;
+    //    vp.Width = static_cast<FLOAT>(scDesc.BufferDesc.Width);
+    //    vp.Height = static_cast<FLOAT>(scDesc.BufferDesc.Height);
+    //    vp.MinDepth = 0.0f;
+    //    vp.MaxDepth = 1.0f;
+    //    m_immediateContext->RSSetViewports(1, &vp);
+    //}
 }
 
 void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencil>& depthStencil)

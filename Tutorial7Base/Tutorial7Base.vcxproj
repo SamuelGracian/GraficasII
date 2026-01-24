@@ -240,6 +240,7 @@
     <ClCompile Include="Dx11CommandBuffer.cpp" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
     <ClCompile Include="Dx11DepthStecil.cpp" />
+    <ClCompile Include="Dx11DepthStencilView.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="Dx11IndexBuffer.cpp" />
     <ClCompile Include="Dx11PixelShader.cpp" />

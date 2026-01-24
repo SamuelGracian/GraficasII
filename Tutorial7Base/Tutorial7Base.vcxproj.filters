@@ -90,6 +90,9 @@
     <ClCompile Include="Dx11DepthStecil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Dx11DepthStencilView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">

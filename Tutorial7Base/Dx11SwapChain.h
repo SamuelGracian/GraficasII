@@ -9,6 +9,8 @@ public:
 
 	~Dx11SwapChain() = default;
 
+	IDXGISwapChain* GetSwapChain() const;
+
 private:
 
 	IDXGISwapChain* m_swapChain;

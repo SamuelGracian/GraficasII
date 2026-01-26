@@ -9,6 +9,8 @@ public:
 
 	~Dx11IndexBuffer() = default;
 
+	ID3D11Buffer* GetBuffer() const;
+
 private:
 
 	ID3D11Buffer* m_buffer;

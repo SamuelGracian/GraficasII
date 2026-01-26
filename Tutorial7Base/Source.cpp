@@ -123,7 +123,7 @@ std::shared_ptr<Topology> Gapi_topology = nullptr;
 //--------------------------------------------------------------------------------------
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 HRESULT InitDevice();
-void CleanupDevice();
+//void CleanupDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void Render();
 
@@ -142,7 +142,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     if (FAILED(InitDevice()))
     {
-        CleanupDevice();
+       // CleanupDevice();
         return 0;
     }
 
@@ -161,7 +161,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
     }
 
-    CleanupDevice();
+   // CleanupDevice();
 
     return (int)msg.wParam;
 }
@@ -269,7 +269,7 @@ HRESULT InitDevice()
     //////////////////////////////////////
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = Gapi_swpChain->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+    hr = Gapi_swpChain->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
     if (FAILED(hr))
         return hr;
 
@@ -376,7 +376,7 @@ HRESULT InitDevice()
         );
 
         // Set index buffer (same format used in Source.cpp)
-        GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->GetBuffer(), DXGI_FORMAT_R16_UINT, 0);
+        GAPI->m_immediateContext->IASetIndexBuffer(Gapi_indxBuffer->m_buffer, DXGI_FORMAT_R16_UINT, 0);
 
         // store index count for Render()
         g_IndexCount = static_cast<UINT>(meshIndices.size());
@@ -464,38 +464,38 @@ HRESULT InitDevice()
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created
 //--------------------------------------------------------------------------------------
-void CleanupDevice()
-{
-    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
-
-    if (g_pSamplerLinear) g_pSamplerLinear->Release();
-    if (g_pTextureRV) g_pTextureRV->Release();
-    //if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
-    if (Gapi_constbuffer -> m_buffer) Gapi_constbuffer -> m_buffer->Release();
-    if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
-    if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
-    //if (g_pVertexBuffer) g_pVertexBuffer->Release();
-    if (Gapi_vrtxBuffer->GetBuffer()) Gapi_vrtxBuffer->GetBuffer()->Release();
-    //if (g_pIndexBuffer) g_pIndexBuffer->Release();
-    if (Gapi_indxBuffer->GetBuffer()) Gapi_indxBuffer->GetBuffer()->Release();
-    if (g_pVertexLayout) g_pVertexLayout->Release();
-    //if (g_pVertexShader) g_pVertexShader->Release();
-    if (Gapi_vrtxShader->GetShader()) Gapi_vrtxShader->GetShader()->Release();
-    //if (g_pPixelShader) g_pPixelShader->Release();
-    if (Gapi_pxlShader->GetShader()) Gapi_pxlShader->GetShader()->Release();
-    //if (g_pDepthStencil) g_pDepthStencil->Release();
-    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
-    //if (g_pDepthStencilView) g_pDepthStencilView->Release();
-    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
-    if (g_pRenderTargetView) g_pRenderTargetView->Release();
-    if (g_pSwapChain1) g_pSwapChain1->Release();
-    //if (g_pSwapChain) g_pSwapChain->Release();
-    if (Gapi_swpChain->GetSwapChain()) Gapi_swpChain->GetSwapChain()->Release();
-    if (g_pImmediateContext1) g_pImmediateContext1->Release();
-    if (g_pImmediateContext) g_pImmediateContext->Release();
-    if (g_pd3dDevice1) g_pd3dDevice1->Release();
-    if (g_pd3dDevice) g_pd3dDevice->Release();
-}
+//void CleanupDevice()
+//{
+//    if (GAPI->m_immediateContext) GAPI->m_immediateContext->ClearState();
+//
+//    if (g_pSamplerLinear) g_pSamplerLinear->Release();
+//    if (g_pTextureRV) g_pTextureRV->Release();
+//    //if (g_pCBNeverChanges) g_pCBNeverChanges->Release();
+//    //if (Gapi_constbuffer -> m_buffer) Gapi_constbuffer -> m_buffer->Release();
+//    if (g_pCBChangeOnResize) g_pCBChangeOnResize->Release();
+//    if (g_pCBChangesEveryFrame) g_pCBChangesEveryFrame->Release();
+//    //if (g_pVertexBuffer) g_pVertexBuffer->Release();
+//    if (Gapi_vrtxBuffer->m_buffer) Gapi_vrtxBuffer->m_buffer->Release();
+//    //if (g_pIndexBuffer) g_pIndexBuffer->Release();
+//    if (Gapi_indxBuffer->m_buffer) Gapi_indxBuffer->m_buffer->Release();
+//    if (g_pVertexLayout) g_pVertexLayout->Release();
+//    //if (g_pVertexShader) g_pVertexShader->Release();
+//    if (Gapi_vrtxShader->GetShader()) Gapi_vrtxShader->m_shader->Release();
+//    //if (g_pPixelShader) g_pPixelShader->Release();
+//    if (Gapi_pxlShader->GetShader()) Gapi_pxlShader->GetShader()->Release();
+//    //if (g_pDepthStencil) g_pDepthStencil->Release();
+//    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
+//    //if (g_pDepthStencilView) g_pDepthStencilView->Release();
+//    if (GAPI->m_backBufferDS)GAPI->m_backBufferDS->Release();
+//    if (g_pRenderTargetView) g_pRenderTargetView->Release();
+//    if (g_pSwapChain1) g_pSwapChain1->Release();
+//    //if (g_pSwapChain) g_pSwapChain->Release();
+//    if (Gapi_swpChain->GetSwapChain()) Gapi_swpChain->GetSwapChain()->Release();
+//    if (g_pImmediateContext1) g_pImmediateContext1->Release();
+//    if (g_pImmediateContext) g_pImmediateContext->Release();
+//    if (g_pd3dDevice1) g_pd3dDevice1->Release();
+//    if (g_pd3dDevice) g_pd3dDevice->Release();
+//}
 
 
 //--------------------------------------------------------------------------------------
@@ -576,8 +576,8 @@ void Render()
     else
     {
         // Use only GAPI objects (avoid raw/uninitialized globals)
-        if (Gapi_vrtxShader && Gapi_vrtxShader->GetShader())
-            GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->GetShader(), nullptr, 0);
+        if (Gapi_vrtxShader && Gapi_vrtxShader->m_shader)
+            GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
 
         // Bind constant buffers (slot 0 = never-changes, slot1 = projection, slot2 = per-frame)
         ID3D11Buffer* cb0 = (Gapi_constbuffer && Gapi_constbuffer->m_buffer) ? Gapi_constbuffer->m_buffer : nullptr;
@@ -585,8 +585,8 @@ void Render()
         GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
         GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
 
-        if (Gapi_pxlShader && Gapi_pxlShader->GetShader())
-            GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->GetShader(), nullptr, 0);
+        if (Gapi_pxlShader && Gapi_pxlShader->m_shader)
+            GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
 
 
         GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
@@ -598,8 +598,8 @@ void Render()
     }
 
     // Present
-    if (Gapi_swpChain && Gapi_swpChain->GetSwapChain())
-        Gapi_swpChain->GetSwapChain()->Present(0, 0);
+    if (Gapi_swpChain && Gapi_swpChain->m_swapChain)
+        Gapi_swpChain->m_swapChain->Present(0, 0);
 }
 
 #endif

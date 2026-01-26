@@ -20,6 +20,9 @@ DXGI_FORMAT GetDX11Format_internal (const GAPI_FORMAT::K format)
     case GAPI_FORMAT::FORMAT_D24_UNORM_S8_UINT:
         return DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
         break;
+        
+    case GAPI_FORMAT::FORMAT_R8G8B8A8_UNORM:
+        return DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
     }
 }
 
@@ -104,6 +107,74 @@ ID3D11DepthStencilView* Dx11GraphicsAPI::CreateDepthStencilView_internal(ID3D11T
     return ResultDepthStencilView;
 }
 
+IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t width, uint32_t height, GAPI_FORMAT::K format)
+{
+    IDXGIFactory1* dxgiFactory1 = nullptr;
+
+    IDXGIFactory2* dxgiFactory2 = nullptr;
+
+    IDXGIDevice* dxgiDevice = nullptr;
+
+    IDXGIAdapter* adapter = nullptr;
+
+    IDXGISwapChain1* swapChain1 = nullptr;
+
+    if (SUCCEEDED(m_device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice))))
+    {
+        if (SUCCEEDED(dxgiDevice->GetAdapter(&adapter)))
+        {
+            if (adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory1)))
+            {
+                if (dxgiFactory1->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2)))
+                {
+
+                    DXGI_SWAP_CHAIN_DESC1 sd = {};
+                    sd.Width = width;
+                    sd.Height = height;
+                    sd.Format = GetDX11Format_internal(format);
+                    sd.SampleDesc.Count = 1;
+                    sd.SampleDesc.Quality = 0;
+                    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+                    sd.BufferCount = 1;
+
+
+                    if (SUCCEEDED(dxgiFactory2->CreateSwapChainForHwnd(m_device, hwnd, &sd, nullptr, nullptr, &swapChain1)))
+                    {
+                        swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
+                    }
+                }
+                else
+                {
+                    DXGI_SWAP_CHAIN_DESC sd = {};
+                    sd.BufferCount = 1;
+                    sd.BufferDesc.Width = width;
+                    sd.BufferDesc.Height = height;
+                    sd.BufferDesc.Format = GetDX11Format_internal(format);
+                    sd.BufferDesc.RefreshRate.Numerator = 60;
+                    sd.BufferDesc.RefreshRate.Denominator = 1;
+                    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+                    sd.OutputWindow = hwnd;
+                    sd.SampleDesc.Count = 1;
+                    sd.SampleDesc.Quality = 0;
+                    sd.Windowed = TRUE;
+
+
+                    dxgiFactory1->CreateSwapChain(m_device, &sd, &m_swapChain);
+                }
+
+                dxgiFactory1->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+            }
+        }
+    }
+
+    SAFE_RELEASE(dxgiFactory1);
+    SAFE_RELEASE(dxgiFactory2);
+    SAFE_RELEASE(dxgiDevice);
+    SAFE_RELEASE(adapter);
+    SAFE_RELEASE(swapChain1);
+
+}
+
 ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)
 {
     assert(width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN);
@@ -186,7 +257,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
             hr = dxgiDevice->GetAdapter(&adapter);
             if (SUCCEEDED(hr))
             {
-                hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory));
+                hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory1));
                 adapter->Release();
             }
             dxgiDevice->Release();
@@ -209,90 +280,15 @@ void Dx11GraphicsAPI::CleanUpResources()
     SAFE_RELEASE(m_device);
 }
 
-void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height )
+std::shared_ptr<SwapChain> Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t height, GAPI_FORMAT::K format)
 {
-    HRESULT hr = S_OK;
+    std::shared_ptr <Dx11SwapChain> SChain = nullptr;
 
-    IDXGIFactory1* dxgiFactory = nullptr;
+    if (auto* ResultSwapCain = CreateSwapChain_Internal(hwnd, width, height, format))
     {
-        IDXGIDevice* dxgiDevice = nullptr;
-        hr = m_device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
-        if (SUCCEEDED(hr))
-        {
-            IDXGIAdapter* adapter = nullptr;
-            hr = dxgiDevice->GetAdapter(&adapter);
-            if (SUCCEEDED(hr))
-            {
-                hr = adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgiFactory));
-                SAFE_RELEASE(adapter);
-            }
-            SAFE_RELEASE(dxgiDevice);
-        }
+        SChain = std::make_shared<Dx11SwapChain>();
     }
-    assert (!FAILED(hr));
-
-    // Create swap chain
-    ID3D11Device* m_device1 = nullptr;
-    ID3D11DeviceContext1* m_immediateContext1 = nullptr;
-    IDXGISwapChain1* m_swapChain1 =  nullptr;
-    IDXGIFactory2* dxgiFactory2 = nullptr;
-    hr = dxgiFactory->QueryInterface(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&dxgiFactory2));
-    if (dxgiFactory2)
-    {
-        // DirectX 11.1 or later
-        hr = m_device->QueryInterface(__uuidof(ID3D11Device1), reinterpret_cast<void**>(&m_device1));
-        if (SUCCEEDED(hr))
-        {
-            (void)m_immediateContext->QueryInterface(__uuidof(ID3D11DeviceContext1), reinterpret_cast<void**>(&m_immediateContext1));
-        }
-
-        DXGI_SWAP_CHAIN_DESC1 sd = {};
-        sd.Width = width;
-        sd.Height = height;
-        sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount = 1;
-
-        hr = dxgiFactory2->CreateSwapChainForHwnd(m_device,hwnd, &sd, nullptr, nullptr, &m_swapChain1);
-        if (SUCCEEDED(hr))
-        {
-            hr = m_swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
-        }
-
-        SAFE_RELEASE(dxgiFactory2);
-    }
-    else
-    {
-        // DirectX 11.0 systems
-        DXGI_SWAP_CHAIN_DESC sd = {};
-        sd.BufferCount = 1;
-        sd.BufferDesc.Width = width;
-        sd.BufferDesc.Height = height;
-        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-        sd.BufferDesc.RefreshRate.Denominator = 1;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.OutputWindow = hwnd;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.Windowed = TRUE;
-        
-
-        hr = dxgiFactory->CreateSwapChain(m_device, &sd, &m_swapChain);
-    }
-
-    dxgiFactory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
-
-    SAFE_RELEASE(dxgiFactory);
-    SAFE_RELEASE(m_swapChain1);
-    SAFE_RELEASE(m_immediateContext1);  
-    SAFE_RELEASE(m_device1);
-
-    assert (!FAILED(hr));
-
-    m_backBufferRT = GetBackBufferRT_internal();
+    return SChain;
 }
 
 std::shared_ptr<Dx11SwapChain> Dx11GraphicsAPI::GetSwapChain()

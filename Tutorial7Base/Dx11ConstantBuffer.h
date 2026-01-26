@@ -11,6 +11,6 @@ public:
 
 	~Dx11ConstatBuffer();
 
-private:
+//private:
 	ID3D11Buffer* m_buffer;
 };

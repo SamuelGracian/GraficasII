@@ -9,9 +9,7 @@ public:
 
 	~Dx11PixelShader() = default;
 
-	ID3D11PixelShader* GetShader() const;
-
-private:
+//private:
 
 	ID3D11PixelShader* m_shader;
 };

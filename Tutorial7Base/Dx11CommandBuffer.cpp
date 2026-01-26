@@ -167,18 +167,18 @@ void Dx11CommandBuffer::RecordCommandList()
 
 	m_isBufferReady = true;
 }
-
-ID3D11Buffer* Dx11CommandBuffer::GetBuffer(int index)
-{
-	if (index > m_bufferList.size())
-	{
-		std::cout << "DX11Commandbuffer: function GetBuffer() : invalid index" << std::endl;
-		return;
-	}
-
-	return m_bufferList[index];
-
-}
+//
+//ID3D11Buffer* Dx11CommandBuffer::GetBuffer(int index)
+//{
+//	if (index > m_bufferList.size())
+//	{
+//		std::cout << "DX11Commandbuffer: function GetBuffer() : invalid index" << std::endl;
+//		return;
+//	}
+//
+//	return m_bufferList[index];
+//
+//}
 
 void Dx11CommandBuffer::Execute()
 {

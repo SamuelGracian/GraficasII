@@ -70,7 +70,7 @@ public:
 	//Clean up function
 	void CleanUpResources() override;
 
-	void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0) override;
+	std::shared_ptr<SwapChain> CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K = GAPI_FORMAT::FORMAT_UNKNOWN) override;
 
 	std::shared_ptr<Dx11SwapChain>GetSwapChain();
 
@@ -134,6 +134,7 @@ public:
 
 	ID3D11DepthStencilView* m_backBufferDS; ///Depth Stencil back buffer
 private:
+
 	IDXGISwapChain* m_swapChain;
 
 private:
@@ -143,4 +144,6 @@ private:
 	ID3D11RenderTargetView* GetBackBufferRT_internal();
 
 	ID3D11DepthStencilView* CreateDepthStencilView_internal(ID3D11Texture2D* texture);
+
+	IDXGISwapChain* CreateSwapChain_Internal(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN);
 };

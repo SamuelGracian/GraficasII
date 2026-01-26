@@ -40,7 +40,7 @@ public:
 	virtual void CleanUpResources() = 0;
 
 	//Swap chain function
-	virtual void CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0) = 0;
+	virtual std::shared_ptr<SwapChain> CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K = GAPI_FORMAT::FORMAT_UNKNOWN) = 0;
 	
 	//Buffer functions
 

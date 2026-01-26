@@ -11,9 +11,7 @@ public:
 
 	~Dx11VertexBuffer() = default;
 
-	ID3D11Buffer* GetBuffer() const;
-
-private:
+//private:
 
 	ID3D11Buffer* m_buffer;
 };

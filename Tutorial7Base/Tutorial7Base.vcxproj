@@ -236,10 +236,8 @@
     <ClCompile Include="BaseShaders.h" />
     <ClCompile Include="CommandBuffer.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="ContainerFiles.h" />
     <ClCompile Include="Dx11CommandBuffer.cpp" />
     <ClCompile Include="Dx11ConstantBuffer.cpp" />
-    <ClCompile Include="Dx11DepthStecil.cpp" />
     <ClCompile Include="Dx11DepthStencilView.cpp" />
     <ClCompile Include="DX11GRAPI.cpp" />
     <ClCompile Include="Dx11IndexBuffer.cpp" />
@@ -256,15 +254,14 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="Vertexbuffer.cpp" />
+    <ClCompile Include="VertexShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basebuffers.h" />
     <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Dx11CommandBuffer.h" />
-    <ClInclude Include="Dx11DepthStecil.h" />
     <ClInclude Include="Dx11DepthStencilView.h" />
     <ClInclude Include="DX11GRAPI.h" />
     <ClInclude Include="Dx11PixelShader.h" />

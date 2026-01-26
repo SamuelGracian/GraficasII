@@ -36,9 +36,6 @@
     <ClCompile Include="GRAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ContainerFiles.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vertexbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,10 +84,10 @@
     <ClCompile Include="Dx11IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dx11DepthStecil.cpp">
+    <ClCompile Include="Dx11DepthStencilView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dx11DepthStencilView.cpp">
+    <ClCompile Include="VertexShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,12 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dx11DepthStecil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">

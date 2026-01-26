@@ -13,11 +13,11 @@ namespace GAPI_BIND_FLAGS
 {
     enum K
     {
-        BIND_VERTEX_BUFFER = 1,
-        BIND_INDEX_BUFFER ,
-        BIND_CONSTANT_BUFFER ,
-        SHADER_RESOURCE ,
-        RENDER_TARGET ,
-        DEPTH_STENCIL ,
+        BIND_VERTEX_BUFFER = (1<<0),
+        BIND_INDEX_BUFFER = (1<<1),
+        BIND_CONSTANT_BUFFER = (1<<2),
+        SHADER_RESOURCE = (1<<3),
+        RENDER_TARGET = (1<<4),
+        DEPTH_STENCIL = (1<<5)
     };
 };

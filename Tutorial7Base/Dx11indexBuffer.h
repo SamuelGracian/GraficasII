@@ -9,5 +9,7 @@ public:
 
 	~Dx11IndexBuffer() = default;
 
+private:
+
 	ID3D11Buffer* m_buffer;
 };

@@ -27,10 +27,7 @@
     // bajar compilar mathfoo
 	// hacer matrices
     // cpp de Dx11, constructor
-    // private variables contenidas 
-    // quitar dx11 contenedores base
-    // coinicidir en nombres
-    /// Render targets, funcion de set
+    // private variables contenidas
  
 
 /// Buffers
@@ -42,8 +39,6 @@
 #include "PixelShader.h"
 
 /// DepthStencil
-#include "DepthStencil.h"
-///DepthStencilViewoo
 #include "DepthStencilView.h"
 
 ///SwapChain
@@ -94,14 +89,6 @@ ID3D11DeviceContext* g_pImmediateContext = nullptr;
 ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
 IDXGISwapChain1* g_pSwapChain1 = nullptr;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
-
-//IDXGISwapChain* g_pSwapChain = nullptr;
-//ID3D11Texture2D* g_pDepthStencil = nullptr;
-//ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
-//ID3D11VertexShader* g_pVertexShader = nullptr;
-//ID3D11PixelShader* g_pPixelShader = nullptr;
-//ID3D11Buffer* g_pVertexBuffer = nullptr;
-//ID3D11Buffer* g_pIndexBuffer = nullptr;
 ID3D11Buffer* g_pCBNeverChanges = nullptr;
 
 ID3D11InputLayout* g_pVertexLayout = nullptr;
@@ -129,7 +116,7 @@ std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
 std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
-std::shared_ptr<DepthStencil> Gapi_depthStencil = nullptr;
+std::shared_ptr<DepthStencilView> Gapi_depthStencil = nullptr;
 std::shared_ptr<CommandBuffer> Gapi_CommandBuffer = nullptr;
 std::shared_ptr<Topology> Gapi_topology = nullptr;
 
@@ -282,6 +269,7 @@ HRESULT InitDevice()
         Gapi_swpChain = GAPI->GetSwapChain();
     }
 
+    //////////////////////////////////////
     // Create a render target view
     ID3D11Texture2D* pBackBuffer = nullptr;
     hr = Gapi_swpChain->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
@@ -294,7 +282,7 @@ HRESULT InitDevice()
     if (FAILED(hr))
         return hr;
 
-
+    ///////////////////////////////////
     Gapi_depthStencil = GAPI->CreateDepthStencil(width, height, GAPI_FORMAT::FORMAT_D24_UNORM_S8_UINT);
 
     ///______________________________________________________________
@@ -575,7 +563,7 @@ void Render()
 
     // Clear targets
     GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Color);
-    GAPI->m_immediateContext->ClearDepthStencilView(GAPI->m_backBufferDS, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    //GAPI->m_immediateContext->ClearDepthStencilView(GAPI->m_backBufferDS, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     // Update per-frame CB
     CBChangesEveryFrame cb;

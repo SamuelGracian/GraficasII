@@ -27,33 +27,32 @@ uint32_t GetDx11BindFlag_internal(uint32_t bindFlags)
 {
     uint32_t ResultFlags = 0;
 
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_CONSTANT_BUFFER)) != 0)
+    if ((bindFlags &  GAPI_BIND_FLAGS::BIND_CONSTANT_BUFFER) != 0)
     {
         ResultFlags += D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
     }
 
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_INDEX_BUFFER)) != 0)
+    if ((bindFlags & GAPI_BIND_FLAGS::BIND_INDEX_BUFFER) != 0)
     {
         ResultFlags += D3D11_BIND_INDEX_BUFFER;
     }
 
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::BIND_VERTEX_BUFFER)) != 0)
+    if ((bindFlags & GAPI_BIND_FLAGS::BIND_VERTEX_BUFFER) != 0)
     {
         ResultFlags += D3D11_BIND_VERTEX_BUFFER;
     }
 
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::DEPTH_STENCIL)) != 0)
+    if ((bindFlags & GAPI_BIND_FLAGS::DEPTH_STENCIL) != 0)
     {
         ResultFlags += D3D11_BIND_DEPTH_STENCIL;
     }
 
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::RENDER_TARGET)) != 0)
+    if ((bindFlags & GAPI_BIND_FLAGS::RENDER_TARGET) != 0)
     {
         ResultFlags += D3D11_BIND_RENDER_TARGET;
     }
 
-
-    if ((bindFlags & (1 << GAPI_BIND_FLAGS::SHADER_RESOURCE)) != 0)
+    if ((bindFlags & GAPI_BIND_FLAGS::SHADER_RESOURCE) != 0)
     {
         ResultFlags += D3D11_BIND_SHADER_RESOURCE;
     }
@@ -61,20 +60,48 @@ uint32_t GetDx11BindFlag_internal(uint32_t bindFlags)
     return ResultFlags;
 }
 
-ID3D11RenderTargetView* Dx11GraphicsAPI:: GetBackBuffer_internal()
-{
-    ID3D11RenderTargetView* ResultRender = nullptr;
 
-    if (m_swapChain != nullptr && m_device != nullptr && m_immediateContext != nullptr)
+ID3D11RenderTargetView* Dx11GraphicsAPI::GetBackBufferRT_internal()
+{
+    ID3D11Texture2D* ResultTextureRt = nullptr;
+
+    ID3D11RenderTargetView* ResultRT = nullptr;
+
+    if (m_swapChain != nullptr && m_device != nullptr)
     {
-        ID3D11Texture2D* pBackBuffer = nullptr;
-        HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-        if (SUCCEEDED(hr))
+        if (SUCCEEDED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&ResultTextureRt))))
         {
-            hr = m_device->CreateRenderTargetView(pBackBuffer, nullptr, &ResultRender);
+            m_device->CreateRenderTargetView(ResultTextureRt, nullptr, &m_backBufferRT);
         }
     }
-    return ResultRender;
+    SAFE_RELEASE(ResultTextureRt);
+   
+    return m_backBufferRT;
+}
+
+ID3D11DepthStencilView* Dx11GraphicsAPI::CreateDepthStencilView_internal(ID3D11Texture2D* texture)
+{
+    D3D11_TEXTURE2D_DESC TextureDesc = {};
+
+    ID3D11DepthStencilView* ResultDepthStencilView = nullptr;
+
+    if (texture != nullptr)
+    {
+        texture->GetDesc(&TextureDesc);
+
+        if ((TextureDesc.BindFlags & D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL) != 0)
+        {
+            D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
+            descDSV.Format = TextureDesc.Format;
+            descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            descDSV.Texture2D.MipSlice = 0;
+
+            m_device->CreateDepthStencilView(texture, &descDSV, &ResultDepthStencilView);
+        }
+    }
+
+    // Wrap the raw D3D resource into the Dx11 depth-stencil object (same pattern as buffer creators)
+    return ResultDepthStencilView;
 }
 
 ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)
@@ -265,7 +292,7 @@ void Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t width , uint32_t heigh
 
     assert (!FAILED(hr));
 
-    m_backBufferRT = 
+    m_backBufferRT = GetBackBufferRT_internal();
 }
 
 std::shared_ptr<Dx11SwapChain> Dx11GraphicsAPI::GetSwapChain()
@@ -519,33 +546,25 @@ void Dx11GraphicsAPI::SetVertexShader(std::weak_ptr<VertexShader> shader)
 }
 
 
-std::shared_ptr<DepthStencil> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height, const GAPI_FORMAT::K format)
+std::shared_ptr<DepthStencilView> Dx11GraphicsAPI::CreateDepthStencil(uint32_t width, uint32_t height, const GAPI_FORMAT::K format)
 {
-    assert(width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN);
+    
+    std::shared_ptr<Dx11DepthStencilView> ResultStencil = nullptr;
 
-    std::shared_ptr<Dx11DepthStencil> ResultStencil = nullptr;
-
-    ID3D11Texture2D* rawDepth = CreateTexture2D_internal(width, height, format, GAPI_BIND_FLAGS::DEPTH_STENCIL);
-
-    if (rawDepth != nullptr)
+    if (width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN)
     {
-        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-        descDSV.Format = GetDX11Format_internal(format);
-        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        descDSV.Texture2D.MipSlice = 0;
-
-      
-        ID3D11DepthStencilView* DepthStencilView = nullptr;
-        if (SUCCEEDED(m_device->CreateDepthStencilView(rawDepth, &descDSV, &DepthStencilView)))
+        if (auto* Texture2D = CreateTexture2D_internal(width, height, format, GAPI_BIND_FLAGS::DEPTH_STENCIL))
         {
-            ResultStencil = std::make_shared<Dx11DepthStencil>();
-            ResultStencil->m_depthStencil = rawDepth;
-            ASSIGN_DEBUG_NAME(ResultStencil.get(), rawDepth);
+            if (auto * DepthStencilView = CreateDepthStencilView_internal(Texture2D))
+            { 
+                SAFE_RELEASE(Texture2D);
+
+                ResultStencil = std::make_shared<Dx11DepthStencilView>();
+
+                ResultStencil->m_depthStencilView = DepthStencilView;
+            }
         }
     }
-
-    // Wrap the raw D3D resource into the Dx11 depth-stencil object (same pattern as buffer creators)
-    SAFE_RELEASE(rawDepth);
     return ResultStencil;
 }
 
@@ -568,7 +587,7 @@ void Dx11GraphicsAPI::CreateRenderTarget()
     //}
 }
 
-void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencil>& depthStencil)
+void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencilView>& depthStencil)
 {
 
 }

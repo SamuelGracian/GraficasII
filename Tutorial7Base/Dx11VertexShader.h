@@ -7,5 +7,7 @@ public:
 	Dx11VertexShader();
 	~Dx11VertexShader() = default; 
 
+private:
+
 	ID3D11VertexShader* m_shader;
 };

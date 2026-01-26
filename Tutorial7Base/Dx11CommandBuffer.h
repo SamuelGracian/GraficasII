@@ -29,9 +29,13 @@ protected:
 
 	virtual void RecordCommandList() override;
 
+	ID3D11Buffer* GetBuffer(int index);
+
 private:
-	ID3D11DeviceContext* m_context; 
+	ID3D11DeviceContext* m_context;
+
 	ID3D11CommandList* m_commandList;
+
 	std::vector<ID3D11Buffer*> m_bufferList;
 };
 

@@ -9,7 +9,7 @@
 #include "PixelShader.h"
 #include "VertexShader.h"
 //Depth stencil
-#include "DepthStencil.h"
+#include "DepthStencilView.h"
 #include "SwapChain.h"
 //topology
 #include "Topology.h"
@@ -85,11 +85,11 @@ public:
 	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
 
 	//DepthStencil
-	virtual std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0, const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) = 0;
+	virtual std::shared_ptr<DepthStencilView> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0, const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) = 0;
 
 	virtual void CreateRenderTarget() = 0;
 
-	virtual void SetRenderTarget(const std::weak_ptr <DepthStencil>& depthStencil ) = 0;
+	virtual void SetRenderTarget(const std::weak_ptr <DepthStencilView>& depthStencil ) = 0;
 
 };
 

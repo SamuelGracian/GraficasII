@@ -18,7 +18,6 @@
 //topology
 #include "Topology.h"
 //Depth stencil
-#include "Dx11DepthStecil.h"
 #include "Dx11DepthStencilView.h"
 //command buffer
 #include "Dx11CommandBuffer.h"
@@ -118,11 +117,11 @@ public:
 	void SetVertexShader(std::weak_ptr<VertexShader> shader) override;
 
 	//DepthStencil
-	std::shared_ptr<DepthStencil> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0 , const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) override;
+	std::shared_ptr<DepthStencilView> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0 , const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) override;
 
 	void CreateRenderTarget( )override;
 
-	void SetRenderTarget(const std::weak_ptr <DepthStencil>& depthStencil) override;
+	void SetRenderTarget(const std::weak_ptr <DepthStencilView>& depthStencil) override;
 
 
 	ID3D11Device* m_device;
@@ -131,14 +130,17 @@ public:
 
 	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
 
-	ID3D11RenderTargetView* m_backBufferRT;
+	ID3D11RenderTargetView* m_backBufferRT; ///Render target back buffer
 
-	ID3D11DepthStencilView* m_backBufferDS;
+	ID3D11DepthStencilView* m_backBufferDS; ///Depth Stencil back buffer
 private:
 	IDXGISwapChain* m_swapChain;
 
 private:
-	ID3D11RenderTargetView* GetBackBuffer_internal();
 
 	ID3D11Texture2D* CreateTexture2D_internal (uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags);
+
+	ID3D11RenderTargetView* GetBackBufferRT_internal();
+
+	ID3D11DepthStencilView* CreateDepthStencilView_internal(ID3D11Texture2D* texture);
 };

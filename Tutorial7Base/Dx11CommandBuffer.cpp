@@ -1,5 +1,7 @@
 #include "Dx11CommandBuffer.h"
 #include <algorithm>
+#include <iostream>
+
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
 
@@ -164,6 +166,18 @@ void Dx11CommandBuffer::RecordCommandList()
 	}
 
 	m_isBufferReady = true;
+}
+
+ID3D11Buffer* Dx11CommandBuffer::GetBuffer(int index)
+{
+	if (index > m_bufferList.size())
+	{
+		std::cout << "DX11Commandbuffer: function GetBuffer() : invalid index" << std::endl;
+		return;
+	}
+
+	return m_bufferList[index];
+
 }
 
 void Dx11CommandBuffer::Execute()

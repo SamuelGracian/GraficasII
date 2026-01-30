@@ -24,6 +24,9 @@
 //Pass
 #include "Pass.h"
 
+//View Port
+#include "ViewPort.h"
+
 #include "GRAPIGenerals.h"
 
 #if defined (DEBUG) || defined (_DEBUG)
@@ -72,8 +75,6 @@ public:
 
 	std::shared_ptr<SwapChain> CreateSwapChain(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K = GAPI_FORMAT::FORMAT_UNKNOWN) override;
 
-	std::shared_ptr<Dx11SwapChain>GetSwapChain();
-
 	//Buffer functions
 	std::shared_ptr<ConstantBuffer> CreateConstantBuffer(const uint32_t bytewidth = 0,
 		const uint32_t slot = 0,
@@ -109,7 +110,7 @@ public:
 
 	//Shaders functions
 	//Create shaders
-	std::shared_ptr<VertexShader> CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght) override;
+	std::shared_ptr<VertexShader> CreateVertexShader(const char* shader) override;
 
 	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght) override;
 
@@ -123,6 +124,9 @@ public:
 
 	void SetRenderTarget(const std::weak_ptr <DepthStencilView>& depthStencil) override;
 
+	//ViewPort
+
+	std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) override;
 
 	ID3D11Device* m_device;
 
@@ -130,18 +134,11 @@ public:
 
 	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
 
-	ID3D11RenderTargetView* m_backBufferRT; ///Render target back buffer
-
-	ID3D11DepthStencilView* m_backBufferDS; ///Depth Stencil back buffer
-private:
-
-	IDXGISwapChain* m_swapChain;
-
 private:
 
 	ID3D11Texture2D* CreateTexture2D_internal (uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags);
 
-	ID3D11RenderTargetView* GetBackBufferRT_internal();
+	ID3D11RenderTargetView* CreateBackBufferRT_internal(IDXGISwapChain* swapChain);
 
 	ID3D11DepthStencilView* CreateDepthStencilView_internal(ID3D11Texture2D* texture);
 

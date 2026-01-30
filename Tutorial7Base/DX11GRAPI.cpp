@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Dx11Topology.h"
 #include <d3dcompiler.h>
+#include "Dx11ViewPort.h"
 
 #define SAFE_RELEASE(x) if (x) {x -> Release(); x = nullptr;}
 #define HIGHER_AVAILABLE_SLOT 8
@@ -64,22 +65,22 @@ uint32_t GetDx11BindFlag_internal(uint32_t bindFlags)
 }
 
 
-ID3D11RenderTargetView* Dx11GraphicsAPI::GetBackBufferRT_internal()
+ID3D11RenderTargetView* Dx11GraphicsAPI::CreateBackBufferRT_internal(IDXGISwapChain* swapChain)
 {
     ID3D11Texture2D* ResultTextureRt = nullptr;
 
     ID3D11RenderTargetView* ResultRT = nullptr;
 
-    if (m_swapChain != nullptr && m_device != nullptr)
+    if ( swapChain != nullptr && m_device != nullptr)
     {
-        if (SUCCEEDED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&ResultTextureRt))))
+        if (SUCCEEDED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&ResultTextureRt))))
         {
-            m_device->CreateRenderTargetView(ResultTextureRt, nullptr, &m_backBufferRT);
+            m_device->CreateRenderTargetView(ResultTextureRt, nullptr, &ResultRT);
         }
     }
     SAFE_RELEASE(ResultTextureRt);
    
-    return m_backBufferRT;
+    return ResultRT;
 }
 
 ID3D11DepthStencilView* Dx11GraphicsAPI::CreateDepthStencilView_internal(ID3D11Texture2D* texture)
@@ -119,6 +120,8 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
 
     IDXGISwapChain1* swapChain1 = nullptr;
 
+    IDXGISwapChain* ResultSwapChain = nullptr;
+
     if (SUCCEEDED(m_device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice))))
     {
         if (SUCCEEDED(dxgiDevice->GetAdapter(&adapter)))
@@ -140,7 +143,7 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
 
                     if (SUCCEEDED(dxgiFactory2->CreateSwapChainForHwnd(m_device, hwnd, &sd, nullptr, nullptr, &swapChain1)))
                     {
-                        swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&m_swapChain));
+                        swapChain1->QueryInterface(__uuidof(IDXGISwapChain), reinterpret_cast<void**>(&ResultSwapChain));
                     }
                 }
                 else
@@ -159,7 +162,7 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
                     sd.Windowed = TRUE;
 
 
-                    dxgiFactory1->CreateSwapChain(m_device, &sd, &m_swapChain);
+                    dxgiFactory1->CreateSwapChain(m_device, &sd, &ResultSwapChain);
                 }
 
                 dxgiFactory1->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
@@ -173,6 +176,7 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
     SAFE_RELEASE(adapter);
     SAFE_RELEASE(swapChain1);
 
+    return ResultSwapChain;
 }
 
 ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)
@@ -200,7 +204,7 @@ ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint3
 }
 
 Dx11GraphicsAPI::Dx11GraphicsAPI()
-	:m_device(nullptr),m_immediateContext(nullptr),m_swapChain(nullptr), m_backBufferDS(nullptr), m_backBufferRT(nullptr)
+	:m_device(nullptr),m_immediateContext(nullptr)
 {
     UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -247,7 +251,7 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
     assert (!FAILED(hr));
 
     // Obtain DXGI factory from device (since we used nullptr for pAdapter above)
-    IDXGIFactory1* dxgiFactory = nullptr;
+    IDXGIFactory1* dxgiFactory1 = nullptr;
     {
         IDXGIDevice* dxgiDevice = nullptr;
         hr = m_device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice));
@@ -265,7 +269,6 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
     }
    assert (!FAILED(hr));
 
-
 }
 
 Dx11GraphicsAPI::~Dx11GraphicsAPI()
@@ -275,7 +278,7 @@ Dx11GraphicsAPI::~Dx11GraphicsAPI()
 
 void Dx11GraphicsAPI::CleanUpResources()
 {
-    SAFE_RELEASE(m_swapChain);
+    
     SAFE_RELEASE(m_immediateContext);
     SAFE_RELEASE(m_device);
 }
@@ -284,19 +287,20 @@ std::shared_ptr<SwapChain> Dx11GraphicsAPI::CreateSwapChain(HWND hwnd, uint32_t 
 {
     std::shared_ptr <Dx11SwapChain> SChain = nullptr;
 
-    if (auto* ResultSwapCain = CreateSwapChain_Internal(hwnd, width, height, format))
+    if (auto* ResultSwapChain = CreateSwapChain_Internal(hwnd, width, height, format))
     {
-        SChain = std::make_shared<Dx11SwapChain>();
+        if (auto * ResultRT = CreateBackBufferRT_internal(ResultSwapChain))
+        {
+            SChain = std::make_shared<Dx11SwapChain>();
+
+            SChain->m_BackBUfferRT = ResultRT;
+
+            SChain->m_swapChain = ResultSwapChain;
+        }
     }
     return SChain;
 }
 
-std::shared_ptr<Dx11SwapChain> Dx11GraphicsAPI::GetSwapChain()
-{
-    auto SChain = std::make_shared<Dx11SwapChain>();
-    SChain->m_swapChain = m_swapChain;
-    return SChain;
-}
 
 std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint32_t bytewidth, const uint32_t slot, void* data)
 {
@@ -514,7 +518,7 @@ std::shared_ptr<Pass> Dx11GraphicsAPI::CreatePass()
 }
 
 
-std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const void* shaderBytecode, uint32_t bytecodeLenght)
+std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const char* shaderchar)
 {
 	ID3D11VertexShader* shader = nullptr;
     HRESULT hr = m_device->CreateVertexShader(shaderBytecode, bytecodeLenght, nullptr, &shader);
@@ -585,6 +589,21 @@ void Dx11GraphicsAPI::CreateRenderTarget()
 
 void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencilView>& depthStencil)
 {
+
+}
+
+std::shared_ptr<ViewPort> Dx11GraphicsAPI::CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY)
+{
+    std::shared_ptr<Dx11ViewPort> ResultVP = nullptr;
+
+    ResultVP->m_ViewPort->Width = width;
+    ResultVP->m_ViewPort->Height = height;
+    ResultVP->m_ViewPort->MinDepth = minDepth;
+    ResultVP->m_ViewPort->MaxDepth = maxDepth;
+    ResultVP->m_ViewPort->TopLeftX = topLeftX;
+    ResultVP->m_ViewPort->TopLeftY = topLeftY;
+
+    return ResultVP;
 
 }
 

@@ -246,6 +246,7 @@
     <ClCompile Include="Dx11Topology.cpp" />
     <ClCompile Include="Dx11VertexBuffer.cpp" />
     <ClCompile Include="Dx11VertexShader.cpp" />
+    <ClCompile Include="Dx11ViewPort.cpp" />
     <ClCompile Include="GRAPI.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="Pass.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="Dx11ConstantBuffer.h" />
     <ClInclude Include="Dx11IndexBuffer.h" />
     <ClInclude Include="Dx11VertexBuffer.h" />
+    <ClInclude Include="Dx11ViewPort.h" />
     <ClInclude Include="GRAPI.h" />
     <ClInclude Include="GRAPIGenerals.h" />
     <ClInclude Include="Indexbuffer.h" />
@@ -284,6 +286,7 @@
     <ClInclude Include="Topology.h" />
     <ClInclude Include="Vertexbuffer.h" />
     <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="ViewPort.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fxh" />

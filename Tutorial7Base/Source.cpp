@@ -110,7 +110,7 @@ std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
 std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
 std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
 std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
-std::shared_ptr<Dx11SwapChain> Gapi_swpChain;
+std::shared_ptr<SwapChain> Gapi_swpChain = nullptr;
 std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
 std::shared_ptr<DepthStencilView> Gapi_depthStencil = nullptr;
@@ -206,43 +206,6 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 }
 
 
-//--------------------------------------------------------------------------------------
-// Helper for compiling shaders with D3DCompile
-//
-// With VS 11, we could load up prebuilt .cso files instead...
-//--------------------------------------------------------------------------------------
-//HRESULT CompileShaderFromFile(const WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
-//{
-//    HRESULT hr = S_OK;
-//
-//    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-//#ifdef _DEBUG
-//    // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-//    // Setting this flag improves the shader debugging experience, but still allows 
-//    // the shaders to be optimized and to run exactly the way they will run in 
-//    // the release configuration of this program.
-//    dwShaderFlags |= D3DCOMPILE_DEBUG;
-//
-//    // Disable optimizations to further improve shader debugging
-//    dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-//#endif
-//
-//    ID3DBlob* pErrorBlob = nullptr;
-//    hr = D3DCompileFromFile(szFileName, nullptr, nullptr, szEntryPoint, szShaderModel,
-//        dwShaderFlags, 0, ppBlobOut, &pErrorBlob);
-//    if (FAILED(hr))
-//    {
-//        if (pErrorBlob)
-//        {
-//            OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
-//            pErrorBlob->Release();
-//        }
-//        return hr;
-//    }
-//    if (pErrorBlob) pErrorBlob->Release();
-//
-//    return S_OK;
-//}
 
 
 //--------------------------------------------------------------------------------------
@@ -262,39 +225,11 @@ HRESULT InitDevice()
     //Create swap chain with grapi
     if (GAPI)
     {
-        GAPI->CreateSwapChain(g_hWnd, width, height);
-        Gapi_swpChain = GAPI->GetSwapChain();
+        Gapi_swpChain =  GAPI->CreateSwapChain(g_hWnd, width, height, GAPI_FORMAT::FORMAT_R8G8B8A8_UNORM);
     }
-
-    //////////////////////////////////////
-    // Create a render target view
-    ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = Gapi_swpChain->m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-    if (FAILED(hr))
-        return hr;
-
-
-    hr = GAPI->m_device->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
-    pBackBuffer->Release();
-    if (FAILED(hr))
-        return hr;
-
-    ///////////////////////////////////
-    Gapi_depthStencil = GAPI->CreateDepthStencil(width, height, GAPI_FORMAT::FORMAT_D24_UNORM_S8_UINT);
-
-    ///______________________________________________________________
-    //g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
   
-
     // Setup the viewport
-    D3D11_VIEWPORT vp;
-    vp.Width = (FLOAT)width;
-    vp.Height = (FLOAT)height;
-    vp.MinDepth = 0.0f;
-    vp.MaxDepth = 1.0f;
-    vp.TopLeftX = 0;
-    vp.TopLeftY = 0;
-    GAPI->m_immediateContext->RSSetViewports(1, &vp);
+
 
     // Compile the vertex shader
     ID3DBlob* pVSBlob = nullptr;
@@ -337,11 +272,6 @@ HRESULT InitDevice()
             L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
         return hr;
     }
-
-    ///To do compile dentro de Gx11
-	/// --------------------------------------------------------------
-    /// Create the pixel shader
-
 
 	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 
@@ -443,9 +373,7 @@ HRESULT InitDevice()
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose(g_View);
-    //g_pImmediateContext->UpdateSubresource(g_pCBNeverChanges, 0, nullptr, &cbNeverChanges, 0, 0);
-    //GAPI->m_immediateContext->UpdateSubresource(Gapi_constbuffer->m_buffer, 0, nullptr, &cbNeverChanges, 0, 0);
-    
+
     ///Update constant buffer
     GAPI->UpdateConstantBuffer(Gapi_constbuffer, sizeof(cbNeverChanges), &cbNeverChanges);
 
@@ -533,73 +461,73 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void Render()
 {
 
-    GAPI->m_immediateContext->OMSetRenderTargets(1, &GAPI->m_backBufferRT, GAPI->m_backBufferDS);
+    //GAPI->m_immediateContext->OMSetRenderTargets(1, &GAPI->m_backBufferRT, GAPI->m_backBufferDS);
 
-    // Update our time
-    static float t = 0.0f;
-    if (g_driverType == D3D_DRIVER_TYPE_REFERENCE)
-    {
-        t += (float)XM_PI * 0.0125f;
-    }
-    else
-    {
-        static ULONGLONG timeStart = 0;
-        ULONGLONG timeCur = GetTickCount64();
-        if (timeStart == 0)
-            timeStart = timeCur;
-        t = (timeCur - timeStart) / 1000.0f;
-    }
+    //// Update our time
+    //static float t = 0.0f;
+    //if (g_driverType == D3D_DRIVER_TYPE_REFERENCE)
+    //{
+    //    t += (float)XM_PI * 0.0125f;
+    //}
+    //else
+    //{
+    //    static ULONGLONG timeStart = 0;
+    //    ULONGLONG timeCur = GetTickCount64();
+    //    if (timeStart == 0)
+    //        timeStart = timeCur;
+    //    t = (timeCur - timeStart) / 1000.0f;
+    //}
 
-    // Reset world / color
-    g_World = XMMatrixIdentity();
-    g_vMeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
-    g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
-    g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
+    //// Reset world / color
+    //g_World = XMMatrixIdentity();
+    //g_vMeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
+    //g_vMeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
+    //g_vMeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
-    float Color[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+    //float Color[] = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-    // Clear targets
-    GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Color);
-    //GAPI->m_immediateContext->ClearDepthStencilView(GAPI->m_backBufferDS, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    //// Clear targets
+    //GAPI->m_immediateContext->ClearRenderTargetView(g_pRenderTargetView, Color);
+    ////GAPI->m_immediateContext->ClearDepthStencilView(GAPI->m_backBufferDS, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // Update per-frame CB
-    CBChangesEveryFrame cb;
-    cb.mWorld = XMMatrixTranspose(g_World);
-    cb.vMeshColor = g_vMeshColor;
-    GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
+    //// Update per-frame CB
+    //CBChangesEveryFrame cb;
+    //cb.mWorld = XMMatrixTranspose(g_World);
+    //cb.vMeshColor = g_vMeshColor;
+    //GAPI->m_immediateContext->UpdateSubresource(g_pCBChangesEveryFrame, 0, nullptr, &cb, 0, 0);
 
-    // If command buffer exists, execute only if it's ready. Otherwise perform direct draw.
-    if (Gapi_CommandBuffer && Gapi_CommandBuffer->IsBufferReady())
-    {
-        Gapi_CommandBuffer->Execute();
-    }
-    else
-    {
-        // Use only GAPI objects (avoid raw/uninitialized globals)
-        if (Gapi_vrtxShader && Gapi_vrtxShader->m_shader)
-            GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
+    //// If command buffer exists, execute only if it's ready. Otherwise perform direct draw.
+    //if (Gapi_CommandBuffer && Gapi_CommandBuffer->IsBufferReady())
+    //{
+    //    Gapi_CommandBuffer->Execute();
+    //}
+    //else
+    //{
+    //    // Use only GAPI objects (avoid raw/uninitialized globals)
+    //    if (Gapi_vrtxShader && Gapi_vrtxShader->m_shader)
+    //        GAPI->m_immediateContext->VSSetShader(Gapi_vrtxShader->m_shader, nullptr, 0);
 
-        // Bind constant buffers (slot 0 = never-changes, slot1 = projection, slot2 = per-frame)
-        ID3D11Buffer* cb0 = (Gapi_constbuffer && Gapi_constbuffer->m_buffer) ? Gapi_constbuffer->m_buffer : nullptr;
-        GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &cb0);
-        GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
-        GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    //    // Bind constant buffers (slot 0 = never-changes, slot1 = projection, slot2 = per-frame)
+    //    ID3D11Buffer* cb0 = (Gapi_constbuffer && Gapi_constbuffer->m_buffer) ? Gapi_constbuffer->m_buffer : nullptr;
+    //    GAPI->m_immediateContext->VSSetConstantBuffers(0, 1, &cb0);
+    //    GAPI->m_immediateContext->VSSetConstantBuffers(1, 1, &g_pCBChangeOnResize);
+    //    GAPI->m_immediateContext->VSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
 
-        if (Gapi_pxlShader && Gapi_pxlShader->m_shader)
-            GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
+    //    if (Gapi_pxlShader && Gapi_pxlShader->m_shader)
+    //        GAPI->m_immediateContext->PSSetShader(Gapi_pxlShader->m_shader, nullptr, 0);
 
 
-        GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
-        GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
-        GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
+    //    GAPI->m_immediateContext->PSSetConstantBuffers(2, 1, &g_pCBChangesEveryFrame);
+    //    GAPI->m_immediateContext->PSSetShaderResources(0, 1, &g_pTextureRV);
+    //    GAPI->m_immediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
 
-        // Ensure topology and vertex/index buffers already set in InitDevice()
-        GAPI->m_immediateContext->DrawIndexed(g_IndexCount, 0, 0);
-    }
+    //    // Ensure topology and vertex/index buffers already set in InitDevice()
+    //    GAPI->m_immediateContext->DrawIndexed(g_IndexCount, 0, 0);
+    //}
 
-    // Present
-    if (Gapi_swpChain && Gapi_swpChain->m_swapChain)
-        Gapi_swpChain->m_swapChain->Present(0, 0);
+    //// Present
+    //if (Gapi_swpChain && Gapi_swpChain->m_swapChain)
+    //    Gapi_swpChain->m_swapChain->Present(0, 0);
 }
 
 #endif

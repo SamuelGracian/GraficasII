@@ -16,6 +16,9 @@
 //Render Pass
 #include "Pass.h"
 
+//view Port
+#include "ViewPort.h"
+
 #include "GRAPIGenerals.h"
 
 class IndexBuffer;
@@ -78,7 +81,7 @@ public:
 	virtual void RenderPass(std::weak_ptr<Pass> pase) = 0;
 
 	//Shader functions
-	virtual std::shared_ptr<VertexShader> CreateVertexShader(const void * shaderBytecode, uint32_t bytecodeLenght) = 0;
+	virtual std::shared_ptr<VertexShader> CreateVertexShader(const char * shader);
 
 	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght ) = 0;
 
@@ -90,6 +93,9 @@ public:
 	virtual void CreateRenderTarget() = 0;
 
 	virtual void SetRenderTarget(const std::weak_ptr <DepthStencilView>& depthStencil ) = 0;
+
+	//View Port
+	virtual std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) = 0
 
 };
 

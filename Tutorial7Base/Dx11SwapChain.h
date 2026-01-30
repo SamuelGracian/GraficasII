@@ -12,4 +12,6 @@ public:
 //private:
 
 	IDXGISwapChain* m_swapChain;
+
+	ID3D11RenderTargetView* m_BackBUfferRT; //Back buffer render target
 };

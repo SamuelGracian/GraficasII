@@ -81,11 +81,13 @@ public:
 	virtual void RenderPass(std::weak_ptr<Pass> pase) = 0;
 
 	//Shader functions
-	virtual std::shared_ptr<VertexShader> CreateVertexShader(const char * shader);
+	virtual std::shared_ptr<VertexShader> CreateVertexShader(const std::string& shaderCode ,  const std::string& entrypoint, std::vector<std::string> Defines) = 0;
 
-	virtual std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght ) = 0;
+	virtual std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode,  const std::string& entrypoint, std::vector<std::string> Defines) = 0;
 
 	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
+
+
 
 	//DepthStencil
 	virtual std::shared_ptr<DepthStencilView> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0, const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) = 0;
@@ -95,7 +97,10 @@ public:
 	virtual void SetRenderTarget(const std::weak_ptr <DepthStencilView>& depthStencil ) = 0;
 
 	//View Port
-	virtual std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) = 0
+	virtual std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) = 0;
+
+protected:
+	uint32_t m_shaderModel;
 
 };
 

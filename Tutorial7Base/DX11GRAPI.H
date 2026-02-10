@@ -110,9 +110,9 @@ public:
 
 	//Shaders functions
 	//Create shaders
-	std::shared_ptr<VertexShader> CreateVertexShader(const char* shader) override;
+	std::shared_ptr<VertexShader> CreateVertexShader(const std::string& shaderCode , const std::string& entrypoint, std::vector<std::string> Defines) override;
 
-	std::shared_ptr<PixelShader> CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLenght) override;
+	std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines) override;
 
 	//Set shaders
 	void SetVertexShader(std::weak_ptr<VertexShader> shader) override;
@@ -143,4 +143,6 @@ private:
 	ID3D11DepthStencilView* CreateDepthStencilView_internal(ID3D11Texture2D* texture);
 
 	IDXGISwapChain* CreateSwapChain_Internal(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN);
+
+	std::string GetShaderModel_internal(SHADER_TYPE::K);
 };

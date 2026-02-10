@@ -179,6 +179,14 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
     return ResultSwapChain;
 }
 
+std::string Dx11GraphicsAPI::GetShaderModel_internal(SHADER_TYPE::K)
+{
+    if(SHADER_TYPE::)
+
+    return std::string();
+}
+
+
 ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)
 {
     assert(width != 0 && height != 0 && format != GAPI_FORMAT::FORMAT_UNKNOWN);
@@ -268,6 +276,8 @@ Dx11GraphicsAPI::Dx11GraphicsAPI()
         }
     }
    assert (!FAILED(hr));
+
+   m_shaderModel = 4;
 
 }
 
@@ -518,22 +528,38 @@ std::shared_ptr<Pass> Dx11GraphicsAPI::CreatePass()
 }
 
 
-std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const char* shaderchar)
+std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines)
 {
-	ID3D11VertexShader* shader = nullptr;
-    HRESULT hr = m_device->CreateVertexShader(shaderBytecode, bytecodeLenght, nullptr, &shader);
-    assert(SUCCEEDED(hr));
+    if (m_device != nullptr && !shaderCode.empty() && !entrypoint.empty())
+    {
 
-    auto shaderPtr = std::make_shared<Dx11VertexShader>();
-    shaderPtr->m_shader = shader;
+        std::string FinalShaderCode;
 
+
+        for (auto& macro : Defines)
+        {
+            FinalShaderCode += macro;
+        }
+
+        FinalShaderCode += shaderCode;
+
+        if (D3DCompile(FinalShaderCode.c_str(), sizeof(char ) * FinalShaderCode.length(), nullptr, nullptr,entrypoint.c_str(),))
+
+        ID3D11VertexShader* shader = nullptr;
+        HRESULT hr = m_device->CreateVertexShader(shaderCode, bytecodeLenght, nullptr, &shader);
+        assert(SUCCEEDED(hr));
+
+        auto shaderPtr = std::make_shared<Dx11VertexShader>();
+        shaderPtr->m_shader = shader;
+    
     return shaderPtr;
+    }
 }
 
-std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const void* shaderBytecode, uint32_t bytecodeLength)
+std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines)
 {
     ID3D11PixelShader* pixelShader = nullptr;
-    HRESULT hr = m_device->CreatePixelShader(shaderBytecode, bytecodeLength, nullptr, &pixelShader);
+    HRESULT hr = m_device->CreatePixelShader(shaderCode, bytecodeLength, nullptr, &pixelShader);
     assert(SUCCEEDED(hr));
 
     auto shaderPtr = std::make_shared<Dx11PixelShader>();

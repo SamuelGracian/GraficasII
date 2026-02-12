@@ -179,12 +179,29 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
     return ResultSwapChain;
 }
 
-std::string Dx11GraphicsAPI::GetShaderModel_internal(SHADER_TYPE::K)
-{
-    if(SHADER_TYPE::)
-
-    return std::string();
-}
+    std::string Dx11GraphicsAPI::GetShaderModel_internal(SHADER_TYPE::K shaderType)
+    {
+        std::string ResultShader;
+    
+        std::string modelVersion = std::to_string(m_shaderModel) + "_0";
+    
+        switch (shaderType)
+        {
+        case SHADER_TYPE::K::VERTEX_SHADER:
+            ResultShader = "vs_" + modelVersion;
+            break;
+        
+        case SHADER_TYPE::K::PIXEL_SHADER:
+            ResultShader = "ps_" + modelVersion;
+            break;
+        
+        default:
+            ResultShader = "vs_4_0";
+            break;
+        }
+    
+        return ResultShader;
+    }
 
 
 ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint32_t height, const GAPI_FORMAT::K format, uint32_t bindFlags)

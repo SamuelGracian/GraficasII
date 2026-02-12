@@ -179,11 +179,11 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
     return ResultSwapChain;
 }
 
-    std::string Dx11GraphicsAPI::GetShaderModel_internal(SHADER_TYPE::K shaderType)
+    const char* GetShaderModel_internal(SHADER_TYPE::K shaderType, uint32_t shaderModel)
     {
         std::string ResultShader;
     
-        std::string modelVersion = std::to_string(m_shaderModel) + "_0";
+        std::string modelVersion = std::to_string(shaderModel) + "_0";
     
         switch (shaderType)
         {
@@ -200,7 +200,7 @@ IDXGISwapChain* Dx11GraphicsAPI::CreateSwapChain_Internal(HWND hwnd, uint32_t wi
             break;
         }
     
-        return ResultShader;
+        return ResultShader.c_str();
     }
 
 
@@ -226,6 +226,45 @@ ID3D11Texture2D* Dx11GraphicsAPI::CreateTexture2D_internal(uint32_t width, uint3
     m_device->CreateTexture2D(&descTexture, nullptr, &ResultTexture);
 
     return ResultTexture;
+}
+
+ID3DBlob* Dx11GraphicsAPI:: CompileShader_internal(const std::string & shaderCode, const std::string & entrypoint, std::vector<std::string> Defines, SHADER_TYPE::K shaderType)
+{
+    if (!shaderCode.empty() && !entrypoint.empty())
+    {
+
+        std::string FinalShaderCode;
+
+        ID3DBlob* ErrorBlob = nullptr;
+        ID3DBlob* BinaryBlob = nullptr;
+
+        uint32_t dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+        // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+        // Setting this flag improves the shader debugging experience, but still allows 
+        // the shaders to be optimized and to run exactly the way they will run in 
+        // the release configuration of this program.
+        dwShaderFlags |= D3DCOMPILE_DEBUG;
+
+        // Disable optimizations to further improve shader debugging
+        dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+        for (auto& macro : Defines)
+        {
+            FinalShaderCode += (macro + "/n");
+        }
+
+        FinalShaderCode += shaderCode;
+
+        if (D3DCompile(FinalShaderCode.c_str(), sizeof(char) * FinalShaderCode.length(), nullptr, nullptr, nullptr,
+            entrypoint.c_str(), GetShaderModel_internal(SHADER_TYPE::K::VERTEX_SHADER , m_shaderModel), dwShaderFlags, 0, &BinaryBlob, &ErrorBlob))
+        {
+            return BinaryBlob;
+        }
+        std::cout << reinterpret_cast<const char*>(ErrorBlob->GetBufferPointer()) << std::endl;
+        SAFE_RELEASE(ErrorBlob);
+    }
 }
 
 Dx11GraphicsAPI::Dx11GraphicsAPI()
@@ -547,41 +586,44 @@ std::shared_ptr<Pass> Dx11GraphicsAPI::CreatePass()
 
 std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines)
 {
-    if (m_device != nullptr && !shaderCode.empty() && !entrypoint.empty())
-    {
+    ID3DBlob* BinaryBlob = nullptr;
 
-        std::string FinalShaderCode;
+    ID3D11VertexShader* ResultShader = nullptr;
 
+   BinaryBlob = CompileShader_internal(shaderCode, entrypoint, Defines, SHADER_TYPE::K::VERTEX_SHADER);
+        
+   if (BinaryBlob != nullptr)
+   {
+       ID3D11VertexShader* shader = nullptr;
+       HRESULT hr = m_device->CreateVertexShader(BinaryBlob, BinaryBlob->GetBufferSize(), nullptr, &ResultShader);
+       assert(SUCCEEDED(hr));
 
-        for (auto& macro : Defines)
-        {
-            FinalShaderCode += macro;
-        }
-
-        FinalShaderCode += shaderCode;
-
-        if (D3DCompile(FinalShaderCode.c_str(), sizeof(char ) * FinalShaderCode.length(), nullptr, nullptr,entrypoint.c_str(),))
-
-        ID3D11VertexShader* shader = nullptr;
-        HRESULT hr = m_device->CreateVertexShader(shaderCode, bytecodeLenght, nullptr, &shader);
-        assert(SUCCEEDED(hr));
-
-        auto shaderPtr = std::make_shared<Dx11VertexShader>();
-        shaderPtr->m_shader = shader;
+       auto shaderPtr = std::make_shared<Dx11VertexShader>();
+       shaderPtr->m_shader = ResultShader;
     
-    return shaderPtr;
-    }
+       return shaderPtr;
+   }
 }
 
 std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines)
 {
-    ID3D11PixelShader* pixelShader = nullptr;
-    HRESULT hr = m_device->CreatePixelShader(shaderCode, bytecodeLength, nullptr, &pixelShader);
-    assert(SUCCEEDED(hr));
+    ID3DBlob* BinaryBlob = nullptr;
 
-    auto shaderPtr = std::make_shared<Dx11PixelShader>();
-    shaderPtr->m_shader = pixelShader;
-    return shaderPtr;
+    ID3D11PixelShader* ResultShader = nullptr;
+
+    BinaryBlob = CompileShader_internal(shaderCode, entrypoint, Defines, SHADER_TYPE::K::PIXEL_SHADER);
+
+    if (BinaryBlob != nullptr)
+    {
+        ID3D11PixelShader* shader = nullptr;
+        HRESULT hr = m_device->CreatePixelShader(BinaryBlob, BinaryBlob->GetBufferSize(), nullptr, &ResultShader);
+        assert(SUCCEEDED(hr));
+
+        auto shaderPtr = std::make_shared<Dx11PixelShader>();
+        shaderPtr->m_shader = ResultShader;
+
+        return shaderPtr;
+    }
 }
 
 void Dx11GraphicsAPI::SetVertexShader(std::weak_ptr<VertexShader> shader)

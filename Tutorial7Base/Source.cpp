@@ -243,7 +243,7 @@ HRESULT InitDevice()
 
     ///-----------------------------------------------------------------
 
-	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize()));
+	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader());
 
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC layout[] =

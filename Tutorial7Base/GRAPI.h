@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <d3d11.h>
+#include<iostream>
 ////Buffers
 #include "ConstantBuffer.h"
 #include "IndexBuffer.h"

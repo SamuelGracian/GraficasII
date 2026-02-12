@@ -144,5 +144,6 @@ private:
 
 	IDXGISwapChain* CreateSwapChain_Internal(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN);
 
-	std::string GetShaderModel_internal(SHADER_TYPE::K);
+	ID3DBlob* CompileShader_internal(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines, SHADER_TYPE::K shaderType);
+
 };

@@ -380,7 +380,7 @@ std::shared_ptr<ConstantBuffer> Dx11GraphicsAPI::CreateConstantBuffer(const uint
 
     assert(!FAILED(m_device->CreateBuffer(&bd, nullptr, &Rawbuffer)));
 
-    auto buffer = std::make_shared<Dx11ConstatBuffer>();
+    auto buffer = std::make_shared<Dx11ConstantBuffer>();
     buffer->m_buffer = Rawbuffer;
     buffer->SetByteWidth(bytewidth);
     buffer->SetSlot(slot); /// Cambio mas restrictivo el uso de info
@@ -435,7 +435,7 @@ void Dx11GraphicsAPI::SetConstantBuffer(std::weak_ptr<ConstantBuffer> buffer)
     {
         return;
     }
-    auto pbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(buffer.lock());
+    auto pbuffer = std::static_pointer_cast<Dx11ConstantBuffer>(buffer.lock());
 
     if (pbuffer == nullptr || pbuffer->m_buffer == nullptr || pbuffer->GetSlot() >= HIGHER_AVAILABLE_SLOT)
     {
@@ -453,7 +453,7 @@ void Dx11GraphicsAPI::UpdateConstantBuffer(std::weak_ptr<ConstantBuffer> buffer,
     {
         return;
     }
-    auto pbuffer = std::static_pointer_cast<Dx11ConstatBuffer> (buffer.lock());
+    auto pbuffer = std::static_pointer_cast<Dx11ConstantBuffer> (buffer.lock());
 
     if (pbuffer == nullptr || pbuffer->m_buffer == nullptr || pbuffer->GetByteWidth() != bytewidth)
     {

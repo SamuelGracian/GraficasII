@@ -107,7 +107,7 @@ UINT g_IndexCount = 0;
 //--------------------------------------------------------------------------------------
 
 std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
-std::shared_ptr<Dx11ConstatBuffer> Gapi_constbuffer = nullptr;
+std::shared_ptr<Dx11ConstantBuffer> Gapi_constbuffer = nullptr;
 std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
 std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<SwapChain> Gapi_swpChain = nullptr;
@@ -321,7 +321,7 @@ HRESULT InitDevice()
     ///-----------------------------------------------------------------------------
     ///Create constant buffer with GRAPI
     ///-----------------------------------------------------------------------------
-    Gapi_constbuffer = std::static_pointer_cast<Dx11ConstatBuffer>(GAPI->CreateConstantBuffer(sizeof(CBNeverChanges),0,nullptr));
+    Gapi_constbuffer = std::static_pointer_cast<Dx11ConstantBuffer>(GAPI->CreateConstantBuffer(sizeof(CBNeverChanges),0,nullptr));
 
     ///----------------------------------------------------------------------------
     ///Command buffer

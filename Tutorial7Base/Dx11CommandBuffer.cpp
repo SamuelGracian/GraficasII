@@ -116,7 +116,7 @@ void Dx11CommandBuffer::RecordCommandList()
 		{
 			continue;
 		}
-		auto pDX11buffer = std::static_pointer_cast<Dx11ConstatBuffer>(pbuffer);
+		auto pDX11buffer = std::static_pointer_cast<Dx11ConstantBuffer>(pbuffer);
 
 		if (pDX11buffer == nullptr || pDX11buffer->m_buffer == nullptr || pbuffer->GetSlot() >= HIGHER_AVAILABLE_SLOT)
 		{
@@ -143,7 +143,7 @@ void Dx11CommandBuffer::RecordCommandList()
 			{
 				continue;
 			}
-			auto pDX11buffer = std::static_pointer_cast<Dx11ConstatBuffer>(pbuffer);
+			auto pDX11buffer = std::static_pointer_cast<Dx11ConstantBuffer>(pbuffer);
 
 			if (pDX11buffer == nullptr || pDX11buffer->m_buffer == nullptr || pbuffer->GetSlot() >= HIGHER_AVAILABLE_SLOT)
 			{

@@ -112,7 +112,8 @@ public:
 	//Create shaders
 	std::shared_ptr<VertexShader> CreateVertexShader(const std::string& shaderCode , const std::string& entrypoint, std::vector<std::string> Defines) override;
 
-	std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines) override;
+	std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint,
+		const std::vector< std::string> &Defines = std::vector<std::string>() ) override;
 
 	//Set shaders
 	void SetVertexShader(std::weak_ptr<VertexShader> shader) override;

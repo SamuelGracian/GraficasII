@@ -18,6 +18,9 @@
 #include <windows.h>
 #include "resource.h"
 #include "ObjLoader.h"
+#include <iostream>
+#include <sstream> 
+#include <fstream> 
 
 #ifdef DIRECTX11
 #include <directxmath.h>
@@ -106,13 +109,13 @@ UINT g_IndexCount = 0;
 //Interface GRAPI
 //--------------------------------------------------------------------------------------
 
-std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
-std::shared_ptr<Dx11ConstantBuffer> Gapi_constbuffer = nullptr;
-std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
-std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
+//std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
+//std::shared_ptr<Dx11ConstantBuffer> Gapi_constbuffer = nullptr;
+//std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
+//std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<SwapChain> Gapi_swpChain = nullptr;
-std::shared_ptr<Dx11VertexShader> Gapi_vrtxShader = nullptr;
-std::shared_ptr<Dx11PixelShader> Gapi_pxlShader = nullptr;
+std::shared_ptr<VertexShader> Gapi_vrtxShader = nullptr;
+std::shared_ptr<PixelShader> Gapi_pxlShader = nullptr;
 std::shared_ptr<DepthStencilView> Gapi_depthStencil = nullptr;
 std::shared_ptr<CommandBuffer> Gapi_CommandBuffer = nullptr;
 std::shared_ptr<Topology> Gapi_topology = nullptr;
@@ -127,6 +130,23 @@ HRESULT InitDevice();
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void Render();
 
+
+std::string ReadFileToString(const std::wstring& filePath)
+{
+    std::ifstream file(filePath, std::ios::in | std::ios::binary);
+
+    if (!file.is_open())
+    {
+        MessageBox(nullptr, L"Unable to open file", L"File Read Error", MB_OK);
+        return "";
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    file.close();
+
+    return buffer.str();
+}
 
 //--------------------------------------------------------------------------------------
 // Entry point to the program. Initializes everything and goes into a message processing 
@@ -265,13 +285,19 @@ HRESULT InitDevice()
 
     // Compile the pixel shader
     ID3DBlob* pPSBlob = nullptr;
-    hr = GAPI->CompileShaderFromFile(L"Resources/RawData/Shaders/Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
+    
+    
+    //hr = GAPI->CompileShaderFromFile(L"Resources/RawData/Shaders/Tutorial07.fxh", "PS", "ps_4_0", &pPSBlob);
+    
+    GAPI->CreatePixelShader(ReadFileToString(L"Resources/RawData/Shaders/Tutorial07.fxh"), "PS");
+
     if (FAILED(hr))
     {
         MessageBox(nullptr,
             L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
         return hr;
     }
+
 
 	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 

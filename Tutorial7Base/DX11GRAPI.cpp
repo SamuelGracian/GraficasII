@@ -267,6 +267,80 @@ ID3DBlob* Dx11GraphicsAPI:: CompileShader_internal(const std::string & shaderCod
     }
 }
 
+std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal (ID3DBlob* vertexShaderBlob)
+{
+    ID3D11InputLayout* resultLayout = nullptr;
+    ID3D11ShaderReflection* reflection = nullptr;
+    D3D11_INPUT_ELEMENT_DESC elementDesc = {};
+
+    if (!vertexShaderBlob)
+    {
+        std::cout << "Empty VertexShader blob" << std::endl;
+        return;
+    }
+
+
+    if (SUCCEEDED(D3DReflect(
+        vertexShaderBlob->GetBufferPointer(),
+        vertexShaderBlob->GetBufferSize(),
+        IID_ID3D11ShaderReflection,
+        (void**)&reflection)))
+    {
+        D3D11_SHADER_DESC shaderDesc;
+        reflection->GetDesc(&shaderDesc);
+
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
+        inputLayoutDesc.reserve(shaderDesc.InputParameters);
+
+        for (UINT i = 0; i < shaderDesc.InputParameters; ++i)
+        {
+            D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
+
+            reflection->GetInputParameterDesc(i, &paramDesc);
+
+            elementDesc.SemanticName = paramDesc.SemanticName;
+            elementDesc.SemanticIndex = paramDesc.SemanticIndex;
+            elementDesc.InputSlot = 0;
+            elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+            elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+            elementDesc.InstanceDataStepRate = 0;
+            UINT componentCount = 0;
+            if (paramDesc.Mask == 1) componentCount = 1;
+            else if (paramDesc.Mask <= 3) componentCount = 2;
+            else if (paramDesc.Mask <= 7) componentCount = 3;
+            else if (paramDesc.Mask <= 15) componentCount = 4;
+
+
+            if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+            {
+                if (componentCount == 1) elementDesc.Format = DXGI_FORMAT_R32_FLOAT;
+                else if (componentCount == 2) elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+                else if (componentCount == 3) elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+                else if (componentCount == 4) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            }
+            else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+            {
+                if (componentCount == 1) elementDesc.Format = DXGI_FORMAT_R32_UINT;
+                else if (componentCount == 2) elementDesc.Format = DXGI_FORMAT_R32G32_UINT;
+                else if (componentCount == 3) elementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
+                else if (componentCount == 4) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+            }
+            else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+            {
+                if (componentCount == 1) elementDesc.Format = DXGI_FORMAT_R32_SINT;
+                else if (componentCount == 2) elementDesc.Format = DXGI_FORMAT_R32G32_SINT;
+                else if (componentCount == 3) elementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
+                else if (componentCount == 4) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+            }
+
+            inputLayoutDesc.push_back(elementDesc);
+        }
+    }
+    reflection->Release();
+    return resultLayout;
+}
+
+
 Dx11GraphicsAPI::Dx11GraphicsAPI()
 	:m_device(nullptr),m_immediateContext(nullptr)
 {
@@ -605,7 +679,7 @@ std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const std::str
    }
 }
 
-std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines)
+std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, const std::vector< std::string>  &Defines)
 {
     ID3DBlob* BinaryBlob = nullptr;
 

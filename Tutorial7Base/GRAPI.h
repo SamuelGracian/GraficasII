@@ -84,7 +84,8 @@ public:
 	//Shader functions
 	virtual std::shared_ptr<VertexShader> CreateVertexShader(const std::string& shaderCode ,  const std::string& entrypoint, std::vector<std::string> Defines) = 0;
 
-	virtual std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode,  const std::string& entrypoint, std::vector<std::string> Defines) = 0;
+	virtual std::shared_ptr<PixelShader> CreatePixelShader(const std::string& shaderCode,  const std::string& entrypoint,
+		const std::vector< std::string>& Defines = std::vector<std::string>()) = 0;
 
 	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
 

@@ -129,11 +129,13 @@ public:
 
 	std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) override;
 
+	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
+	
+	//Objects
 	ID3D11Device* m_device;
 
 	ID3D11DeviceContext* m_immediateContext;
 
-	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
 
 private:
 

@@ -267,18 +267,16 @@ ID3DBlob* Dx11GraphicsAPI:: CompileShader_internal(const std::string & shaderCod
     }
 }
 
-std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal (ID3DBlob* vertexShaderBlob)
+std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal(ID3DBlob* vertexShaderBlob)
 {
-    ID3D11InputLayout* resultLayout = nullptr;
+    std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
     ID3D11ShaderReflection* reflection = nullptr;
-    D3D11_INPUT_ELEMENT_DESC elementDesc = {};
 
     if (!vertexShaderBlob)
     {
         std::cout << "Empty VertexShader blob" << std::endl;
-        return;
+        return inputLayoutDesc;  // Return empty vector
     }
-
 
     if (SUCCEEDED(D3DReflect(
         vertexShaderBlob->GetBufferPointer(),
@@ -289,27 +287,26 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal (ID3DBlob* vert
         D3D11_SHADER_DESC shaderDesc;
         reflection->GetDesc(&shaderDesc);
 
-        std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
         inputLayoutDesc.reserve(shaderDesc.InputParameters);
 
         for (UINT i = 0; i < shaderDesc.InputParameters; ++i)
         {
             D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
-
             reflection->GetInputParameterDesc(i, &paramDesc);
 
+            D3D11_INPUT_ELEMENT_DESC elementDesc = {};
             elementDesc.SemanticName = paramDesc.SemanticName;
             elementDesc.SemanticIndex = paramDesc.SemanticIndex;
             elementDesc.InputSlot = 0;
             elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
             elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
             elementDesc.InstanceDataStepRate = 0;
+
             UINT componentCount = 0;
             if (paramDesc.Mask == 1) componentCount = 1;
             else if (paramDesc.Mask <= 3) componentCount = 2;
             else if (paramDesc.Mask <= 7) componentCount = 3;
             else if (paramDesc.Mask <= 15) componentCount = 4;
-
 
             if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
             {
@@ -335,9 +332,11 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal (ID3DBlob* vert
 
             inputLayoutDesc.push_back(elementDesc);
         }
+
+        reflection->Release();
     }
-    reflection->Release();
-    return resultLayout;
+
+    return inputLayoutDesc;
 }
 
 

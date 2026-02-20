@@ -89,8 +89,6 @@ public:
 
 	virtual void SetVertexShader(std::weak_ptr<VertexShader> shader) = 0;
 
-
-
 	//DepthStencil
 	virtual std::shared_ptr<DepthStencilView> CreateDepthStencil(uint32_t width = 0, uint32_t height = 0, const GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN) = 0;
 

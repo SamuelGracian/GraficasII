@@ -130,6 +130,7 @@ public:
 	std::shared_ptr<ViewPort> CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY) override;
 
 	HRESULT CompileShaderFromFile(const  WCHAR* szFileName, const char* szEntryPoint, const char* szShaderModel, ID3DBlob** ppBlobOut);
+
 	
 	//Objects
 	ID3D11Device* m_device;
@@ -148,5 +149,4 @@ private:
 	IDXGISwapChain* CreateSwapChain_Internal(HWND hwnd = nullptr, uint32_t width = 0, uint32_t height = 0, GAPI_FORMAT::K format = GAPI_FORMAT::FORMAT_UNKNOWN);
 
 	ID3DBlob* CompileShader_internal(const std::string& shaderCode, const std::string& entrypoint, std::vector<std::string> Defines, SHADER_TYPE::K shaderType);
-
 };

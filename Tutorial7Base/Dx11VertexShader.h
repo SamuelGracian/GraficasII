@@ -11,4 +11,5 @@ public:
 //private:
 
 	ID3D11VertexShader* m_shader;
+	ID3D11InputLayout* m_InputLayout ;
 };

@@ -109,10 +109,10 @@ UINT g_IndexCount = 0;
 //Interface GRAPI
 //--------------------------------------------------------------------------------------
 
-//std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
-//std::shared_ptr<Dx11ConstantBuffer> Gapi_constbuffer = nullptr;
-//std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
-//std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
+std::shared_ptr<Dx11GraphicsAPI> GAPI = nullptr;
+std::shared_ptr<Dx11ConstantBuffer> Gapi_constbuffer = nullptr;
+std::shared_ptr<Dx11IndexBuffer> Gapi_indxBuffer = nullptr;
+std::shared_ptr<Dx11VertexBuffer> Gapi_vrtxBuffer = nullptr;
 std::shared_ptr<SwapChain> Gapi_swpChain = nullptr;
 std::shared_ptr<VertexShader> Gapi_vrtxShader = nullptr;
 std::shared_ptr<PixelShader> Gapi_pxlShader = nullptr;
@@ -263,22 +263,9 @@ HRESULT InitDevice()
 
     ///-----------------------------------------------------------------
 
-	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader());
+    std::vector<std::string> defines  {"#define TEST"};
 
-    // Define the input layout
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    };
-    UINT numElements = ARRAYSIZE(layout);
-
-    // Create the input layout
-    hr = GAPI->m_device->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-        pVSBlob->GetBufferSize(), &g_pVertexLayout);
-    pVSBlob->Release();
-    if (FAILED(hr))
-        return hr;
+	Gapi_vrtxShader = std::static_pointer_cast<Dx11VertexShader>( GAPI->CreateVertexShader(ReadFileToString(L"Resources/RawData/Shaders/Tutorial07.fxh"), "VS",defines));
 
     // Set the input layout
     GAPI->m_immediateContext->IASetInputLayout(g_pVertexLayout);
@@ -299,7 +286,7 @@ HRESULT InitDevice()
     }
 
 
-	Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
+	//Gapi_pxlShader = std::static_pointer_cast<Dx11PixelShader>(GAPI->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize()));
 
 
     D3D11_BUFFER_DESC bd = {};

@@ -252,22 +252,23 @@ ID3DBlob* Dx11GraphicsAPI:: CompileShader_internal(const std::string & shaderCod
 
         for (auto& macro : Defines)
         {
-            FinalShaderCode += (macro + "/n");
+            FinalShaderCode += (macro + '\n');
         }
 
         FinalShaderCode += shaderCode;
 
-        if (D3DCompile(FinalShaderCode.c_str(), sizeof(char) * FinalShaderCode.length(), nullptr, nullptr, nullptr,
-            entrypoint.c_str(), GetShaderModel_internal(SHADER_TYPE::K::VERTEX_SHADER , m_shaderModel), dwShaderFlags, 0, &BinaryBlob, &ErrorBlob))
+        if (SUCCEEDED(  D3DCompile(FinalShaderCode.c_str(), sizeof(char) * FinalShaderCode.length(), nullptr, nullptr, nullptr,
+            entrypoint.c_str(), GetShaderModel_internal(SHADER_TYPE::K::VERTEX_SHADER , m_shaderModel), dwShaderFlags, 0, &BinaryBlob, &ErrorBlob)))
         {
             return BinaryBlob;
         }
         std::cout << reinterpret_cast<const char*>(ErrorBlob->GetBufferPointer()) << std::endl;
         SAFE_RELEASE(ErrorBlob);
     }
+    return nullptr;
 }
 
-std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayout_internal(ID3DBlob* vertexShaderBlob)
+std::vector<D3D11_INPUT_ELEMENT_DESC> CreateInputLayoutDesc_internal(ID3DBlob* vertexShaderBlob)
 {
     std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
     ID3D11ShaderReflection* reflection = nullptr;
@@ -663,19 +664,30 @@ std::shared_ptr<VertexShader> Dx11GraphicsAPI::CreateVertexShader(const std::str
 
     ID3D11VertexShader* ResultShader = nullptr;
 
-   BinaryBlob = CompileShader_internal(shaderCode, entrypoint, Defines, SHADER_TYPE::K::VERTEX_SHADER);
-        
-   if (BinaryBlob != nullptr)
-   {
-       ID3D11VertexShader* shader = nullptr;
-       HRESULT hr = m_device->CreateVertexShader(BinaryBlob, BinaryBlob->GetBufferSize(), nullptr, &ResultShader);
-       assert(SUCCEEDED(hr));
+    ID3D11InputLayout* resultLayout = nullptr;
 
-       auto shaderPtr = std::make_shared<Dx11VertexShader>();
-       shaderPtr->m_shader = ResultShader;
-    
-       return shaderPtr;
+   BinaryBlob = CompileShader_internal(shaderCode, entrypoint, Defines, SHADER_TYPE::K::VERTEX_SHADER);
+
+   std::shared_ptr<Dx11VertexShader> p_VS = nullptr;
+        
+   if (BinaryBlob != nullptr && m_device != nullptr)
+   {
+       auto desc = CreateInputLayoutDesc_internal(BinaryBlob);
+
+       if (!desc.empty())
+       {
+           if (SUCCEEDED(m_device->CreateVertexShader(BinaryBlob, BinaryBlob->GetBufferSize(), nullptr, &ResultShader)) &&
+               SUCCEEDED(m_device->CreateInputLayout(desc.data(), desc.size(), BinaryBlob->GetBufferPointer(),BinaryBlob->GetBufferSize(), &resultLayout)))
+           {
+               p_VS = std::make_shared<Dx11VertexShader>();
+               p_VS->m_shader = ResultShader;
+               p_VS->m_InputLayout = resultLayout;
+           }
+       }
+ 
+       SAFE_RELEASE(BinaryBlob);
    }
+       return p_VS;
 }
 
 std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::string& shaderCode, const std::string& entrypoint, const std::vector< std::string>  &Defines)
@@ -701,6 +713,14 @@ std::shared_ptr<PixelShader> Dx11GraphicsAPI::CreatePixelShader(const std::strin
 
 void Dx11GraphicsAPI::SetVertexShader(std::weak_ptr<VertexShader> shader)
 {
+    if (shader.expired())
+    {
+        auto p_VS = std::reinterpret_pointer_cast<Dx11VertexShader>(shader.lock());
+
+        m_immediateContext->IASetInputLayout(p_VS->m_InputLayout);
+        
+        m_immediateContext->VSSetShader(p_VS->m_shader, nullptr, 0);
+    }
 }
 
 
@@ -752,14 +772,14 @@ void Dx11GraphicsAPI::SetRenderTarget(const std::weak_ptr<DepthStencilView>& dep
 
 std::shared_ptr<ViewPort> Dx11GraphicsAPI::CreateViewPort(float width, float height, float minDepth, float maxDepth, float topLeftX, float topLeftY)
 {
-    std::shared_ptr<Dx11ViewPort> ResultVP = nullptr;
+    std::shared_ptr<Dx11ViewPort> ResultVP = std::make_shared<Dx11ViewPort>();
 
-    ResultVP->m_ViewPort->Width = width;
-    ResultVP->m_ViewPort->Height = height;
-    ResultVP->m_ViewPort->MinDepth = minDepth;
-    ResultVP->m_ViewPort->MaxDepth = maxDepth;
-    ResultVP->m_ViewPort->TopLeftX = topLeftX;
-    ResultVP->m_ViewPort->TopLeftY = topLeftY;
+    ResultVP->m_ViewPort.Width = width;
+    ResultVP->m_ViewPort.Height = height;
+    ResultVP->m_ViewPort.MinDepth = minDepth;
+    ResultVP->m_ViewPort.MaxDepth = maxDepth;
+    ResultVP->m_ViewPort.TopLeftX = topLeftX;
+    ResultVP->m_ViewPort.TopLeftY = topLeftY;
 
     return ResultVP;
 
